@@ -1,0 +1,5 @@
+django==3.0.5
+djangorestframework==3.11.0
+dnspython
+mongoengine==0.19.0
+blinker
