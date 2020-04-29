@@ -20,7 +20,7 @@ reading all the reviews and understanding about it.
 # Technical Specification
 ## Main Tools
 * <b>Client-Side Framework : </b>Angular
-* <b>Back-end Framework : </b>Python Django Rest Framework
+* <b>Back-end Framework : </b>Python Flask Rest Framework
 * <b>Database : </b>MongoDB Atlas
 * <b>Deployment : </b>Heroku
 
