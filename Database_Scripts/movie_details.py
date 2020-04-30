@@ -107,9 +107,6 @@ def swedishMovieDatabase():
 
 swedishMovieDatabase()
 
-
-
-
 def addCountries():
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
@@ -124,3 +121,20 @@ def addCountries():
         col.insert_one(countries)
 
 addCountries()
+
+def addLanguages():
+    client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
+    db=client['SWMDB']
+    col = db['languages']
+    languageData = pd.read_csv("Languages.csv",encoding="utf-8")
+    languageShortCode = list(languageData['639-1 '])
+    languageName = list(languageData['Language name '])
+    for i in range(0,len(languageShortCode)):
+        language = {}
+        language["_id"] = i + 1
+        language["languageCode"] = languageShortCode[i]
+        language["languageName"] = languageName[i]
+        col.insert_one(language)
+    print("Total Documents are:",col.find({}).count())
+
+addLanguages()
