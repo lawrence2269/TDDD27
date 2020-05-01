@@ -39,14 +39,14 @@ class CreateUser(Resource):
         data = request.get_json()
         users_collection = mongo.db.users
         if(users_collection.find({'email_id':data['email']}).count()!=0):
-            return jsonify({"message":False})
+            return jsonify({"message":"user already exists"})
         else:
             userData = {}
             _id = [user['_id'] for user in users_collection.find().sort("_id",-1).limit(1)][0]
             userData['_id'] = _id+1
-            userData['name'] = data['name']
+            userData['username'] = data['name']
             userData['gender'] = data['gender']
-            userData['dateofbirth'] = str(data['dateofbirth'])[:10]
+            userData['dateofbirth'] = str(data['dateofbirth'])
             userData['email_id'] = data['email']
             userData['country'] = data['country']
             userData['password'] = data['password']
@@ -89,7 +89,7 @@ class ChangePassword(Resource):
         data = request.get_json()
         users_collection = mongo.db.users
         result = users_collection.update_one(
-            {"email_id":data["email_id"]},
+            {"email_id":data["email"]},
             {"$set":{"password":data['password']}}
         )
         if(result.acknowledged == True):
@@ -102,13 +102,68 @@ class DeactivateUser(Resource):
         data = request.get_json()
         users_collection = mongo.db.users
         result = users_collection.update_one(
-            {"email_id":data["email_id"]},
+            {"email_id":data["email"]},
             {"$set":{"status":"inactive"}}
         )
         if(result.acknowledged == True):
             return jsonify({"message":"success"})
         else:
             return jsonify({"message":"failure"})
+
+class GetUpcomingMovies(Resource):
+    def get(self):
+        data = request.get_json()
+        upcomingMovieURL = tm.upcomingMovieURL+"&region={}".format(data['region'])
+        upcomingMoviesData = json.loads(json.dumps(requests.get(upcomingMovieURL).json()))
+        if(len(upcomingMoviesData['results'])!=0):
+            upcomingMoviesList = []
+            for i in range(0,len(upcomingMoviesData['results'])):
+                upcomingMovies = {}
+                upcomingMovies['title'] = upcomingMoviesData['results'][i]['title']
+                upcomingMovies['release_date'] = upcomingMoviesData['results'][i]['release_date']
+                upcomingMovies['poster_path'] = tm.posterPathURL.format(upcomingMoviesData['results'][i]['poster_path'])
+                upcomingMoviesList.append(upcomingMovies)
+            return jsonify({"upcomingMovies":upcomingMoviesList})
+        else:
+            return jsonify({"message":"No upcoming movies in your region"})
+
+class GetNowPlayingMovies(Resource):
+    def get(self):
+        data = request.get_json()
+        nowPlayingMovieURL = tm.nowPlayingMovieURL+"&region={}".format(data['region'])
+        nowPlayingMovieURLData = json.loads(json.dumps(requests.get(nowPlayingMovieURL).json()))
+        if(len(nowPlayingMovieURLData['results'])!=0):
+            newMoviesList = []
+            for i in range(0,len(nowPlayingMovieURLData['results'])):
+                newMovies = {}
+                newMovies['title'] = nowPlayingMovieURLData['results'][i]['title']
+                newMovies['release_date'] = nowPlayingMovieURLData['results'][i]['release_date']
+                newMovies['poster_path'] = tm.posterPathURL.format(nowPlayingMovieURLData['results'][i]['poster_path'])
+                newMoviesList.append(newMovies)
+            return jsonify({"newMovies":newMoviesList})
+        else:
+            return jsonify({"message":"No new movies being played in your region"})
+
+class GetUserReview(Resource):
+    def get(self):
+        data = request.get_json()
+        movie_collection = mongo.db.movies
+        review_collection = mongo.db.reviews
+        movieId = [movie['_id'] for movie in movie_collection.find({"title":{"$regex":data['title'],"$options":"i"}},{"_id":1})][0]
+        review_cursor = review_collection.find({"movie_id":movieId})
+        if(review_cursor.count()!=0):
+            reviewList = []
+            for review in review_cursor:
+                reviews = {}
+                reviews['user'] = review['user']
+                reviews['reviewStmt'] = review['content']
+                reviews['rating'] = review['rating']
+                reviewList.append(reviews)
+            return jsonify({"reviews":reviewList})
+        else:
+            return jsonify({"message":"No reviews for this movie"})
+
+
 ##### Admin related services #####
 
 class GetUser(Resource):
@@ -147,13 +202,28 @@ class AddMovies(Resource):
             else:
                 return jsonify({"message":"failure"})
 
+class DeleteUser(Resource):
+    def post(self):
+        data = request.get_json()
+        users_collection = mongo.db.users
+        deleteQuery = {"username":{"$regex":data["username"],"$options":"i"}}
+        deletedResult = users_collection.delete_one(deleteQuery)
+        if(deletedResult.acknowledged == True):
+            return jsonify({"message":"success"})
+        else:
+            return jsonify({"message":"failure"})
+
 api.add_resource(Countries,'/countries')
 api.add_resource(Languages,'/languages')
 api.add_resource(CreateUser,'/createuser')
 api.add_resource(RequestMovies,'/requestmovie')
 api.add_resource(ChangePassword,'/changepwd')
 api.add_resource(GetMovies,'/movies')
+api.add_resource(GetUpcomingMovies,'/upcomingmovies')
+api.add_resource(GetNowPlayingMovies,'/newmovies')
+api.add_resource(GetUserReview,'/userreviews')
 api.add_resource(GetUser,'/admin/users')
 api.add_resource(AddMovies,'/admin/addmovies')
+api.add_resource(DeleteUser,'/admin/deleteuser')
 
 app.run(port=5000, debug=True)
