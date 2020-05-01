@@ -1,0 +1,43 @@
+.example-container{
+    text-align: center;
+    margin-top: 65px;
+    margin-left: 325px;
+    justify-content: center;
+    align-content: center;
+}
+
+.form-container{
+    width: 400 px; 
+    margin: 0 px auto; 
+    margin-top: 200 px
+}
+
+.form-field{
+    display: block;
+}
+
+.matCard{
+    text-align: center;
+}
+
+.btnGoogle{
+    border:none;
+    outline: none;
+    cursor: pointer;
+    color: white;
+    background-color: #346df2;
+}
+
+.btnGoogle:before{
+    content:url(https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg);
+    width:20px;
+    float: left;
+    margin-right: 5px;
+    margin-top:3px;
+}
+
+.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
