@@ -1,3 +1,5 @@
+import { HomeService } from './home/home.service';
+import { SignupService } from './signup/signup.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -21,6 +23,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import {MatDividerModule} from '@angular/material/divider';
 import { HttpClientModule } from '@angular/common/http';
 import { BsNavbarComponent } from './bs-navbar/bs-navbar.component';
+import { MovieComponent } from './movie/movie.component';
+import { MoviesComponent } from './movies/movies.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +32,9 @@ import { BsNavbarComponent } from './bs-navbar/bs-navbar.component';
     HomeComponent,
     LoginComponent,
     SignupComponent,
-    BsNavbarComponent
+    BsNavbarComponent,
+    MovieComponent,
+    MoviesComponent
   ],
   imports: [
     BrowserModule,
@@ -51,10 +57,15 @@ import { BsNavbarComponent } from './bs-navbar/bs-navbar.component';
     RouterModule.forRoot([
       {path: '', component: HomeComponent},
       {path: 'login', component:LoginComponent},
-      {path: 'signup', component:SignupComponent}
+      {path: 'signup', component:SignupComponent},
+      {path: 'movies',component:MoviesComponent},
+      {path: 'movie',component:MovieComponent}
     ])
   ],
-  providers: [],
+  providers: [
+    SignupService,
+    HomeService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,0 +1,42 @@
+.heading2{
+    color:white;
+    text-align: center;
+    margin-top: 30px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 48px; 
+}
+
+.paragraph1{
+    color:white;
+    text-align: justify;
+}
+
+.paragraph2{
+    color:white;
+    text-align: center;
+}
+
+.heading4{
+    color:white;
+    font-family: 'Raleway',sans-serif;
+    font-size: 20px; 
+    font-weight: bold;
+}
+
+.divider{
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+
+.star{
+    font-size:20px;
+    color:yellow;
+}
+
+.divcard{
+    width:200px;
+}

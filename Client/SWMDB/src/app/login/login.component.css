@@ -1,0 +1,41 @@
+.example-container{
+    text-align: center;
+    margin-top: 65px;
+    margin-left: 325px;
+    justify-content: center;
+    align-content: center;
+}
+
+.form-container{
+    width: 400 px; 
+    margin: 0 px auto; 
+    margin-top: 200 px
+}
+
+.form-field{
+    display: block;
+}
+
+.matCard{
+    text-align: center;
+}
+
+.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+
+.bg{
+    position: fixed;
+    top: 55px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    opacity:.5;
+    background-color:transparent;
+    background-image: url('/assets/img/home_image.png');
+    background-repeat: no-repeat;
+    
+}
