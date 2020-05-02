@@ -4,3 +4,4 @@ posterPathURL = "http://image.tmdb.org/t/p/w185{}"
 upcomingMovieURL = "https://api.themoviedb.org/3/movie/upcoming?api_key={}".format(api_key)
 nowPlayingMovieURL = "https://api.themoviedb.org/3/movie/now_playing?api_key={}".format(api_key)
 movieReviewURL = "https://api.themoviedb.org/3/movie/{}/reviews?api_key={}"
+popularMovieURL = "https://api.themoviedb.org/3/movie/popular?api_key={}&region={}"

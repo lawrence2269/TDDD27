@@ -144,6 +144,23 @@ class GetNowPlayingMovies(Resource):
         else:
             return jsonify({"message":"No new movies being played in your region"})
 
+class GetPopularMovies(Resource):
+    def get(self):
+        data = request.get_json()
+        popularMovieURL = tm.popularMovieURL.format(tm.api_key,data['region'])
+        popularMovieURLData = json.loads(json.dumps(requests.get(popularMovieURL).json()))
+        if(len(popularMovieURLData['results'])!=0):
+            popularMovieList = []
+            for i in range(0,len(popularMovieURLData['results'])):
+                popularMovies = {}
+                if(datetime.now().year == datetime.strptime(popularMovieURLData['results'][i]['release_date'],"%Y-%m-%d").year):
+                    popularMovies['title'] = popularMovieURLData['results'][i]['title']
+                    popularMovies['poster_path'] = tm.posterPathURL.format(popularMovieURLData['results'][i]['poster_path'])
+                    popularMovieList.append(popularMovies)
+            return jsonify({"popularMovies":popularMovieList})
+        else:
+            return jsonify({"message":"No popular movies is available in your region"})
+
 class GetUserReview(Resource):
     def get(self):
         data = request.get_json()
@@ -162,7 +179,6 @@ class GetUserReview(Resource):
             return jsonify({"reviews":reviewList})
         else:
             return jsonify({"message":"No reviews for this movie"})
-
 
 ##### Admin related services #####
 
@@ -221,6 +237,7 @@ api.add_resource(ChangePassword,'/changepwd')
 api.add_resource(GetMovies,'/movies')
 api.add_resource(GetUpcomingMovies,'/upcomingmovies')
 api.add_resource(GetNowPlayingMovies,'/newmovies')
+api.add_resource(GetPopularMovies,'/popularmovies')
 api.add_resource(GetUserReview,'/userreviews')
 api.add_resource(GetUser,'/admin/users')
 api.add_resource(AddMovies,'/admin/addmovies')
