@@ -30,7 +30,18 @@ export class LoginComponent implements OnInit {
 
   public loginUser():void{
     console.log(this.loginForm.value);
-    localStorage.setItem("region","SE");
+    let region = ""
+    if(sessionStorage.getItem("region") == null)
+    {
+        sessionStorage.setItem("region","US");
+        region = "US";
+        console.log(localStorage.getItem("region"));
+    }
+    else
+    {
+        region = sessionStorage.getItem("region");
+        console.log(sessionStorage.getItem("region"));
+    }
     this.router.navigate(["/"]);
   }
 }

@@ -40,3 +40,65 @@
 .divcard{
     width:200px;
 }
+
+.row{
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+.browse-movie-wrap {
+    margin-bottom: 15px;
+}
+
+.browse-movie-link {
+    display: inline-block;
+    max-width: 220px;
+    border: 5px solid #fff;
+    transition: border .15s ease-in-out;
+    -moz-transition: border .15s ease-in-out;
+    -webkit-transition: border .15s ease-in-out;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    font-size: 24px;
+}
+
+.img-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.browse-movie-bottom {
+    margin: 0 auto;
+    padding: 0 5px;
+    max-width: 220px;
+    margin-left: 0.15px;
+    font-size: .95em;
+}
+
+.browse-movie-title, .browse-movie-title:focus, #comments-box a {
+    color: #fff;
+    font-weight: 700;
+    display: block;
+    transition: color .15s ease-in-out;
+    -moz-transition: color .15s ease-in-out;
+    -webkit-transition: color .15s ease-in-out;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .95em;
+}
+
+.invisible{
+    display: block;
+    visibility: hidden;
+    height: 0;
+    width: 0;
+}
+
+a,
+a label {
+    cursor: pointer;
+}
+

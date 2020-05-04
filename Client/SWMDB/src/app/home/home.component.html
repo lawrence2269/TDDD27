@@ -9,15 +9,59 @@
     <br>
     <h4 class="heading4"><i class="fa fa-star star"></i> Popular Movies</h4>
     <hr class="divider"/>
-    <div class="divcard">
-        <mat-card class="mat-elevation-z14" style="margin-top:10px">
-            <mat-card-header>
-                <div mat-card-avatar class="example-header-image"></div>
-            </mat-card-header>
-            <img mat-card-image src="http://image.tmdb.org/t/p/w185/8WUVHemHFH2ZIP6NWkwlHWsyrEL.jpg" style="margin-top:-56px; margin-bottom: -16px;"/>
-            <mat-card-content style="margin-top:20px;">
-                <h4>Bloodshot</h4>
-            </mat-card-content>
-        </mat-card>
+    <div class="row">
+        <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of popular_movie_poster_path; let i = index">
+            <a (click) = "popularMovieClick(popular_movie_title[i])" class="browse-movie-link">
+                <figure>
+                    <img class="img-responsive" src={{obj}} width="210" height="315"/>
+                </figure>
+            </a>
+            <div class="browse-movie-bottom">
+                <p class="browse-movie-title">
+                    {{popular_movie_title[i]}}
+                </p>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div>
+        <h4 class="heading4"><i class="fa fa-star star"></i> Now Playing</h4>
+        <hr class="divider"/>
+        <div class="row">
+            <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of new_movies_poster_path; let i = index">
+                <!-- [routerLink]="['/login',popular_movie_title[i]]" -->
+                <a (click) = "playingMovieclick(new_movies_title[i])" class="browse-movie-link">
+                    <figure>
+                        <img class="img-responsive" src={{obj}} width="210" height="315"/>
+                    </figure>
+                </a>
+                <div class="browse-movie-bottom">
+                    <p class="browse-movie-title">
+                        {{new_movies_title[i]}}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div>
+        <h4 class="heading4"><i class="fa fa-star star"></i> Upcoming Movies</h4>
+        <hr class="divider"/>
+        <div class="row">
+            <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of upcoming_movies_poster_path; let i = index">
+                <a (click) = "upcomingMovieClick(upcoming_movies_title[i])" class="browse-movie-link">
+                    <figure>
+                        <img class="img-responsive" src={{obj}} width="210" height="315"/>
+                    </figure>
+                </a>
+                <div class="browse-movie-bottom">
+                    <p class="browse-movie-title">
+                        {{upcoming_movies_title[i]}}
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
