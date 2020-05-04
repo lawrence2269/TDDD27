@@ -141,8 +141,8 @@ class GetUpcomingMovies(Resource):
                 if(upcomingMoviesData['results'][i]['poster_path'] != None):
                     upcomingMovies = {}
                     upcomingMovies['title'] = upcomingMoviesData['results'][i]['title']
-                    upcomingMovies['release_date'] = upcomingMoviesData['results'][i]['release_date']
                     upcomingMovies['poster_path'] = tm.posterPathURL.format(upcomingMoviesData['results'][i]['poster_path'])
+                    upcomingMovies['release_year'] = datetime.strptime(upcomingMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
                     upcomingMoviesList.append(upcomingMovies)
             resp = jsonify({"upcomingMovies":upcomingMoviesList})
             resp.status_code = 200
@@ -162,8 +162,8 @@ class GetNowPlayingMovies(Resource):
             for i in range(0,len(nowPlayingMovieURLData['results'])):
                 newMovies = {}
                 newMovies['title'] = nowPlayingMovieURLData['results'][i]['title']
-                newMovies['release_date'] = nowPlayingMovieURLData['results'][i]['release_date']
                 newMovies['poster_path'] = tm.posterPathURL.format(nowPlayingMovieURLData['results'][i]['poster_path'])
+                newMovies['release_year'] = datetime.strptime(nowPlayingMovieURLData['results'][i]['release_date'],"%Y-%m-%d").year
                 newMoviesList.append(newMovies)
             resp = jsonify({"newMovies":newMoviesList})
             resp.status_code = 200
@@ -185,12 +185,52 @@ class GetPopularMovies(Resource):
                 if(datetime.now().year == datetime.strptime(popularMovieURLData['results'][i]['release_date'],"%Y-%m-%d").year):
                     popularMovies['title'] = popularMovieURLData['results'][i]['title']
                     popularMovies['poster_path'] = tm.posterPathURL.format(popularMovieURLData['results'][i]['poster_path'])
+                    popularMovies['release_year'] = datetime.strptime(popularMovieURLData['results'][i]['release_date'],"%Y-%m-%d").year
                     popularMovieList.append(popularMovies)
             resp = jsonify({"popularMovies":popularMovieList})
             resp.status_code = 200
             return resp
         else:
             resp = jsonify({"message":"No popular movies is available in your region"})
+            resp.status_code = 404
+            return resp
+
+class GetMovieDetails(Resource):
+    def get(self):
+        title = request.args.get("title")
+        year = int(request.args.get("year"))
+        movieSearchURL = tm.movieSearchURL+"&query={}&include_adult={}&year={}".format(title,True,year)
+        movieDetails = json.loads(json.dumps(requests.get(movieSearchURL).json()))
+        if(len(movieDetails['results'])!=0):
+            movieData = {}
+            movieData['tmdb_id'] = movieDetails['results'][0]['id']
+            movieData['title'] = movieDetails['results'][0]['title']
+            movieData['poster_path'] = tm.posterPathURL_L.format(movieDetails['results'][0]['poster_path'])
+            yifyMovieDetail = json.loads(json.dumps(requests.get(tm.yifyMovieDetailURL.format(title)).json()))
+            for i in range(0,len(yifyMovieDetail['data']['movies'])):
+                print(type(yifyMovieDetail['data']['movies'][i]['year']))
+                if(yifyMovieDetail['data']['movies'][i]['year'] == year):
+                    movieData['yify_id'] = yifyMovieDetail['data']['movies'][i]['id']
+                    movieData['synopsis'] = yifyMovieDetail['data']['movies'][i]['synopsis']
+                    movieData['runtime'] = yifyMovieDetail['data']['movies'][i]['runtime']
+                    movieData['trailer'] = tm.youtubeTrailerURL.format(yifyMovieDetail['data']['movies'][i]['yt_trailer_code'])
+            genre = []
+            genre_temp = movieDetails['results'][0]['genre_ids']
+            genreDetails = json.loads(json.dumps(requests.get(tm.genreDetailURL).json()))
+            for genreId in genre_temp:
+                for info in genreDetails['genres']:
+                    if(info['id'] == genreId):
+                        genre.append(info['name'])
+            movieData['genre'] = str('/'.join(genre))
+            if(movieDetails['results'][0]["adult"] == False):
+                movieData["adult_Content"] = "No"
+            else:
+                movieData["adult_Content"] = "Yes"
+            resp = jsonify({"movieDetails":movieData})
+            resp.status_code = 200
+            return resp
+        else:
+            resp = jsonify({"message":"Movie is not available"})
             resp.status_code = 404
             return resp
 
@@ -291,6 +331,7 @@ api.add_resource(GetMovies,'/movies')
 api.add_resource(GetUpcomingMovies,'/upcomingmovies')
 api.add_resource(GetNowPlayingMovies,'/newmovies')
 api.add_resource(GetPopularMovies,'/popularmovies')
+api.add_resource(GetMovieDetails,'/movieDetails')
 api.add_resource(GetUserReview,'/userreviews')
 api.add_resource(GetUser,'/admin/users')
 api.add_resource(AddMovies,'/admin/addmovies')
