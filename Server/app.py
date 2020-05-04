@@ -30,7 +30,9 @@ class Languages(Resource):
         languages_collection = mongo.db.languages
         languages_records = languages_collection.find({})
         languages = [{"languageCode":language['languageCode'],"languageName":language['languageName']} for language in languages_records]
-        return jsonify({"languages":languages})
+        resp = jsonify({"languages":languages})
+        resp.status_code = 200
+        return resp
 
 ##### User related services ######
 
@@ -55,16 +57,22 @@ class CreateUser(Resource):
             userData['created_at'] = datetime.now(tz=None)
             result = users_collection.insert_one(userData)
             if(result.acknowledged == True):
-                return jsonify({"message":"Success"})
+                resp = jsonify({"message":"Success"})
+                resp.status_code = 200
+                return resp
             else:
-                return jsonify({"message":"Failure"})
+                resp = jsonify({"message":"Failure"})
+                resp.status_code = 400
+                return resp
 
 class GetMovies(Resource):
     def get(self):
         movie_collection = mongo.db.movies
         movie_records = movie_collection.find({})
         movies = [movie for movie in movie_records]
-        return jsonify({"movies":movies})
+        resp = jsonify({"movies":movies})
+        resp.status_code = 200
+        return resp
 
 class RequestMovies(Resource):
     def post(self):
@@ -80,9 +88,13 @@ class RequestMovies(Resource):
             requestMovie["language"] = data["language"]
             result = movie_request_collection.insert_one(requestMovie)
             if(result.acknowledged == True):
-                return jsonify({"message":"success"})
+                resp = jsonify({"message":"Success"})
+                resp.status_code = 200
+                return resp
             else:
-                return jsonify({"message":"failure"})
+                resp = jsonify({"message":"Failure"})
+                resp.status_code = 400
+                return resp
 
 class ChangePassword(Resource):
     def post(self):
@@ -93,9 +105,13 @@ class ChangePassword(Resource):
             {"$set":{"password":data['password']}}
         )
         if(result.acknowledged == True):
-            return jsonify({"message":"success"})
+            resp = jsonify({"message":"Success"})
+            resp.status_code = 200
+            return resp
         else:
-            return jsonify({"message":"failure"})
+            resp = jsonify({"message":"Failure"})
+            resp.status_code = 400
+            return resp
 
 class DeactivateUser(Resource):
     def post(self):
@@ -106,31 +122,40 @@ class DeactivateUser(Resource):
             {"$set":{"status":"inactive"}}
         )
         if(result.acknowledged == True):
-            return jsonify({"message":"success"})
+            resp = jsonify({"message":"Success"})
+            resp.status_code = 200
+            return resp
         else:
-            return jsonify({"message":"failure"})
+            resp = jsonify({"message":"Failure"})
+            resp.status_code = 400
+            return resp
 
 class GetUpcomingMovies(Resource):
     def get(self):
-        data = request.get_json()
-        upcomingMovieURL = tm.upcomingMovieURL+"&region={}".format(data['region'])
+        data = request.args.get("region")
+        upcomingMovieURL = tm.upcomingMovieURL+"&region={}".format(data)
         upcomingMoviesData = json.loads(json.dumps(requests.get(upcomingMovieURL).json()))
         if(len(upcomingMoviesData['results'])!=0):
             upcomingMoviesList = []
             for i in range(0,len(upcomingMoviesData['results'])):
-                upcomingMovies = {}
-                upcomingMovies['title'] = upcomingMoviesData['results'][i]['title']
-                upcomingMovies['release_date'] = upcomingMoviesData['results'][i]['release_date']
-                upcomingMovies['poster_path'] = tm.posterPathURL.format(upcomingMoviesData['results'][i]['poster_path'])
-                upcomingMoviesList.append(upcomingMovies)
-            return jsonify({"upcomingMovies":upcomingMoviesList})
+                if(upcomingMoviesData['results'][i]['poster_path'] != None):
+                    upcomingMovies = {}
+                    upcomingMovies['title'] = upcomingMoviesData['results'][i]['title']
+                    upcomingMovies['release_date'] = upcomingMoviesData['results'][i]['release_date']
+                    upcomingMovies['poster_path'] = tm.posterPathURL.format(upcomingMoviesData['results'][i]['poster_path'])
+                    upcomingMoviesList.append(upcomingMovies)
+            resp = jsonify({"upcomingMovies":upcomingMoviesList})
+            resp.status_code = 200
+            return resp
         else:
-            return jsonify({"message":"No upcoming movies in your region"})
+            resp = jsonify({"message":"No upcoming movies in your region"})
+            resp.status_code = 404
+            return resp
 
 class GetNowPlayingMovies(Resource):
     def get(self):
-        data = request.get_json()
-        nowPlayingMovieURL = tm.nowPlayingMovieURL+"&region={}".format(data['region'])
+        data = request.args.get("region")
+        nowPlayingMovieURL = tm.nowPlayingMovieURL+"&region={}".format(data)
         nowPlayingMovieURLData = json.loads(json.dumps(requests.get(nowPlayingMovieURL).json()))
         if(len(nowPlayingMovieURLData['results'])!=0):
             newMoviesList = []
@@ -140,14 +165,18 @@ class GetNowPlayingMovies(Resource):
                 newMovies['release_date'] = nowPlayingMovieURLData['results'][i]['release_date']
                 newMovies['poster_path'] = tm.posterPathURL.format(nowPlayingMovieURLData['results'][i]['poster_path'])
                 newMoviesList.append(newMovies)
-            return jsonify({"newMovies":newMoviesList})
+            resp = jsonify({"newMovies":newMoviesList})
+            resp.status_code = 200
+            return resp
         else:
-            return jsonify({"message":"No new movies being played in your region"})
+            resp = jsonify({"message":"No new movies being played in your region"})
+            resp.status_code = 404
+            return resp
 
 class GetPopularMovies(Resource):
     def get(self):
-        data = request.get_json()
-        popularMovieURL = tm.popularMovieURL.format(tm.api_key,data['region'])
+        data = request.args.get("region")
+        popularMovieURL = tm.popularMovieURL.format(tm.api_key,data)
         popularMovieURLData = json.loads(json.dumps(requests.get(popularMovieURL).json()))
         if(len(popularMovieURLData['results'])!=0):
             popularMovieList = []
@@ -157,9 +186,13 @@ class GetPopularMovies(Resource):
                     popularMovies['title'] = popularMovieURLData['results'][i]['title']
                     popularMovies['poster_path'] = tm.posterPathURL.format(popularMovieURLData['results'][i]['poster_path'])
                     popularMovieList.append(popularMovies)
-            return jsonify({"popularMovies":popularMovieList})
+            resp = jsonify({"popularMovies":popularMovieList})
+            resp.status_code = 200
+            return resp
         else:
-            return jsonify({"message":"No popular movies is available in your region"})
+            resp = jsonify({"message":"No popular movies is available in your region"})
+            resp.status_code = 404
+            return resp
 
 class GetUserReview(Resource):
     def get(self):
@@ -176,9 +209,13 @@ class GetUserReview(Resource):
                 reviews['reviewStmt'] = review['content']
                 reviews['rating'] = review['rating']
                 reviewList.append(reviews)
-            return jsonify({"reviews":reviewList})
+            resp = jsonify({"reviews":reviewList})
+            resp.status_code = 200
+            return resp
         else:
-            return jsonify({"message":"No reviews for this movie"})
+            resp = jsonify({"message":"No reviews for this movie"})
+            resp.status_code = 400
+            return resp
 
 ##### Admin related services #####
 
@@ -189,7 +226,9 @@ class GetUser(Resource):
         user_Cursor = users_collection.find({"_id":{"$ne":1},"status":{"$ne":"inactive"}},{"_id":1,"name":1,"gender":1,"email_id":1,"role":1})
         for users in user_Cursor:
             userData.append(users)
-        return jsonify({"users":userData})
+        resp = jsonify({"users":userData})
+        resp.status_code = 200
+        return resp
 
 class AddMovies(Resource):
     def post(self):
@@ -212,11 +251,21 @@ class AddMovies(Resource):
                     query = {"title":data['title']}
                     deletedResult = movie_request_collection.delete_one(query)
                     if(deletedResult.acknowledged == True):
-                        return jsonify({"message":"success"})
+                        resp = jsonify({"message":"Success"})
+                        resp.status_code = 200
+                        return resp
                     else:
-                        return jsonify({"message":"failure"})
+                        resp = jsonify({"message":"Movie already deleted"})
+                        resp.status_code = 400
+                        return resp
+                else:
+                    resp = jsonify({"message":"Failure"})
+                    resp.status_code = 400
+                    return resp
             else:
-                return jsonify({"message":"failure"})
+                resp = jsonify({"message":"No Data"})
+                resp.status_code = 404
+                return resp
 
 class DeleteUser(Resource):
     def post(self):
@@ -225,9 +274,13 @@ class DeleteUser(Resource):
         deleteQuery = {"username":{"$regex":data["username"],"$options":"i"}}
         deletedResult = users_collection.delete_one(deleteQuery)
         if(deletedResult.acknowledged == True):
-            return jsonify({"message":"success"})
+            resp = jsonify({"message":"Success"})
+            resp.status_code = 200
+            return resp
         else:
-            return jsonify({"message":"failure"})
+            resp = jsonify({"message":"Failure"})
+            resp.status_code = 400
+            return resp
 
 api.add_resource(Countries,'/countries')
 api.add_resource(Languages,'/languages')
