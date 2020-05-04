@@ -11,7 +11,7 @@
     <hr class="divider"/>
     <div class="row">
         <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of popular_movie_poster_path; let i = index">
-            <a (click) = "popularMovieClick(popular_movie_title[i])" class="browse-movie-link">
+            <a (click) = "popularMovieClick(popular_movie_title[i],popular_movie_year[i])" class="browse-movie-link">
                 <figure>
                     <img class="img-responsive" src={{obj}} width="210" height="315"/>
                 </figure>
@@ -31,7 +31,7 @@
         <div class="row">
             <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of new_movies_poster_path; let i = index">
                 <!-- [routerLink]="['/login',popular_movie_title[i]]" -->
-                <a (click) = "playingMovieclick(new_movies_title[i])" class="browse-movie-link">
+                <a (click) = "playingMovieclick(new_movies_title[i],new_movies_year[i])" class="browse-movie-link">
                     <figure>
                         <img class="img-responsive" src={{obj}} width="210" height="315"/>
                     </figure>
@@ -51,8 +51,9 @@
         <hr class="divider"/>
         <div class="row">
             <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of upcoming_movies_poster_path; let i = index">
-                <a (click) = "upcomingMovieClick(upcoming_movies_title[i])" class="browse-movie-link">
+                <a (click) = "upcomingMovieClick(upcoming_movies_title[i],upcoming_movies_year[i])" class="browse-movie-link">
                     <figure>
+                        <!-- width="210" height="340" -->
                         <img class="img-responsive" src={{obj}} width="210" height="315"/>
                     </figure>
                 </a>
