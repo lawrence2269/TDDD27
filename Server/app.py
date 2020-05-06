@@ -206,14 +206,20 @@ class GetMovieDetails(Resource):
             movieData['tmdb_id'] = movieDetails['results'][0]['id']
             movieData['title'] = movieDetails['results'][0]['title']
             movieData['poster_path'] = tm.posterPathURL_L.format(movieDetails['results'][0]['poster_path'])
-            yifyMovieDetail = json.loads(json.dumps(requests.get(tm.yifyMovieDetailURL.format(title)).json()))
-            for i in range(0,len(yifyMovieDetail['data']['movies'])):
-                print(type(yifyMovieDetail['data']['movies'][i]['year']))
-                if(yifyMovieDetail['data']['movies'][i]['year'] == year):
-                    movieData['yify_id'] = yifyMovieDetail['data']['movies'][i]['id']
-                    movieData['synopsis'] = yifyMovieDetail['data']['movies'][i]['synopsis']
-                    movieData['runtime'] = yifyMovieDetail['data']['movies'][i]['runtime']
-                    movieData['trailer'] = tm.youtubeTrailerURL.format(yifyMovieDetail['data']['movies'][i]['yt_trailer_code'])
+            yifyMovieDetails = json.loads(json.dumps(requests.get(tm.yifyMovieDetailURL.format(title)).json()))
+            for i in range(0,len(yifyMovieDetails['data']['movies'])):
+                if(yifyMovieDetails['data']['movies'][i]['year'] == year):
+                    movieData['yify_id'] = yifyMovieDetails['data']['movies'][i]['id']
+                    yifyMovieDetail = json.loads(json.dumps(requests.get(tm.yifyMovieSearchURL.format(movieData['yify_id'])).json()))
+                    if(len(yifyMovieDetail['data']['movie'])!=0):
+                        movieData['likes'] = yifyMovieDetail['data']['movie']['like_count']
+                    else:
+                        movieData['likes'] = 0
+                    movieData['imdb_id'] = tm.imdb_URL.format(yifyMovieDetails['data']['movies'][i]['imdb_code'])
+                    movieData['synopsis'] = yifyMovieDetails['data']['movies'][i]['synopsis']
+                    movieData['runtime'] = yifyMovieDetails['data']['movies'][i]['runtime']
+                    movieData['rating'] = yifyMovieDetails['data']['movies'][i]['rating']
+                    movieData['trailer'] = tm.youtubeTrailerURL.format(yifyMovieDetails['data']['movies'][i]['yt_trailer_code'])
             genre = []
             genre_temp = movieDetails['results'][0]['genre_ids']
             genreDetails = json.loads(json.dumps(requests.get(tm.genreDetailURL).json()))
@@ -221,7 +227,7 @@ class GetMovieDetails(Resource):
                 for info in genreDetails['genres']:
                     if(info['id'] == genreId):
                         genre.append(info['name'])
-            movieData['genre'] = str('/'.join(genre))
+            movieData['genre'] = str(' / '.join(genre))
             if(movieDetails['results'][0]["adult"] == False):
                 movieData["adult_Content"] = "No"
             else:

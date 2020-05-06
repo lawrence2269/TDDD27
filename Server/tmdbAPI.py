@@ -9,3 +9,5 @@ posterPathURL_L = "http://image.tmdb.org/t/p/w342{}"
 genreDetailURL = "https://api.themoviedb.org/3/genre/movie/list?api_key={}".format(api_key)
 yifyMovieDetailURL = "https://yts.mx/api/v2/list_movies.json?query_term={}"
 youtubeTrailerURL = "https://www.youtube.com/watch?v={}"
+imdb_URL = "https://www.imdb.com/title/{}/"
+yifyMovieSearchURL = "https://yts.mx/api/v2/movie_details.json?movie_id={}"
