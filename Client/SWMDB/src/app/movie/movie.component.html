@@ -1,1 +1,36 @@
-<p>movie works!</p>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <img class="img-responsive" src="{{poster_path}}">
+        </div>
+        <div id="movieContent" class="col-sm-6">
+            <h1 style="color: white;">{{title}}</h1>
+            <br>
+            <h4 style="color: white;">{{year}}</h4>
+            <h4 style="color: white;">{{genre}}</h4>
+            <h4 Style="color: white;">{{runTime}}</h4>
+            <br>
+            <table>
+                <tr class="spaceUnder">
+                    <td>
+                        <a href="{{imdb_id}}" title="IMDB Rating" target="_blank">
+                            <img src="/assets/img/logo-imdb.svg">
+                        </a>
+                    </td>
+                    <td>
+                        <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{rating}}</span>
+                        <i class="fa fa-star star"></i>
+                    </td>
+                </tr>
+                <tr class="spaceUnder">
+                    <td>
+                        <i class="fa fa-heart heart" title="Likes"></i>
+                    </td>
+                    <td>
+                        <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{like_count}}</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
