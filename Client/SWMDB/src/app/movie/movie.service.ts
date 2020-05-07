@@ -15,4 +15,9 @@ export class MovieService {
     let params = new HttpParams({fromString:'title='+title+"&year="+year});
     return this.http.get(localUrl+"/movieDetails",{params});
   }
+
+  getSimilarMovies(value:number):Observable<any>{
+    let params = new HttpParams({fromString:'yify_id='+value});
+    return this.http.get(localUrl+"/similarmovies",{params});
+  }
 }

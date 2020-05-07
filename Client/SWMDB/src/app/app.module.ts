@@ -1,3 +1,4 @@
+import { MovieService } from './movie/movie.service';
 import { HomeService } from './home/home.service';
 import { SignupService } from './signup/signup.service';
 import { BrowserModule } from '@angular/platform-browser';
@@ -64,7 +65,8 @@ import { MoviesComponent } from './movies/movies.component';
   ],
   providers: [
     SignupService,
-    HomeService
+    HomeService,
+    MovieService
   ],
   bootstrap: [AppComponent]
 })

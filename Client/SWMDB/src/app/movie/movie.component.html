@@ -1,9 +1,9 @@
 <div class="container">
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-xs-3">
             <img class="img-responsive" src="{{poster_path}}">
         </div>
-        <div id="movieContent" class="col-sm-6">
+        <div id="movieContent" class="col-xs-6">
             <h1 style="color: white;">{{title}}</h1>
             <br>
             <h4 style="color: white;">{{year}}</h4>
@@ -19,18 +19,72 @@
                     </td>
                     <td>
                         <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{rating}}</span>
-                        <i class="fa fa-star star"></i>
+                        <i class="fa fa-star star" style="margin-left: 10px;"></i>
                     </td>
                 </tr>
                 <tr class="spaceUnder">
                     <td>
-                        <i class="fa fa-heart heart" title="Likes"></i>
+                        <i class="fa fa-thumbs-up thumbsup" title="Likes" style="font-size: 36px;"></i>
                     </td>
                     <td>
                         <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{like_count}}</span>
                     </td>
                 </tr>
             </table>
+        </div>
+    </div>
+    <div class="trailer">
+        <h4 class="heading4">Trailer &amp; Screenshots</h4>
+        <hr class="dividerTrailer">
+        <div style="margin-top: 40px;margin-bottom: 60px;margin-left: -35px;">
+            <div style="text-align: center;">
+                <iframe [src]="trailer" frameborder="0" width="540" height="315" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        </div>
+        <div class="row" style="margin-top: -30px;margin-bottom: 70px;margin-left: -35px;text-align: center;">
+            <div class="col">
+                <img [src] = "screenshot1" height="315" width="70%"/>
+            </div>
+            <div class="col" style="margin-left: -220px;">
+                <img [src] = "screenshot2" height="315" width="70%"/>
+            </div>
+        </div>
+    </div>
+    <div class="synopsis">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="leftside">
+                    <h4 class="heading4">Synopsis</h4>
+                    <hr class="dividerSynopsis">
+                    <br>
+                    <p style="color: white;text-align: justify;text-justify: inter-word;margin-top: -20px;">
+                        {{synopsis}}
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="rightside">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="similar">
+        <h4 class="heading4"><i class="fa fa-star star"></i>&nbsp;&nbsp;Similar Movies</h4>
+        <hr class="dividerSimilar"/>
+        <div class="row">
+            <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of similar_Movies_Poster_Path; let i = index">
+                <a (click)="similarMovieClick(similar_Movies_Title[i],similar_Movies_Year[i])" class="browse-movie-link">
+                    <figure>
+                        <img class="img-responsive2" src={{obj}}/>
+                    </figure>
+                </a>
+                <div class="browse-movie-bottom">
+                    <p class="browse-movie-title">
+                        {{similar_Movies_Title[i]}}
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
