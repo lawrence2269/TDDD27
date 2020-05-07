@@ -210,11 +210,36 @@ class GetMovieDetails(Resource):
             for i in range(0,len(yifyMovieDetails['data']['movies'])):
                 if(yifyMovieDetails['data']['movies'][i]['year'] == year):
                     movieData['yify_id'] = yifyMovieDetails['data']['movies'][i]['id']
-                    yifyMovieDetail = json.loads(json.dumps(requests.get(tm.yifyMovieSearchURL.format(movieData['yify_id'])).json()))
+                    yifyMovieDetail = json.loads(json.dumps(requests.get(tm.yifyMovieSearchURL.format(movieData['yify_id'],"true","true")).json()))
                     if(len(yifyMovieDetail['data']['movie'])!=0):
                         movieData['likes'] = yifyMovieDetail['data']['movie']['like_count']
+                        movieData['screenshot1'] = yifyMovieDetail['data']['movie']['medium_screenshot_image1']
+                        movieData['screenshot2'] = yifyMovieDetail['data']['movie']['medium_screenshot_image2']
+                        castList = []
+                        dirList = []
+                        tmdbMovieDetails = json.loads(json.dumps(requests.get(tm.tmdbMovieDetailsURL.format(movieData['tmdb_id'],tm.api_key)).json()))
+                        for j in range(0,len(yifyMovieDetail['data']['movie']['cast'])):
+                            castDict = {}
+                            castDict['name'] = yifyMovieDetail['data']['movie']['cast'][i]['name']
+                            castDict['character_name'] = yifyMovieDetail['data']['movie']['cast'][i]['character_name']
+                            castDict['cast_image_url'] = yifyMovieDetail['data']['movie']['cast'][i]['url_small_image']
+                            castDict['imdb_profile_url'] = tm.imdbProfileURL.format(yifyMovieDetail['data']['movie']['cast'][i]['imdb_code'])
+                            castList.append(castDict)
+                        for k in range(0,len(tmdbMovieDetails['credits']['crew'])):
+                            if(tmdbMovieDetails['credits']['crew'][k]['job'] == "Director"):
+                                dirDict = {}
+                                dirDict['name'] = tmdbMovieDetails['credits']['crew'][k]['name']
+                                if(tmdbMovieDetails['credits']['crew'][k]['profile_path'] != None):
+                                    dirDict['cast_image_url'] = tm.tmdbProfileURL.format(tmdbMovieDetails['credits']['crew'][k]['profile_path'])
+                                peopleDetails = json.loads(json.dumps(requests.get(tm.tmdbPersonDetailsURL.format(tmdbMovieDetails['credits']['crew'][k]['id'],tm.api_key)).json()))
+                                dirDict['imdb_profile_url'] = tm.imdbProfileURL.format(peopleDetails['imdb_id'][2:])
+                                dirList.append(dirDict)
+                        movieData['director'] = dirList
+                        movieData['cast'] = castList
                     else:
                         movieData['likes'] = 0
+                        movieData['screenshot1'] = " "
+                        movieData['screenshot2'] = " "
                     movieData['imdb_id'] = tm.imdb_URL.format(yifyMovieDetails['data']['movies'][i]['imdb_code'])
                     movieData['synopsis'] = yifyMovieDetails['data']['movies'][i]['synopsis']
                     movieData['runtime'] = yifyMovieDetails['data']['movies'][i]['runtime']
@@ -237,6 +262,30 @@ class GetMovieDetails(Resource):
             return resp
         else:
             resp = jsonify({"message":"Movie is not available"})
+            resp.status_code = 404
+            return resp
+
+class GetSimilarMovies(Resource):
+    def get(self):
+        yify_id = request.args.get("yify_id")
+        similarMovieURL = tm.yifySimilarMovieURL.format(yify_id)
+        similarMovieDetails = json.loads(json.dumps(requests.get(similarMovieURL).json()))
+        if(len(similarMovieDetails['data']['movies'])!=0):
+            similarMovieList = []
+            for i in range(0,len(similarMovieDetails['data']['movies'])):
+                movieSearchURL = tm.movieSearchURL+"&query={}&include_adult={}&year={}".format(similarMovieDetails['data']['movies'][i]['title'],True,similarMovieDetails['data']['movies'][i]['year'])
+                movieDetails = json.loads(json.dumps(requests.get(movieSearchURL).json()))
+                if(len(movieDetails['results'])!=0):
+                    similarMovieData = {}
+                    similarMovieData['title'] = similarMovieDetails['data']['movies'][i]['title']
+                    similarMovieData['poster_path'] = similarMovieDetails['data']['movies'][i]['medium_cover_image']
+                    similarMovieData['year'] = similarMovieDetails['data']['movies'][i]['year']
+                    similarMovieList.append(similarMovieData)
+            resp = jsonify({"similarMovies":similarMovieList})
+            resp.status_code = 200
+            return resp
+        else:
+            resp = jsonify({"similarMovies":"No similar movies available"})
             resp.status_code = 404
             return resp
 
@@ -337,6 +386,7 @@ api.add_resource(GetMovies,'/movies')
 api.add_resource(GetUpcomingMovies,'/upcomingmovies')
 api.add_resource(GetNowPlayingMovies,'/newmovies')
 api.add_resource(GetPopularMovies,'/popularmovies')
+api.add_resource(GetSimilarMovies,'/similarmovies')
 api.add_resource(GetMovieDetails,'/movieDetails')
 api.add_resource(GetUserReview,'/userreviews')
 api.add_resource(GetUser,'/admin/users')

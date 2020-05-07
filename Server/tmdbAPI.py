@@ -8,6 +8,11 @@ popularMovieURL = "https://api.themoviedb.org/3/movie/popular?api_key={}&region=
 posterPathURL_L = "http://image.tmdb.org/t/p/w342{}"
 genreDetailURL = "https://api.themoviedb.org/3/genre/movie/list?api_key={}".format(api_key)
 yifyMovieDetailURL = "https://yts.mx/api/v2/list_movies.json?query_term={}"
-youtubeTrailerURL = "https://www.youtube.com/watch?v={}"
+youtubeTrailerURL = "https://www.youtube.com/embed/{}"
 imdb_URL = "https://www.imdb.com/title/{}/"
-yifyMovieSearchURL = "https://yts.mx/api/v2/movie_details.json?movie_id={}"
+yifyMovieSearchURL = "https://yts.mx/api/v2/movie_details.json?movie_id={}&with_cast={}&with_images={}"
+yifySimilarMovieURL = "https://yts.mx/api/v2/movie_suggestions.json?movie_id={}"
+imdbProfileURL = "https://www.imdb.com/name/nm{}"
+tmdbMovieDetailsURL = "https://api.themoviedb.org/3/movie/{}?api_key={}&append_to_response=credits"
+tmdbPersonDetailsURL = "https://api.themoviedb.org/3/person/{}?api_key={}"
+tmdbProfileURL = "https://image.tmdb.org/t/p/original{}"
