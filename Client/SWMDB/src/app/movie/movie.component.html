@@ -8,7 +8,10 @@
             <br>
             <h4 style="color: white;">{{year}}</h4>
             <h4 style="color: white;">{{genre}}</h4>
-            <h4 Style="color: white;">{{runTime}}</h4>
+            <h4 *ngIf="runTimeServer != 0;else noRunTime" style="color: white;">{{runTime}}</h4>
+            <ng-template #noRunTime>
+                <h4 Style="color: white;">Sorry, No Runtime available, we are working on it!!!</h4>
+            </ng-template>
             <br>
             <table>
                 <tr class="spaceUnder">
@@ -34,21 +37,27 @@
         </div>
     </div>
     <div class="trailer">
-        <h4 class="heading4">Trailer &amp; Screenshots</h4>
+        <h4 class="heading4">Trailer</h4>
         <hr class="dividerTrailer">
-        <div style="margin-top: 40px;margin-bottom: 60px;margin-left: -35px;">
-            <div style="text-align: center;">
-                <iframe [src]="trailer" frameborder="0" width="540" height="315" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        <div *ngIf="trailerString!=null;else show">
+            <div style="margin-top: 40px;margin-bottom: 60px;margin-left: -35px;">
+                <div style="text-align: center;">
+                    <iframe [src]="trailer" frameborder="0" width="540" height="315" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                </div>
             </div>
         </div>
-        <div class="row" style="margin-top: -30px;margin-bottom: 70px;margin-left: -35px;text-align: center;">
+        <ng-template #show>
+            <h4 class="heading4" style="text-align: center;margin-top: 50px;">Sorry! No trailer is available for this movie, We are working on it.</h4> 
+        </ng-template>
+        
+        <!-- <div class="row" style="margin-top: -30px;margin-bottom: 70px;margin-left: -35px;text-align: center;">
             <div class="col">
                 <img [src] = "screenshot1" height="315" width="70%"/>
             </div>
             <div class="col" style="margin-left: -220px;">
                 <img [src] = "screenshot2" height="315" width="70%"/>
             </div>
-        </div>
+        </div> -->
     </div>
     <div class="synopsis">
         <div class="row">
@@ -64,7 +73,30 @@
             </div>
             <div class="col-md-6">
                 <div class="rightside">
-                    
+                    <div>
+                        <h4 class="heading4" style="margin-left: 50px;"><i class="fa fa-star star"></i>&nbsp;&nbsp;Director(s)</h4>
+                        <hr class="dividerCast" style="margin-left: 50px;">
+                        <table style="margin-left: 50px;border-spacing: 15px;">
+                            <tr *ngFor="let dirName of directorNames; let i = index" class="spaceUnder1">
+                                <td style="padding:0 15px 0 15px;"><img src="{{directorImageURL[i]}}" alt="Avatar" class="avatar"></td>
+                                <td style="padding:0 15px 0 15px;">
+                                    <a href="{{directorProfileURL[i]}}" style="color: white;">{{dirName}}</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="margin-top: 40px;">
+                        <h4 class="heading4" style="margin-left: 50px;"><i class="fa fa-star star"></i>&nbsp;&nbsp;Actors &amp; Actress</h4>
+                        <hr class="dividerCast" style="margin-left: 50px;">
+                        <table style="margin-left: 50px;border-spacing: 5px 1rem;">
+                            <tr *ngFor="let castName of castNames; let i = index" class="spaceUnder1" style="border-spacing: 5px 1rem;">
+                                <td style="padding:0 15px 0 15px;border-spacing: 5px 1rem;"><img src="{{castImageURL[i]}}" alt="Avatar" class="avatar"></td>
+                                <td style="padding:0 15px 0 15px;border-spacing: 5px 1rem;">
+                                    <p style="color: white;"><a href="{{castProfileURL[i]}}" style="color: greenyellow;">{{castName}}</a> as {{characterNames[i]}}</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,19 +104,24 @@
     <div class="similar">
         <h4 class="heading4"><i class="fa fa-star star"></i>&nbsp;&nbsp;Similar Movies</h4>
         <hr class="dividerSimilar"/>
-        <div class="row">
-            <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of similar_Movies_Poster_Path; let i = index">
-                <a (click)="similarMovieClick(similar_Movies_Title[i],similar_Movies_Year[i])" class="browse-movie-link">
-                    <figure>
-                        <img class="img-responsive2" src={{obj}}/>
-                    </figure>
-                </a>
-                <div class="browse-movie-bottom">
-                    <p class="browse-movie-title">
-                        {{similar_Movies_Title[i]}}
-                    </p>
+        <div *ngIf="similar_Movies_Poster_Path.length!=0">
+            <div class="row">
+                <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of similar_Movies_Poster_Path; let i = index">
+                    <a (click)="similarMovieClick(similar_Movies_Title[i],similar_Movies_Year[i])" class="browse-movie-link">
+                        <figure>
+                            <img class="img-responsive2" src={{obj}}/>
+                        </figure>
+                    </a>
+                    <div class="browse-movie-bottom">
+                        <p class="browse-movie-title">
+                            {{similar_Movies_Title[i]}}
+                        </p>
+                    </div>
                 </div>
             </div>
+        </div>
+        <div *ngIf="similar_Movies_Poster_Path.length===0">
+            <h4 class="heading4" style="text-align: center; margin-top: 50px;">Sorry! No similar movies available, We are working on it.</h4> 
         </div>
     </div>
 </div>

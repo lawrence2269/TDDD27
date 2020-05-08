@@ -17,7 +17,7 @@ export class MovieService {
   }
 
   getSimilarMovies(value:number):Observable<any>{
-    let params = new HttpParams({fromString:'yify_id='+value});
+    let params = new HttpParams({fromString:'tmdb_id='+value});
     return this.http.get(localUrl+"/similarmovies",{params});
   }
 }

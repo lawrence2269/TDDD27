@@ -82,6 +82,23 @@
     width: 100%;
 }
 
+.avatar {
+    vertical-align: middle;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+
+.dividerCast{
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+    width: 90%;
+}
+
 .dividerTrailer{
     display: block;
     height: 1px;
@@ -109,6 +126,10 @@
 
 tr.spaceUnder>td {
     padding-bottom: 1em;
+  }
+
+tr.spaceUnder1>td {
+    padding-bottom: 1sem;
   }
 
 .container {

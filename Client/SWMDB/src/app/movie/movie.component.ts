@@ -25,14 +25,26 @@ export class MovieComponent implements OnInit {
   similar_Movies_Poster_Path:any = [];
   similar_Movies_Title:any = [];
   similar_Movies_Year:any = [];
+  trailerString:String= "";
   mySubscription: any;
-  screenshot1:any;
-  screenshot2:any;
+  runTimeServer:any;
+  castNames:any = [];
+  castImageURL:any = [];
+  characterNames:any = [];
+  castProfileURL:any = [];
+  directorNames:any = [];
+  directorImageURL:any = [];
+  directorProfileURL:any = [];
 
   constructor(private route: ActivatedRoute,private router: Router,private movieService: MovieService,
     private sanitizer: DomSanitizer) { 
 
-    
+    this.router.events.subscribe((e)=>{
+      if(e instanceof NavigationEnd){
+        window.scrollTo(0,0);
+      }
+    });
+
     this.router.routeReuseStrategy.shouldReuseRoute = function () {
       return false;
     };
@@ -59,18 +71,31 @@ export class MovieComponent implements OnInit {
         this.runTime = this.runTimeConversion(data.movieDetails.runtime);
         this.synopsis = data.movieDetails.synopsis;
         this.trailer = this.sanitizer.bypassSecurityTrustResourceUrl(data.movieDetails.trailer);
+        this.trailerString = data.movieDetails.trailer;
         this.tmdb_id = data.movieDetails.tmdb_id;
         this.imdb_id = data.movieDetails.imdb_id
         this.rating = data.movieDetails.rating;
         this.like_count = data.movieDetails.likes;
         this.yify_id = data.movieDetails.yify_id;
-        this.screenshot1 = data.movieDetails.screenshot1;
-        this.screenshot2 = data.movieDetails.screenshot2;
-        this.movieService.getSimilarMovies(data.movieDetails.yify_id).subscribe((data)=>{
+        this.runTimeServer = data.movieDetails.runtime
+        data.movieDetails.casts.forEach(elements=>{
+          this.castNames.push(elements.name);
+          this.characterNames.push(elements.character_name);
+          this.castProfileURL.push(elements.imdb_profile_url);
+          this.castImageURL.push(elements.cast_image_url)
+        });
+        data.movieDetails.directors.forEach(elements=>{
+          this.directorNames.push(elements.name);
+          this.directorImageURL.push(elements.cast_image_url);
+          this.directorProfileURL.push(elements.imdb_profile_url);
+        });
+        this.movieService.getSimilarMovies(data.movieDetails.tmdb_id).subscribe((data)=>{
           data.similarMovies.forEach(elements=>{
             this.similar_Movies_Poster_Path.push(elements.poster_path);
             this.similar_Movies_Title.push(elements.title);
             this.similar_Movies_Year.push(elements.year);
+          },error=>{
+            alert("Error is "+error.length);
           });
         console.log("Trailer==>"+this.trailer);
       });
