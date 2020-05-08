@@ -4,6 +4,9 @@ SWMDB (<i>Sweden Movie Database</i>) is a web application which mainly showcases
 # Project Members
 * Lawrence Thanakumar Rajappa - lawra776@student.liu.se
 
+# MidCourse Screencast
+* [https://youtu.be/YPGfy1I9KK0]
+
 # Functional Specification
 The user can login and post their reviews about a movie they had watched and they also can read reviews about a
 movie they are going to watch in the future. Some of the reviews are posted by users in the system and some of the 
