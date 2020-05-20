@@ -1,12 +1,13 @@
 import pymongo
 import json
-import datetime
+from datetime import datetime
 import requests as api
 import dns
 
 regionData = {"US":"US","SE":"SE"}
 
 def insertUpcomingMoviesUS():
+    print("inside insertUpcomingMoviesUS")
     api_key = "818cffde0b1e6749199b67fee1cbd032"
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
@@ -14,7 +15,7 @@ def insertUpcomingMoviesUS():
     col_2 = db['movieDetails']
     region = regionData["US"]
     upcomingMovieURL = "https://api.themoviedb.org/3/movie/upcoming?api_key={}&region={}".format(api_key,region)
-    upcomingMoviesData = json.loads(json.dumps(requests.get(upcomingMovieURL).json()))
+    upcomingMoviesData = json.loads(json.dumps(api.get(upcomingMovieURL).json()))
     if(len(upcomingMoviesData['results'])!=0):
         for i in range(0,len(upcomingMoviesData['results'])):
             if(upcomingMoviesData['results'][i]['poster_path'] != None):
@@ -22,17 +23,17 @@ def insertUpcomingMoviesUS():
                     upcomingMovies = {}
                     upcomingMovie = {}
                     
-                    upcomingMovie["_id"] = col_1.find({}).count+1
+                    upcomingMovie["_id"] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     upcomingMovie['title'] = upcomingMoviesData['results'][i]['title']
                     upcomingMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(upcomingMoviesData['results'][i]['poster_path'])
                     upcomingMovie['release_year'] = datetime.strptime(upcomingMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
                     col_1.insert_one(upcomingMovie)
                     
-                    upcomingMovies["_id"] = col_2.find({}).count+1
+                    upcomingMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
                     upcomingMovies['title'] = upcomingMoviesData['results'][i]['title']
                     upcomingMovies['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(upcomingMoviesData['results'][i]['poster_path'])
                     upcomingMovies['release_year'] = datetime.strptime(upcomingMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
-                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(upcomingMovies['title'],True,upcomingMovies['release_year'])
+                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,upcomingMovies['title'],True,upcomingMovies['release_year'])
                     movieSearch = json.loads(json.dumps(api.get(movieSearchURL).json()))
                     if(len(movieSearch['results'])!=0):
                         upcomingMovies["tmdb_id"] = movieSearch['results'][0]["id"]
@@ -109,6 +110,7 @@ def insertUpcomingMoviesUS():
                         col_2.insert_one(upcomingMovies)
                     
 def insertPopularMoviesUS():
+    print("inside insertPopularMoviesUS")
     api_key = "818cffde0b1e6749199b67fee1cbd032"
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
@@ -116,7 +118,7 @@ def insertPopularMoviesUS():
     col_2 = db['movieDetails']
     region = regionData["US"]
     popularMovieURL = "https://api.themoviedb.org/3/movie/popular?api_key={}&region={}".format(api_key,region)
-    popularMoviesData = json.loads(json.dumps(requests.get(popularMovieURL).json()))
+    popularMoviesData = json.loads(json.dumps(api.get(popularMovieURL).json()))
     if(len(popularMoviesData['results'])!=0):
         for i in range(0,len(popularMoviesData['results'])):
             if(popularMoviesData['results'][i]['poster_path'] != None):
@@ -124,17 +126,17 @@ def insertPopularMoviesUS():
                     popularMovies = {}
                     popularMovie = {}
                     
-                    popularMovie["_id"] = col_1.find({}).count+1
+                    popularMovie["_id"] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     popularMovie['title'] = popularMoviesData['results'][i]['title']
                     popularMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(popularMoviesData['results'][i]['poster_path'])
                     popularMovie['release_year'] = datetime.strptime(popularMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
                     col_1.insert_one(popularMovie)
                     
-                    popularMovies["_id"] = col_2.find({}).count+1
+                    popularMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
                     popularMovies['title'] = popularMoviesData['results'][i]['title']
                     popularMovies['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(popularMoviesData['results'][i]['poster_path'])
                     popularMovies['release_year'] = datetime.strptime(popularMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
-                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(popularMovies['title'],True,popularMovies['release_year'])
+                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,popularMovies['title'],True,popularMovies['release_year'])
                     movieSearch = json.loads(json.dumps(api.get(movieSearchURL).json()))
                     if(len(movieSearch['results'])!=0):
                         popularMovies["tmdb_id"] = movieSearch['results'][0]["id"]
@@ -211,6 +213,7 @@ def insertPopularMoviesUS():
                         col_2.insert_one(popularMovies)
     
 def insertNowPlayingMoviesUS():
+    print("inside insertNowPlayingMoviesUS")
     api_key = "818cffde0b1e6749199b67fee1cbd032"
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
@@ -218,7 +221,7 @@ def insertNowPlayingMoviesUS():
     col_2 = db['movieDetails']
     region = regionData["US"]
     nowPlayingMovieURL = "https://api.themoviedb.org/3/movie/now_playing?api_key={}&region={}".format(api_key,region)
-    nowPlayingMovieData = json.loads(json.dumps(requests.get(nowPlayingMovieURL).json()))
+    nowPlayingMovieData = json.loads(json.dumps(api.get(nowPlayingMovieURL).json()))
     if(len(nowPlayingMovieData['results'])!=0):
         for i in range(0,len(nowPlayingMovieData['results'])):
             if(nowPlayingMovieData['results'][i]['poster_path'] != None):
@@ -226,17 +229,17 @@ def insertNowPlayingMoviesUS():
                     playingMovies = {}
                     playingMovie = {}
                     
-                    playingMovie["_id"] = col_1.find({}).count+1
+                    playingMovie["_id"] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     playingMovie['title'] = nowPlayingMovieData['results'][i]['title']
                     playingMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(nowPlayingMovieData['results'][i]['poster_path'])
                     playingMovie['release_year'] = datetime.strptime(nowPlayingMovieData['results'][i]['release_date'],"%Y-%m-%d").year
                     col_1.insert_one(playingMovie)
                     
-                    playingMovies["_id"] = col_2.find({}).count+1
+                    playingMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
                     playingMovies['title'] = nowPlayingMovieData['results'][i]['title']
                     playingMovies['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(nowPlayingMovieData['results'][i]['poster_path'])
                     playingMovies['release_year'] = datetime.strptime(nowPlayingMovieData['results'][i]['release_date'],"%Y-%m-%d").year
-                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(nowPlayingMovieData['title'],True,nowPlayingMovieData['release_year'])
+                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,nowPlayingMovieData['title'],True,nowPlayingMovieData['release_year'])
                     movieSearch = json.loads(json.dumps(api.get(movieSearchURL).json()))
                     if(len(movieSearch['results'])!=0):
                         playingMovies["tmdb_id"] = movieSearch['results'][0]["id"]
@@ -314,6 +317,7 @@ def insertNowPlayingMoviesUS():
     
     
 def insertUpcomingMoviesSV():
+    print("inside insertUpcomingMoviesSV")
     api_key = "818cffde0b1e6749199b67fee1cbd032"
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
@@ -321,7 +325,7 @@ def insertUpcomingMoviesSV():
     col_2 = db['movieDetails']
     region = regionData["SE"]
     upcomingMovieURL = "https://api.themoviedb.org/3/movie/upcoming?api_key={}&region={}".format(api_key,region)
-    upcomingMoviesData = json.loads(json.dumps(requests.get(upcomingMovieURL).json()))
+    upcomingMoviesData = json.loads(json.dumps(api.get(upcomingMovieURL).json()))
     if(len(upcomingMoviesData['results'])!=0):
         for i in range(0,len(upcomingMoviesData['results'])):
             if(upcomingMoviesData['results'][i]['poster_path'] != None):
@@ -329,14 +333,17 @@ def insertUpcomingMoviesSV():
                     upcomingMovies = {}
                     upcomingMovie = {}
                     
+                    upcomingMovie['_id'] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     upcomingMovie['title'] = upcomingMoviesData['results'][i]['title']
                     upcomingMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(upcomingMoviesData['results'][i]['poster_path'])
                     upcomingMovie['release_year'] = datetime.strptime(upcomingMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
                     col_1.insert_one(upcomingMovie)
+                    
+                    upcomingMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
                     upcomingMovies['title'] = upcomingMoviesData['results'][i]['title']
                     upcomingMovies['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(upcomingMoviesData['results'][i]['poster_path'])
                     upcomingMovies['release_year'] = datetime.strptime(upcomingMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
-                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(upcomingMovies['title'],True,upcomingMovies['release_year'])
+                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,upcomingMovies['title'],True,upcomingMovies['release_year'])
                     movieSearch = json.loads(json.dumps(api.get(movieSearchURL).json()))
                     if(len(movieSearch['results'])!=0):
                         upcomingMovies["tmdb_id"] = movieSearch['results'][0]["id"]
@@ -367,7 +374,7 @@ def insertUpcomingMoviesSV():
                                     upcomingMovies['trailer'] = "https://www.youtube.com/embed/{}".format(videoData['results'][j]['key'])
                         else:
                             upcomingMovies['trailer'] = None
-                         dirList = []
+                        dirList = []
                         castList = []
                         castId = 0
                         for z in range(0,len(movieCompleteDetailsResponse['credits']['cast'])):
@@ -413,6 +420,7 @@ def insertUpcomingMoviesSV():
                         col_2.insert_one(upcomingMovies)
      
 def insertPopularMoviesSV():
+    print("inside insertPopularMoviesSV")
     api_key = "818cffde0b1e6749199b67fee1cbd032"
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
@@ -420,7 +428,7 @@ def insertPopularMoviesSV():
     col_2 = db['movieDetails']
     region = regionData["SE"]
     popularMovieURL = "https://api.themoviedb.org/3/movie/popular?api_key={}&region={}".format(api_key,region)
-    popularMoviesData = json.loads(json.dumps(requests.get(popularMovieURL).json()))
+    popularMoviesData = json.loads(json.dumps(api.get(popularMovieURL).json()))
     if(len(popularMoviesData['results'])!=0):
         for i in range(0,len(popularMoviesData['results'])):
             if(popularMoviesData['results'][i]['poster_path'] != None):
@@ -428,17 +436,17 @@ def insertPopularMoviesSV():
                     popularMovies = {}
                     popularMovie = {}
                     
-                    popularMovie["_id"] = col_1.find({}).count+1
+                    popularMovie["_id"] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     popularMovie['title'] = popularMoviesData['results'][i]['title']
                     popularMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(popularMoviesData['results'][i]['poster_path'])
                     popularMovie['release_year'] = datetime.strptime(popularMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
                     col_1.insert_one(popularMovie)
                     
-                    popularMovies["_id"] = col_2.find({}).count+1
+                    popularMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
                     popularMovies['title'] = popularMoviesData['results'][i]['title']
                     popularMovies['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(popularMoviesData['results'][i]['poster_path'])
                     popularMovies['release_year'] = datetime.strptime(popularMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
-                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(popularMovies['title'],True,popularMovies['release_year'])
+                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,popularMovies['title'],True,popularMovies['release_year'])
                     movieSearch = json.loads(json.dumps(api.get(movieSearchURL).json()))
                     if(len(movieSearch['results'])!=0):
                         popularMovies["tmdb_id"] = movieSearch['results'][0]["id"]
@@ -469,7 +477,7 @@ def insertPopularMoviesSV():
                                     popularMovies['trailer'] = "https://www.youtube.com/embed/{}".format(videoData['results'][j]['key'])
                         else:
                             popularMovies['trailer'] = None
-                         dirList = []
+                        dirList = []
                         castList = []
                         castId = 0
                         for z in range(0,len(movieCompleteDetailsResponse['credits']['cast'])):
@@ -515,6 +523,7 @@ def insertPopularMoviesSV():
                         col_2.insert_one(popularMovies)
     
 def insertNowPlayingMoviesSV():
+    print("inside insertNowPlayingMoviesSV")
     api_key = "818cffde0b1e6749199b67fee1cbd032"
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
@@ -522,7 +531,7 @@ def insertNowPlayingMoviesSV():
     col_2 = db['movieDetails']
     region = regionData["SE"]
     nowPlayingMovieURL = "https://api.themoviedb.org/3/movie/now_playing?api_key={}&region={}".format(api_key,region)
-    nowPlayingMovieData = json.loads(json.dumps(requests.get(nowPlayingMovieURL).json()))
+    nowPlayingMovieData = json.loads(json.dumps(api.get(nowPlayingMovieURL).json()))
     if(len(nowPlayingMovieData['results'])!=0):
         for i in range(0,len(nowPlayingMovieData['results'])):
             if(nowPlayingMovieData['results'][i]['poster_path'] != None):
@@ -530,17 +539,17 @@ def insertNowPlayingMoviesSV():
                     playingMovies = {}
                     playingMovie = {}
                     
-                    playingMovie["_id"] = col_1.find({}).count+1
+                    playingMovie["_id"] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     playingMovie['title'] = nowPlayingMovieData['results'][i]['title']
                     playingMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(nowPlayingMovieData['results'][i]['poster_path'])
                     playingMovie['release_year'] = datetime.strptime(nowPlayingMovieData['results'][i]['release_date'],"%Y-%m-%d").year
                     col_1.insert_one(playingMovie)
                     
-                    playingMovies["_id"] = col_2.find({}).count+1
+                    playingMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
                     playingMovies['title'] = nowPlayingMovieData['results'][i]['title']
                     playingMovies['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(nowPlayingMovieData['results'][i]['poster_path'])
                     playingMovies['release_year'] = datetime.strptime(nowPlayingMovieData['results'][i]['release_date'],"%Y-%m-%d").year
-                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(nowPlayingMovieData['title'],True,nowPlayingMovieData['release_year'])
+                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,playingMovies['title'],True,playingMovies['release_year'])
                     movieSearch = json.loads(json.dumps(api.get(movieSearchURL).json()))
                     if(len(movieSearch['results'])!=0):
                         playingMovies["tmdb_id"] = movieSearch['results'][0]["id"]
@@ -562,7 +571,7 @@ def insertNowPlayingMoviesSV():
                         playingMovies['genre'] = str(" / ".join(genre))
                         playingMovies['rating'] = movieSearch['results'][0]['vote_average']
                         playingMovies['synopsis'] = movieSearch['results'][0]['overview']
-                        popularMovies['likes'] = round(movieSearch['results'][0]['popularity'])
+                        playingMovies['likes'] = round(movieSearch['results'][0]['popularity'])
                         tmdbVideoURL = "https://api.themoviedb.org/3/movie/{}/videos?api_key={}".format(playingMovies["tmdb_id"],api_key)
                         videoData = json.loads(json.dumps(api.get(tmdbVideoURL).json()))
                         if(len(videoData['results'])!=0):
@@ -617,9 +626,12 @@ def insertNowPlayingMoviesSV():
                         col_2.insert_one(playingMovies)
     
 def addMovies():
+    print("inside addMovies")
     insertUpcomingMoviesUS()
     insertPopularMoviesUS()
     insertNowPlayingMoviesUS()
     insertUpcomingMoviesSV()
     insertPopularMoviesSV()
     insertNowPlayingMoviesSV()
+
+addMovies()
