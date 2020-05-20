@@ -200,108 +200,117 @@ class GetMovieDetails(Resource):
     def get(self):
         title = request.args.get("title")
         year = int(request.args.get("year"))
-        movieSearchURL = tm.movieSearchURL+"&query={}&include_adult={}&year={}".format(title,True,year)
-        movieDetails = json.loads(json.dumps(requests.get(movieSearchURL).json()))
-        yifyListMovies = json.loads(json.dumps(requests.get(tm.yifyListMoviesURL.format(title)).json()))
-        if(len(movieDetails['results'])!=0):
-            movieData = {}
-            movieData['tmdb_id'] = movieDetails['results'][0]['id']
-            movieData['title'] = movieDetails['results'][0]['title']
-            movieData['poster_path'] = tm.posterPathURL_L.format(movieDetails['results'][0]['poster_path'])
-            movieData['rating'] = movieDetails['results'][0]['vote_average']
-            movieData['synopsis'] = movieDetails['results'][0]['overview']
-            movieData['likes'] = round(movieDetails['results'][0]['popularity'])
-            tmdbVideoURL = json.loads(json.dumps(requests.get(tm.tmdbVideoURL.format(movieData['tmdb_id'],tm.api_key)).json()))
-
-            if(len(tmdbVideoURL['results'])!=0):
-                movieData['trailer'] = tm.youtubeTrailerURL.format(tmdbVideoURL['results'][0]['key'])
-            else:
-                if("movies" in yifyListMovies['data']):
-                    for movies in range(0,len(yifyListMovies['data']['movies'])):
-                        if(year == yifyListMovies['data']['movies'][movies]['year'] and title == yifyListMovies['data']['movies'][movies]['title']):
-                            movieData['trailer'] = tm.youtubeTrailerURL.format(yifyListMovies['data']['movies'][movies]['yt_trailer_code'])
-                else:
-                    movieData['trailer'] = None
-
-            ####### Cast and Crew Details ##########
-            dirList = []
-            castList = []
-            tmdbMovieDetails = json.loads(json.dumps(requests.get(tm.tmdbMovieDetailsURL.format(movieData['tmdb_id'],tm.api_key)).json()))
-            castFlag = True
-            castId = 0
-            while(castFlag):
-                if(tmdbMovieDetails['credits']['cast'][castId]['profile_path']!=None):
-                    if(len(tmdbMovieDetails['credits']['cast'])<=4):
-                        castDict = {}
-                        castDict['name'] = tmdbMovieDetails['credits']['cast'][castId]['name']
-                        castDict['character_name'] = tmdbMovieDetails['credits']['cast'][castId]['character']
-                        castDict['cast_image_url'] = tm.profilePathURL.format(tmdbMovieDetails['credits']['cast'][castId]['profile_path'])
-                        peopleDetails = json.loads(json.dumps(requests.get(tm.tmdbPersonDetailsURL.format(tmdbMovieDetails['credits']['cast'][castId]['id'],tm.api_key)).json()))
-                        castDict['imdb_profile_url'] = tm.imdbProfileURL.format(peopleDetails['imdb_id'][2:])
-                        castList.append(castDict)
-                        castId+=1
-                        if(castId == len(tmdbMovieDetails['credits']['cast'])):
-                            break
-                    else:
-                        castDict = {}
-                        castDict['name'] = tmdbMovieDetails['credits']['cast'][castId]['name']
-                        castDict['character_name'] = tmdbMovieDetails['credits']['cast'][castId]['character']
-                        castDict['cast_image_url'] = tm.profilePathURL.format(tmdbMovieDetails['credits']['cast'][castId]['profile_path'])
-                        peopleDetails = json.loads(json.dumps(requests.get(tm.tmdbPersonDetailsURL.format(tmdbMovieDetails['credits']['cast'][castId]['id'],tm.api_key)).json()))
-                        castDict['imdb_profile_url'] = tm.imdbProfileURL.format(peopleDetails['imdb_id'][2:])
-                        castList.append(castDict)
-                        castId+=1
-                        if(castId == 4):
-                            break
-            movieData['casts'] = castList
-
-            for k in range(0,len(tmdbMovieDetails['credits']['crew'])):
-                if(tmdbMovieDetails['credits']['crew'][k]['job'] == "Director"):
-                    dirDict = {}
-                    dirDict['name'] = tmdbMovieDetails['credits']['crew'][k]['name']
-                    if(tmdbMovieDetails['credits']['crew'][k]['profile_path'] != None):
-                        dirDict['cast_image_url'] = tm.tmdbProfileURL.format(tmdbMovieDetails['credits']['crew'][k]['profile_path'])
-                    peopleDetails = json.loads(json.dumps(requests.get(tm.tmdbPersonDetailsURL.format(tmdbMovieDetails['credits']['crew'][k]['id'],tm.api_key)).json()))
-                    dirDict['imdb_profile_url'] = tm.imdbProfileURL.format(peopleDetails['imdb_id'][2:])
-                    dirList.append(dirDict)
-            movieData['directors'] = dirList
-
-            if(yifyListMovies['data']['movie_count']!=0):
-                movieData['imdb_id'] = tm.imdb_URL.format(yifyListMovies['data']['movies'][0]['imdb_code'])
-            else:
-                if("imdb_id" in tmdbMovieDetails):
-                    movieData['imdb_id'] = tm.imdb_URL.format(tmdbMovieDetails['imdb_id'])
-                else:
-                    movieData['imdb_id'] = 0
-            ####### Genre Details ###########
-            genre = []
-            genre_temp = movieDetails['results'][0]['genre_ids']
-            genreDetails = json.loads(json.dumps(requests.get(tm.genreDetailURL).json()))
-            for genreId in genre_temp:
-                for info in genreDetails['genres']:
-                    if(info['id'] == genreId):
-                        genre.append(info['name'])
-            movieData['genre'] = str(' / '.join(genre))
-            if(movieDetails['results'][0]["adult"] == False):
-                movieData["adult_Content"] = "No"
-            else:
-                movieData["adult_Content"] = "Yes"
-
-            ###### Run Time #####
-            movieData['runtime'] = tmdbMovieDetails['runtime']
-            if(movieData['runtime'] == 0):
-                if("movies" in yifyListMovies['data']):
-                    for runTime in range(0,len(yifyListMovies['data']['movies'])):
-                        if(year == yifyListMovies['data']['movies'][runTime]['year'] and title == yifyListMovies['data']['movies'][runTime]['title']):
-                            movieData['runTime'] = yifyListMovies['data']['movies'][runTime]['runtime']
-
+        movie_collection = mongo.db.movieDetails
+        if(movie_collection.find({"title":{"$regex":title,'$options':'i'},"release_year":year}).count()!=0):
+            movie_records = movie_collection.find({"title":{"$regex":title,'$options':'i'},"release_year":{"$eq":year}})
+            movieData = [movie for movie in movie_records]
             resp = jsonify({"movieDetails":movieData})
             resp.status_code = 200
             return resp
         else:
-            resp = jsonify({"message":"Movie is not available"})
-            resp.status_code = 404
-            return resp
+            movieSearchURL = tm.movieSearchURL+"&query={}&include_adult={}&year={}".format(title,True,year)
+            movieDetails = json.loads(json.dumps(requests.get(movieSearchURL).json()))
+            yifyListMovies = json.loads(json.dumps(requests.get(tm.yifyListMoviesURL.format(title)).json()))
+            if(len(movieDetails['results'])!=0):
+                movieData = {}
+                movieData['tmdb_id'] = movieDetails['results'][0]['id']
+                movieData['title'] = movieDetails['results'][0]['title']
+                movieData['poster_path'] = tm.posterPathURL_L.format(movieDetails['results'][0]['poster_path'])
+                movieData['rating'] = movieDetails['results'][0]['vote_average']
+                movieData['synopsis'] = movieDetails['results'][0]['overview']
+                movieData['likes'] = round(movieDetails['results'][0]['popularity'])
+                tmdbVideoURL = json.loads(json.dumps(requests.get(tm.tmdbVideoURL.format(movieData['tmdb_id'],tm.api_key)).json()))
+
+                if(len(tmdbVideoURL['results'])!=0):
+                    movieData['trailer'] = tm.youtubeTrailerURL.format(tmdbVideoURL['results'][0]['key'])
+                else:
+                    if("movies" in yifyListMovies['data']):
+                        for movies in range(0,len(yifyListMovies['data']['movies'])):
+                            if(year == yifyListMovies['data']['movies'][movies]['year'] and title == yifyListMovies['data']['movies'][movies]['title']):
+                                movieData['trailer'] = tm.youtubeTrailerURL.format(yifyListMovies['data']['movies'][movies]['yt_trailer_code'])
+                    else:
+                        movieData['trailer'] = None
+
+                ####### Cast and Crew Details ##########
+                dirList = []
+                castList = []
+                tmdbMovieDetails = json.loads(json.dumps(requests.get(tm.tmdbMovieDetailsURL.format(movieData['tmdb_id'],tm.api_key)).json()))
+                castFlag = True
+                castId = 0
+                while(castFlag):
+                    if(tmdbMovieDetails['credits']['cast'][castId]['profile_path']!=None):
+                        if(len(tmdbMovieDetails['credits']['cast'])<=4):
+                            castDict = {}
+                            castDict['name'] = tmdbMovieDetails['credits']['cast'][castId]['name']
+                            castDict['character_name'] = tmdbMovieDetails['credits']['cast'][castId]['character']
+                            castDict['cast_image_url'] = tm.profilePathURL.format(tmdbMovieDetails['credits']['cast'][castId]['profile_path'])
+                            peopleDetails = json.loads(json.dumps(requests.get(tm.tmdbPersonDetailsURL.format(tmdbMovieDetails['credits']['cast'][castId]['id'],tm.api_key)).json()))
+                            castDict['imdb_profile_url'] = tm.imdbProfileURL.format(peopleDetails['imdb_id'][2:])
+                            castList.append(castDict)
+                            castId+=1
+                            if(castId == len(tmdbMovieDetails['credits']['cast'])):
+                                break
+                        else:
+                            castDict = {}
+                            castDict['name'] = tmdbMovieDetails['credits']['cast'][castId]['name']
+                            castDict['character_name'] = tmdbMovieDetails['credits']['cast'][castId]['character']
+                            castDict['cast_image_url'] = tm.profilePathURL.format(tmdbMovieDetails['credits']['cast'][castId]['profile_path'])
+                            peopleDetails = json.loads(json.dumps(requests.get(tm.tmdbPersonDetailsURL.format(tmdbMovieDetails['credits']['cast'][castId]['id'],tm.api_key)).json()))
+                            castDict['imdb_profile_url'] = tm.imdbProfileURL.format(peopleDetails['imdb_id'][2:])
+                            castList.append(castDict)
+                            castId+=1
+                            if(castId == 4):
+                                break
+                movieData['casts'] = castList
+
+                for k in range(0,len(tmdbMovieDetails['credits']['crew'])):
+                    if(tmdbMovieDetails['credits']['crew'][k]['job'] == "Director"):
+                        dirDict = {}
+                        dirDict['name'] = tmdbMovieDetails['credits']['crew'][k]['name']
+                        if(tmdbMovieDetails['credits']['crew'][k]['profile_path'] != None):
+                            dirDict['cast_image_url'] = tm.tmdbProfileURL.format(tmdbMovieDetails['credits']['crew'][k]['profile_path'])
+                        peopleDetails = json.loads(json.dumps(requests.get(tm.tmdbPersonDetailsURL.format(tmdbMovieDetails['credits']['crew'][k]['id'],tm.api_key)).json()))
+                        dirDict['imdb_profile_url'] = tm.imdbProfileURL.format(peopleDetails['imdb_id'][2:])
+                        dirList.append(dirDict)
+                movieData['directors'] = dirList
+
+                if(yifyListMovies['data']['movie_count']!=0):
+                    movieData['imdb_id'] = tm.imdb_URL.format(yifyListMovies['data']['movies'][0]['imdb_code'])
+                else:
+                    if("imdb_id" in tmdbMovieDetails):
+                        movieData['imdb_id'] = tm.imdb_URL.format(tmdbMovieDetails['imdb_id'])
+                    else:
+                        movieData['imdb_id'] = 0
+
+                ####### Genre Details ###########
+                genre = []
+                genre_temp = movieDetails['results'][0]['genre_ids']
+                genreDetails = json.loads(json.dumps(requests.get(tm.genreDetailURL).json()))
+                for genreId in genre_temp:
+                    for info in genreDetails['genres']:
+                        if(info['id'] == genreId):
+                            genre.append(info['name'])
+                movieData['genre'] = str(' / '.join(genre))
+                if(movieDetails['results'][0]["adult"] == False):
+                    movieData["adult_Content"] = "No"
+                else:
+                    movieData["adult_Content"] = "Yes"
+
+                ###### Run Time #####
+                movieData['runtime'] = tmdbMovieDetails['runtime']
+                if(movieData['runtime'] == 0):
+                    if("movies" in yifyListMovies['data']):
+                        for runTime in range(0,len(yifyListMovies['data']['movies'])):
+                            if(year == yifyListMovies['data']['movies'][runTime]['year'] and title == yifyListMovies['data']['movies'][runTime]['title']):
+                                movieData['runTime'] = yifyListMovies['data']['movies'][runTime]['runtime']
+
+                resp = jsonify({"movieDetails":movieData})
+                resp.status_code = 200
+                return resp
+            else:
+                resp = jsonify({"message":"Movie is not available"})
+                resp.status_code = 404
+                return resp
 
 class GetSimilarMovies(Resource):
     def get(self):
