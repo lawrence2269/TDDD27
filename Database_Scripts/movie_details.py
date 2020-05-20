@@ -61,26 +61,153 @@ movieYearsList = [datetime.strptime(m,'%Y-%m-%d').year for m in movieYearsList]
 
 # movieDatabase()
 
-def englishMovieDatabase():
+def englishMoviesDatabase():
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
     col_1 = db['movies']
     not_Added = []
-    for i in range(0,len(movieTitles)):
-        movieDetailsUrl_1 = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,movieTitles[i],True,movieYearsList[i])
-        movieDetails_1 = json.loads(json.dumps(api.get(movieDetailsUrl_1).json()))
+    for i in range(0,1000):
+        movieDetailsUrl = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,movieTitles[i],True,movieYearsList[i])
+        movieDetails_1 = json.loads(json.dumps(api.get(movieDetailsUrl).json()))
         if(len(movieDetails_1['results'])!=0):
             movies = {}
             movies["_id"] = i+1
             movies["tmdb_id"] = movieDetails_1['results'][0]["id"]
             movies["title"] = movieDetails_1['results'][0]['title']
             movies["poster_path"] = "http://image.tmdb.org/t/p/w185{}".format(movieDetails_1['results'][0]['poster_path'])
+            
             col_1.insert_one(movies)
+        else:
+          not_Added.append(movieTitles[i])
+    return not_Added
+
+englishMoviesDatabase()
+
+def addReleaseYear():
+    client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
+    db=client['SWMDB']
+    col_2 = db['movieDetails']
+    for i in range(0,len(movieTitles)):
+        if(col_2.find({"title":{"$regex":movieTitles[i],'$options':'i'}}).count()!=0):
+            print("====>Inside if")
+            myQuery = {"title":{"$regex":movieTitles[i],'$options':'i'}}
+            newValues = {"$set":{"release_year":movieYearsList[i]}}
+            col_2.update_one(myQuery,newValues)
+            
+addReleaseYear()
+  
+def englishMovieDetailsDatabase():
+    client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
+    db=client['SWMDB']
+    col_2 = db['movieDetails']
+    not_Added = []
+    for i in range(0,1001):
+        movieDetailsUrl = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,movieTitles[i],True,movieYearsList[i])
+        movieDetails_1 = json.loads(json.dumps(api.get(movieDetailsUrl).json()))
+        if(len(movieDetails_1['results'])!=0):
+            movies = {}
+            movies["_id"] = i+1
+            movies["tmdb_id"] = movieDetails_1['results'][0]["id"]
+            movies["title"] = movieDetails_1['results'][0]['title']
+            movies["poster_path"] = "http://image.tmdb.org/t/p/w185{}".format(movieDetails_1['results'][0]['poster_path'])            
+            movieCompleteDetailsURL = "https://api.themoviedb.org/3/movie/{}?api_key={}&append_to_response=credits".format(movies["tmdb_id"],api_key)
+            movieCompleteDetailsResponse = json.loads(json.dumps(api.get(movieCompleteDetailsURL).json()))
+            
+            if(movieCompleteDetailsResponse['adult'] == False):
+                movies['adult'] = 'No'
+            else:
+                movies['adult'] = 'Yes'
+            
+            genreDetailUrl = "https://api.themoviedb.org/3/genre/movie/list?api_key={}&language=en-US".format(api_key)
+            genre = []
+            genre_temp = movieDetails_1['results'][0]['genre_ids']
+            genreDetails = json.loads(json.dumps(api.get(genreDetailUrl).json()))
+            for genreId in genre_temp:
+                for info in genreDetails['genres']:
+                    if(info['id'] == genreId):
+                        genre.append(info['name'])
+            movies['genre'] = str(" / ".join(genre))
+            
+            movies['rating'] = movieDetails_1['results'][0]['vote_average']
+            movies['synopsis'] = movieDetails_1['results'][0]['overview']
+            movies['likes'] = round(movieDetails_1['results'][0]['popularity'])
+            
+            tmdbVideoURL = "https://api.themoviedb.org/3/movie/{}/videos?api_key={}".format(movies["tmdb_id"],api_key)
+            videoData = json.loads(json.dumps(api.get(tmdbVideoURL).json()))
+            if(len(videoData['results'])!=0):
+                for j in range(0,len(videoData['results'])):
+                    if(videoData['results'][j]['type'] == 'Trailer'):
+                        movies['trailer'] = "https://www.youtube.com/embed/{}".format(videoData['results'][j]['key'])
+            else:
+                movies['trailer'] = None
+                
+            dirList = []
+            castList = []
+            castId = 0
+            for z in range(0,len(movieCompleteDetailsResponse['credits']['cast'])):
+                if(castId == 4):
+                    break
+                else:
+                    castDict = {}
+                    castDict['name'] = movieCompleteDetailsResponse['credits']['cast'][castId]['name']
+                    castDict['character_name'] = movieCompleteDetailsResponse['credits']['cast'][castId]['character']
+                    castDict['cast_image_url'] = "https://image.tmdb.org/t/p/w45{}".format(movieCompleteDetailsResponse['credits']['cast'][castId]['profile_path'])
+                    peopleDetails = json.loads(json.dumps(api.get("https://api.themoviedb.org/3/person/{}?api_key={}".format(movieCompleteDetailsResponse['credits']['cast'][castId]['id'],api_key)).json()))
+                    castDict['imdb_profile_url'] = "https://www.imdb.com/name/nm{}".format(peopleDetails['imdb_id'][2:])
+                    castList.append(castDict)
+                    castId = castId+1  
+            
+            # castFlag = True
+            
+            # while(castFlag):
+            #     if(len(movieCompleteDetailsResponse['credits']['cast'])<=4):
+            #         #if(movieCompleteDetailsResponse['credits']['cast'][castId]['profile_path']!=None):
+            #         castDict = {}
+            #         castDict['name'] = movieCompleteDetailsResponse['credits']['cast'][castId]['name']
+            #         castDict['character_name'] = movieCompleteDetailsResponse['credits']['cast'][castId]['character']
+            #         castDict['cast_image_url'] = "https://image.tmdb.org/t/p/w45{}".format(movieCompleteDetailsResponse['credits']['cast'][castId]['profile_path'])
+            #         peopleDetails = json.loads(json.dumps(api.get("https://api.themoviedb.org/3/person/{}?api_key={}".format(movieCompleteDetailsResponse['credits']['cast'][castId]['id'],api_key)).json()))
+            #         castDict['imdb_profile_url'] = "https://www.imdb.com/name/nm{}".format(peopleDetails['imdb_id'][2:])
+            #         castList.append(castDict)
+            #         castId+=1
+            #         if(castId == len(movieCompleteDetailsResponse['credits']['cast'])):
+            #             castFlag == False
+            #     else:
+            #         #if(movieCompleteDetailsResponse['credits']['cast'][castId]['profile_path']!=None):
+            #         castDict = {}
+            #         castDict['name'] = movieCompleteDetailsResponse['credits']['cast'][castId]['name']
+            #         castDict['character_name'] = movieCompleteDetailsResponse['credits']['cast'][castId]['character']
+            #         castDict['cast_image_url'] = "https://image.tmdb.org/t/p/w45{}".format(movieCompleteDetailsResponse['credits']['cast'][castId]['profile_path'])
+            #         peopleDetails = json.loads(json.dumps(api.get("https://api.themoviedb.org/3/person/{}?api_key={}".format(movieCompleteDetailsResponse['credits']['cast'][castId]['id'],api_key)).json()))
+            #         castDict['imdb_profile_url'] = "https://www.imdb.com/name/nm{}".format(peopleDetails['imdb_id'][2:])
+            #         castList.append(castDict)
+            #         castId+=1
+            #         if(castId == 4):
+            #             castFlag == False
+            movies['cast'] = castList
+            
+            for k in range(0,len(movieCompleteDetailsResponse['credits']['crew'])):
+                if(movieCompleteDetailsResponse['credits']['crew'][k]['job'] == "Director"):
+                    dirDict = {}
+                    dirDict['name'] = movieCompleteDetailsResponse['credits']['crew'][k]['name']
+                    if(movieCompleteDetailsResponse['credits']['crew'][k]['profile_path'] != None):
+                        dirDict['cast_image_url'] = "https://image.tmdb.org/t/p/w45{}".format(movieCompleteDetailsResponse['credits']['crew'][k]['profile_path'])
+                    peopleDetails = json.loads(json.dumps(api.get("https://api.themoviedb.org/3/person/{}?api_key={}".format(movieCompleteDetailsResponse['credits']['crew'][k]['id'],api_key)).json()))
+                    dirDict['imdb_profile_url'] = "https://www.imdb.com/name/nm{}".format(peopleDetails['imdb_id'][2:])
+                    dirList.append(dirDict)
+            
+            movies['directors'] = dirList
+            
+            movies['imdb_id'] = "https://www.imdb.com/title/{}/".format(movieCompleteDetailsResponse['imdb_id'])
+            movies['runtime'] = movieCompleteDetailsResponse['runtime']
+            
+            col_2.insert_one(movies)
+            
         else:
             not_Added.append(movieTitles[i])
     return not_Added
 
-englishMovieDatabase()
+englishMovieDetailsDatabase()
 
 def swedishMovieDatabase():
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
