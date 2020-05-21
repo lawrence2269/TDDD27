@@ -161,11 +161,12 @@ class GetNowPlayingMovies(Resource):
         if(len(nowPlayingMovieURLData['results'])!=0):
             newMoviesList = []
             for i in range(0,len(nowPlayingMovieURLData['results'])):
-                newMovies = {}
-                newMovies['title'] = nowPlayingMovieURLData['results'][i]['title']
-                newMovies['poster_path'] = tm.posterPathURL.format(nowPlayingMovieURLData['results'][i]['poster_path'])
-                newMovies['release_year'] = datetime.strptime(nowPlayingMovieURLData['results'][i]['release_date'],"%Y-%m-%d").year
-                newMoviesList.append(newMovies)
+                if(nowPlayingMovieURLData['results'][i]['poster_path']!=None):
+                    newMovies = {}
+                    newMovies['title'] = nowPlayingMovieURLData['results'][i]['title']
+                    newMovies['poster_path'] = tm.posterPathURL.format(nowPlayingMovieURLData['results'][i]['poster_path'])
+                    newMovies['release_year'] = datetime.strptime(nowPlayingMovieURLData['results'][i]['release_date'],"%Y-%m-%d").year
+                    newMoviesList.append(newMovies)
             resp = jsonify({"newMovies":newMoviesList})
             resp.status_code = 200
             return resp
@@ -201,10 +202,10 @@ class GetMovieDetails(Resource):
         title = request.args.get("title")
         year = int(request.args.get("year"))
         movie_collection = mongo.db.movieDetails
-        if(movie_collection.find({"title":{"$regex":title,'$options':'i'},"release_year":year}).count()!=0):
-            movie_records = movie_collection.find({"title":{"$regex":title,'$options':'i'},"release_year":{"$eq":year}})
+        if(movie_collection.find({"title":{"$eq":title},"release_year":year}).count()!=0):
+            movie_records = movie_collection.find({"title":{"$eq":title},"release_year":{"$eq":year}})
             movieData = [movie for movie in movie_records]
-            resp = jsonify({"movieDetails":movieData})
+            resp = jsonify({"movieDetails":movieData[0]})
             resp.status_code = 200
             return resp
         else:
@@ -219,6 +220,7 @@ class GetMovieDetails(Resource):
                 movieData['rating'] = movieDetails['results'][0]['vote_average']
                 movieData['synopsis'] = movieDetails['results'][0]['overview']
                 movieData['likes'] = round(movieDetails['results'][0]['popularity'])
+                movieData['release_year'] = year
                 tmdbVideoURL = json.loads(json.dumps(requests.get(tm.tmdbVideoURL.format(movieData['tmdb_id'],tm.api_key)).json()))
 
                 if(len(tmdbVideoURL['results'])!=0):
