@@ -19,14 +19,15 @@ def insertUpcomingMoviesUS():
     if(len(upcomingMoviesData['results'])!=0):
         for i in range(0,len(upcomingMoviesData['results'])):
             if(upcomingMoviesData['results'][i]['poster_path'] != None):
-                if(col_1.find({"title":{"$regex":upcomingMoviesData['results'][i]['title'],'$options':'i'}}).count()!=0):
+                title = upcomingMoviesData['results'][i]['title']
+                if(col_1.find({"title":{"$eq":title}}).count()==0):
                     upcomingMovies = {}
                     upcomingMovie = {}
                     
                     upcomingMovie["_id"] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     upcomingMovie['title'] = upcomingMoviesData['results'][i]['title']
                     upcomingMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(upcomingMoviesData['results'][i]['poster_path'])
-                    upcomingMovie['release_year'] = datetime.strptime(upcomingMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
+                    upcomingMovie['tmdb_id'] = upcomingMoviesData['results'][i]['id']
                     col_1.insert_one(upcomingMovie)
                     
                     upcomingMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
@@ -122,16 +123,17 @@ def insertPopularMoviesUS():
     if(len(popularMoviesData['results'])!=0):
         for i in range(0,len(popularMoviesData['results'])):
             if(popularMoviesData['results'][i]['poster_path'] != None):
-                if(col_1.find({"title":{"$regex":popularMoviesData['results'][i]['title'],'$options':'i'}}).count()!=0):
+                title = popularMoviesData['results'][i]['title']
+                if(col_1.find({"title":{"$eq":title}}).count()==0):
                     popularMovies = {}
                     popularMovie = {}
                     
                     popularMovie["_id"] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     popularMovie['title'] = popularMoviesData['results'][i]['title']
                     popularMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(popularMoviesData['results'][i]['poster_path'])
-                    popularMovie['release_year'] = datetime.strptime(popularMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
+                    popularMovie['tmdb_id'] = popularMoviesData['results'][i]['id']
                     col_1.insert_one(popularMovie)
-                    
+                
                     popularMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
                     popularMovies['title'] = popularMoviesData['results'][i]['title']
                     popularMovies['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(popularMoviesData['results'][i]['poster_path'])
@@ -211,6 +213,7 @@ def insertPopularMoviesUS():
                         popularMovies['imdb_id'] = "https://www.imdb.com/title/{}/".format(movieCompleteDetailsResponse['imdb_id'])
                         popularMovies['runtime'] = movieCompleteDetailsResponse['runtime']
                         col_2.insert_one(popularMovies)
+                        
     
 def insertNowPlayingMoviesUS():
     print("inside insertNowPlayingMoviesUS")
@@ -225,21 +228,22 @@ def insertNowPlayingMoviesUS():
     if(len(nowPlayingMovieData['results'])!=0):
         for i in range(0,len(nowPlayingMovieData['results'])):
             if(nowPlayingMovieData['results'][i]['poster_path'] != None):
-                if(col_1.find({"title":{"$regex":nowPlayingMovieData['results'][i]['title'],'$options':'i'}}).count()!=0):
+                title = nowPlayingMovieData['results'][i]['title']
+                if(col_1.find({"title":{"$eq":title}}).count()==0):
                     playingMovies = {}
                     playingMovie = {}
                     
                     playingMovie["_id"] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     playingMovie['title'] = nowPlayingMovieData['results'][i]['title']
                     playingMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(nowPlayingMovieData['results'][i]['poster_path'])
-                    playingMovie['release_year'] = datetime.strptime(nowPlayingMovieData['results'][i]['release_date'],"%Y-%m-%d").year
+                    playingMovie['tmdb_id'] = nowPlayingMovieData['results'][i]["id"]
                     col_1.insert_one(playingMovie)
                     
                     playingMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
                     playingMovies['title'] = nowPlayingMovieData['results'][i]['title']
                     playingMovies['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(nowPlayingMovieData['results'][i]['poster_path'])
                     playingMovies['release_year'] = datetime.strptime(nowPlayingMovieData['results'][i]['release_date'],"%Y-%m-%d").year
-                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,nowPlayingMovieData['title'],True,nowPlayingMovieData['release_year'])
+                    movieSearchURL = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,playingMovies['title'],True,playingMovies['release_year'])
                     movieSearch = json.loads(json.dumps(api.get(movieSearchURL).json()))
                     if(len(movieSearch['results'])!=0):
                         playingMovies["tmdb_id"] = movieSearch['results'][0]["id"]
@@ -261,7 +265,7 @@ def insertNowPlayingMoviesUS():
                         playingMovies['genre'] = str(" / ".join(genre))
                         playingMovies['rating'] = movieSearch['results'][0]['vote_average']
                         playingMovies['synopsis'] = movieSearch['results'][0]['overview']
-                        popularMovies['likes'] = round(movieSearch['results'][0]['popularity'])
+                        playingMovies['likes'] = round(movieSearch['results'][0]['popularity'])
                         tmdbVideoURL = "https://api.themoviedb.org/3/movie/{}/videos?api_key={}".format(playingMovies["tmdb_id"],api_key)
                         videoData = json.loads(json.dumps(api.get(tmdbVideoURL).json()))
                         if(len(videoData['results'])!=0):
@@ -315,7 +319,6 @@ def insertNowPlayingMoviesUS():
                         playingMovies['runtime'] = movieCompleteDetailsResponse['runtime']
                         col_2.insert_one(playingMovies)
     
-    
 def insertUpcomingMoviesSV():
     print("inside insertUpcomingMoviesSV")
     api_key = "818cffde0b1e6749199b67fee1cbd032"
@@ -329,14 +332,15 @@ def insertUpcomingMoviesSV():
     if(len(upcomingMoviesData['results'])!=0):
         for i in range(0,len(upcomingMoviesData['results'])):
             if(upcomingMoviesData['results'][i]['poster_path'] != None):
-                if(col_1.find({"title":{"$regex":upcomingMoviesData['results'][i]['title'],'$options':'i'}}).count()!=0):
+                title = upcomingMoviesData['results'][i]['title']
+                if(col_1.find({"title":{"$eq":title}}).count()==0):
                     upcomingMovies = {}
                     upcomingMovie = {}
                     
                     upcomingMovie['_id'] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     upcomingMovie['title'] = upcomingMoviesData['results'][i]['title']
                     upcomingMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(upcomingMoviesData['results'][i]['poster_path'])
-                    upcomingMovie['release_year'] = datetime.strptime(upcomingMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
+                    upcomingMovie['tmdb_id'] = upcomingMoviesData['results'][i]['id']
                     col_1.insert_one(upcomingMovie)
                     
                     upcomingMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
@@ -432,14 +436,15 @@ def insertPopularMoviesSV():
     if(len(popularMoviesData['results'])!=0):
         for i in range(0,len(popularMoviesData['results'])):
             if(popularMoviesData['results'][i]['poster_path'] != None):
-                if(col_1.find({"title":{"$regex":popularMoviesData['results'][i]['title'],'$options':'i'}}).count()!=0):
+                title = popularMoviesData['results'][i]['title']
+                if(col_1.find({"title":{"$eq":title}}).count()==0):
                     popularMovies = {}
                     popularMovie = {}
                     
                     popularMovie["_id"] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     popularMovie['title'] = popularMoviesData['results'][i]['title']
                     popularMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(popularMoviesData['results'][i]['poster_path'])
-                    popularMovie['release_year'] = datetime.strptime(popularMoviesData['results'][i]['release_date'],"%Y-%m-%d").year
+                    popularMovie['tmdb_id'] = popularMoviesData['results'][i]['id']
                     col_1.insert_one(popularMovie)
                     
                     popularMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
@@ -535,14 +540,15 @@ def insertNowPlayingMoviesSV():
     if(len(nowPlayingMovieData['results'])!=0):
         for i in range(0,len(nowPlayingMovieData['results'])):
             if(nowPlayingMovieData['results'][i]['poster_path'] != None):
-                if(col_1.find({"title":{"$regex":nowPlayingMovieData['results'][i]['title'],'$options':'i'}}).count()!=0):
+                title = nowPlayingMovieData['results'][i]['title']
+                if(col_1.find({"title":{"$eq":title}}).count()==0):
                     playingMovies = {}
                     playingMovie = {}
                     
                     playingMovie["_id"] = [c['_id'] for c in col_1.find().sort("_id",-1).limit(1)][0]+1
                     playingMovie['title'] = nowPlayingMovieData['results'][i]['title']
                     playingMovie['poster_path'] = "http://image.tmdb.org/t/p/w185{}".format(nowPlayingMovieData['results'][i]['poster_path'])
-                    playingMovie['release_year'] = datetime.strptime(nowPlayingMovieData['results'][i]['release_date'],"%Y-%m-%d").year
+                    playingMovie['tmdb_id'] = nowPlayingMovieData['results'][i]['id']
                     col_1.insert_one(playingMovie)
                     
                     playingMovies["_id"] = [c['_id'] for c in col_2.find().sort("_id",-1).limit(1)][0]+1
