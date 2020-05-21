@@ -78,7 +78,7 @@ export class MovieComponent implements OnInit {
         this.like_count = data.movieDetails.likes;
         this.yify_id = data.movieDetails.yify_id;
         this.runTimeServer = data.movieDetails.runtime
-        data.movieDetails.casts.forEach(elements=>{
+        data.movieDetails.cast.forEach(elements=>{
           this.castNames.push(elements.name);
           this.characterNames.push(elements.character_name);
           this.castProfileURL.push(elements.imdb_profile_url);
