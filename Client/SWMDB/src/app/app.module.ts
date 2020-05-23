@@ -13,6 +13,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatCardModule} from '@angular/material/card';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { CustomFormsModule } from 'ng2-validation';
@@ -26,6 +27,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BsNavbarComponent } from './bs-navbar/bs-navbar.component';
 import { MovieComponent } from './movie/movie.component';
 import { MoviesComponent } from './movies/movies.component';
+import { MoviesService } from './movies/movies.service';
 
 @NgModule({
   declarations: [
@@ -55,6 +57,7 @@ import { MoviesComponent } from './movies/movies.component';
     MatDividerModule,
     MatNativeDateModule,
     MatCardModule,
+    MatSlideToggleModule,
     RouterModule.forRoot([
       {path: '', component: HomeComponent},
       {path: 'login', component:LoginComponent},
@@ -66,7 +69,8 @@ import { MoviesComponent } from './movies/movies.component';
   providers: [
     SignupService,
     HomeService,
-    MovieService
+    MovieService,
+    MoviesService
   ],
   bootstrap: [AppComponent]
 })
