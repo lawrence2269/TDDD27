@@ -41,7 +41,7 @@
                         </mat-form-field>
                     </div>
                     <div class="col-sm-3" style="margin-top: 20px;">
-                        <mat-slide-toggle (change)="onAdultContent($event.checked)" [disabled]="false" [color] = "color" [labelPosition] = "after" >
+                        <mat-slide-toggle (change)="onAdultContent($event.checked)" [disabled]="false" [color] = "color" [labelPosition] = "labelPosition" >
                             <span class="status">Adult Content: {{status}}</span>
                         </mat-slide-toggle>
                     </div>

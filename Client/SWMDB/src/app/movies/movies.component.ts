@@ -1,6 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { CustomValidators } from 'ng2-validation';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { MoviesService } from './movies.service';
 
@@ -16,6 +15,7 @@ export class MoviesComponent implements OnInit {
   status:string = "No";
   moviesForm:FormGroup;
   color = 'primary';
+  labelPosition = 'after';
   constructor(private formBuilder:FormBuilder,private route: ActivatedRoute,private router: Router,private moviesService: MoviesService) { 
     this.moviesService.getGenre().subscribe((data)=>{
       data.genres.forEach(elements=>{
