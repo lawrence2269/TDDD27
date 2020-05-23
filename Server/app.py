@@ -68,10 +68,10 @@ class CreateUser(Resource):
 
 class GetMovies(Resource):
     def get(self):
-        movie_collection = mongo.db.movies
-        movie_records = movie_collection.find({})
+        movie_collection = mongo.db.movieDetails
+        movie_records = movie_collection.find({},{"title":1,"poster_path_s":1,"release_year":1,"genre":1,"adult":1,"rating":1,"_id":0})
         movies = [movie for movie in movie_records]
-        resp = jsonify({"movies":movies})
+        resp = jsonify({"movies":sorted(movies,key = lambda i: i['title'])})
         resp.status_code = 200
         return resp
 
@@ -197,6 +197,47 @@ class GetPopularMovies(Resource):
             resp.status_code = 404
             return resp
 
+class GetGenre(Resource):
+    def get(self):
+        genreDetailsData = json.loads(json.dumps(requests.get(tm.genreDetailURL).json()))
+        genreList = []
+        #genreList.append("Choose...")
+        for i in range(0,len(genreDetailsData['genres'])):
+            genreList.append(genreDetailsData['genres'][i]['name'])
+        resp = jsonify({"genres":genreList})
+        resp.status_code = 200
+        return resp
+
+class GetYears(Resource):
+    def get(self):
+        years = []
+        for i in range(1960,datetime.now().year+1):
+            years.append(i)
+        resp = jsonify({"years":years})
+        resp.status_code = 200
+        return resp
+
+class GetRatings(Resource):
+    def get(self):
+        ratings = []
+        ratings.append("All")
+        for i in range(1,10):
+            ratings.append(str(i)+"+")
+        resp = jsonify({"ratings":ratings})
+        resp.status_code = 200
+        return resp
+
+class GetAllMovies(Resource):
+    def get(self):
+        movies = []
+        movies_collection = mongo.db.movieDetails
+        movies_records = movies_collection.find({},{"title":1,"poster_path":1,"release_year":1,"tmdb_id":0,"_id":0})
+        for movie in movies_records:
+            movies.append(movie)
+        resp = jsonify({"movies":movies})
+        resp.status_code = 200
+        return resp
+
 class GetMovieDetails(Resource):
     def get(self):
         title = request.args.get("title")
@@ -263,7 +304,7 @@ class GetMovieDetails(Resource):
                             castId+=1
                             if(castId == 4):
                                 break
-                movieData['casts'] = castList
+                movieData['cast'] = castList
 
                 for k in range(0,len(tmdbMovieDetails['credits']['crew'])):
                     if(tmdbMovieDetails['credits']['crew'][k]['job'] == "Director"):
@@ -439,6 +480,9 @@ api.add_resource(GetUpcomingMovies,'/upcomingmovies')
 api.add_resource(GetNowPlayingMovies,'/newmovies')
 api.add_resource(GetPopularMovies,'/popularmovies')
 api.add_resource(GetSimilarMovies,'/similarmovies')
+api.add_resource(GetGenre,'/genre')
+api.add_resource(GetYears,'/years')
+api.add_resource(GetRatings,'/ratings')
 api.add_resource(GetMovieDetails,'/movieDetails')
 api.add_resource(GetUserReview,'/userreviews')
 api.add_resource(GetUser,'/admin/users')
