@@ -9,6 +9,7 @@ import requests as api
 import pymongo
 import json
 import dns
+from datetime import datetime
 
 moviesData = pd.read_csv("tmdb_5000_movies.csv")
 movieYearsList = list(moviesData['release_date'])
@@ -87,12 +88,23 @@ def addReleaseYear():
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
     col_2 = db['movieDetails']
-    for i in range(0,len(movieTitles)):
-        if(col_2.find({"title":{"$regex":movieTitles[i],'$options':'i'}}).count()!=0):
-            print("====>Inside if")
-            myQuery = {"title":{"$regex":movieTitles[i],'$options':'i'}}
-            newValues = {"$set":{"release_year":movieYearsList[i]}}
-            col_2.update_one(myQuery,newValues)
+    col_1 = db['movies']
+    # for i in range(0,len(movieTitles)):
+    #     if(col_2.find({"title":{"$eq":movieTitles[i]}}).count()!=0):
+    #         print("====>Inside if")
+    #         myQuery = {"title":{"$eq":movieTitles[i]}}
+    #         newValues = {"$set":{"release_year":movieYearsList[i]}}
+    #         col_2.update_one(myQuery,newValues)
+    records = col_1.find({})
+    for movie in records:
+        #print("movie id is: "+str(movie["_id"]))
+        if("release_year" not in movie):
+            movieCompleteDetailsURL = "https://api.themoviedb.org/3/movie/{}?api_key={}".format(movie["tmdb_id"],api_key)
+            movieCompleteDetailsResponse = json.loads(json.dumps(api.get(movieCompleteDetailsURL).json()))
+            print("movie id is: "+str(movie["_id"])+"\t"+str(datetime.strptime(movieCompleteDetailsResponse['release_date'],"%Y-%m-%d").year))
+            data = {"$set":{"release_year":datetime.strptime(movieCompleteDetailsResponse['release_date'],"%Y-%m-%d").year}}   
+            query = {"_id":movie["_id"]}
+            col_1.update_one(query, data)
             
 addReleaseYear()
   
@@ -265,3 +277,41 @@ def addLanguages():
     print("Total Documents are:",col.find({}).count())
 
 addLanguages()
+
+
+#Changing poster sizes for existing movies
+def changePosterSize():
+    client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
+    db=client['SWMDB']
+    col_2 = db['movieDetails']
+    posterPathURL_L = "http://image.tmdb.org/t/p/w342{}"
+    api_key = "818cffde0b1e6749199b67fee1cbd032"
+    records = col_2.find({},{"title":1,"_id":1,"release_year":1})
+    for i in records:
+        movieDetailsUrl = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,i['title'],True,i['release_year'])
+        movieDetails_1 = json.loads(json.dumps(api.get(movieDetailsUrl).json()))  
+        if(len(movieDetails_1['results'])!=0):
+            query = {"_id":{"$eq":i["_id"]}}
+            replacement = {"$set":{"poster_path":posterPathURL_L.format(movieDetails_1['results'][0]['poster_path'])}}
+            result = col_2.update_one(query, replacement)
+            print(str(i["_id"])+" \t "+str(i['release_year']))
+changePosterSize()
+
+#Changing poster sizes for existing movies
+def changePosterSizeV2():
+    client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
+    db=client['SWMDB']
+    col_2 = db['movieDetails']
+    posterPathURL = "http://image.tmdb.org/t/p/w185{}"
+    api_key = "818cffde0b1e6749199b67fee1cbd032"
+    records = col_2.find({},{"_id":1,"tmdb_id":1})
+    for i in records:
+        movieCompleteDetailsURL = "https://api.themoviedb.org/3/movie/{}?api_key={}".format(i["tmdb_id"],api_key)
+        movieCompleteDetailsResponse = json.loads(json.dumps(api.get(movieCompleteDetailsURL).json()))
+        print("movie id is: "+str(i["_id"]))
+        query = {"_id":{"$eq":i["_id"]}}
+        replacement = {"$set":{"poster_path_s":posterPathURL.format(movieCompleteDetailsResponse['poster_path'])}}
+        col_2.update_one(query, replacement)
+
+changePosterSizeV2()
+    
