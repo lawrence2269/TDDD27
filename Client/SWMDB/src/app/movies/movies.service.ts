@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient,HttpParams} from '@angular/common/http';
+import { HttpClient} from '@angular/common/http';
 import { Observable} from 'rxjs';
 
 const localUrl = 'http://127.0.0.1:5000';
@@ -21,5 +21,9 @@ export class MoviesService {
 
   getRatings():Observable<any>{
     return this.http.get(localUrl+"/ratings");
+  }
+
+  getAllMovies():Observable<any>{
+    return this.http.get(localUrl+"/movies");
   }
 }

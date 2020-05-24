@@ -2,8 +2,62 @@
     /* margin-right: auto;
     margin-left: -200px; */
     margin-top:30px;
-    padding-left: 15px;
+    padding-left: 35px;
     padding-right: 15px;
+}
+
+.mat-paginator{
+    margin-right: 20px;
+}
+
+.browse-movie-wrap {
+    margin-bottom: 15px;
+}
+
+.img-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: -16px;
+}
+
+.browse-movie-bottom {
+    margin: 0 auto;
+    padding: 0 5px;
+    max-width: 220px;
+    margin-left: 0.15px;
+    font-size: .95em;
+}
+
+.browse-movie-title, .browse-movie-title:focus, #comments-box a {
+    color: #fff;
+    font-weight: 700;
+    display: block;
+    transition: color .15s ease-in-out;
+    -moz-transition: color .15s ease-in-out;
+    -webkit-transition: color .15s ease-in-out;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .95em;
+}
+
+a,
+a label {
+    cursor: pointer;
+}
+
+.browse-movie-link {
+    display: inline-block;
+    max-width: 220px;
+    border: 5px solid #fff;
+    transition: border .15s ease-in-out;
+    -moz-transition: border .15s ease-in-out;
+    -webkit-transition: border .15s ease-in-out;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    font-size: 24px;
 }
 
 .onoffswitch {

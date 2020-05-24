@@ -28,6 +28,7 @@ import { BsNavbarComponent } from './bs-navbar/bs-navbar.component';
 import { MovieComponent } from './movie/movie.component';
 import { MoviesComponent } from './movies/movies.component';
 import { MoviesService } from './movies/movies.service';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { MoviesService } from './movies/movies.service';
     MatDividerModule,
     MatNativeDateModule,
     MatCardModule,
+    MatPaginatorModule,
     MatSlideToggleModule,
     RouterModule.forRoot([
       {path: '', component: HomeComponent},

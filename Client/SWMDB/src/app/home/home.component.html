@@ -51,8 +51,8 @@
         <hr class="divider"/>
         <div class="row">
             <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of upcoming_movies_poster_path; let i = index">
-                <!-- <a (click) = "upcomingMovieClick(upcoming_movies_title[i],upcoming_movies_year[i])" class="browse-movie-link"> -->
-                <a class="browse-movie-link">
+                <a (click) = "upcomingMovieClick(upcoming_movies_title[i],upcoming_movies_year[i])" class="browse-movie-link">
+                <!-- <a class="browse-movie-link"> -->
                     <figure>
                         <!-- width="210" height="340" -->
                         <img class="img-responsive" src={{obj}} width="210" height="315"/>

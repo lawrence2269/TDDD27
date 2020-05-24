@@ -97,7 +97,6 @@ export class MovieComponent implements OnInit {
           },error=>{
             alert("Error is "+error.length);
           });
-        console.log("Trailer==>"+this.trailer);
       });
     });
   }
