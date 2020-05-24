@@ -71,7 +71,7 @@ class GetMovies(Resource):
         movie_collection = mongo.db.movieDetails
         movie_records = movie_collection.find({},{"title":1,"poster_path_s":1,"release_year":1,"genre":1,"adult":1,"rating":1,"_id":0})
         movies = [movie for movie in movie_records]
-        resp = jsonify({"movies":sorted(movies,key = lambda i: i['title'])})
+        resp = jsonify({"movies":sorted(movies,key = lambda i: i['rating'],reverse=True)})
         resp.status_code = 200
         return resp
 
