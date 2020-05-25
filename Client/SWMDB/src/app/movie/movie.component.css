@@ -68,6 +68,15 @@
     padding-bottom: 3px;
 }
 
+.heading5{
+    color:white;
+    /* font-family: 'Raleway',sans-serif; */
+    font-size: 15px; 
+    font-weight: bold;
+    margin-top: 10px;
+    padding-bottom: 3px;
+}
+
 .underline{
     text-decoration: underline;
     text-underline-position: under;

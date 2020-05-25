@@ -14,7 +14,7 @@
             </ng-template>
             <br>
             <table>
-                <tr class="spaceUnder">
+                <tr class="spaceUnder" *ngIf="imdb_id!=null,else temp1">
                     <td>
                         <a href="{{imdb_id}}" title="IMDB Rating" target="_blank">
                             <img src="/assets/img/logo-imdb.svg">
@@ -25,7 +25,10 @@
                         <i class="fa fa-star star" style="margin-left: 10px;"></i>
                     </td>
                 </tr>
-                <tr class="spaceUnder">
+                <ng-template #temp1>
+                    <h4 Style="color: white;">Sorry, No IMDB rating and our rating available, we are working on it!!!</h4>
+                </ng-template>
+                <tr class="spaceUnder" *ngIf="like_count!=0,else temp2">
                     <td>
                         <i class="fa fa-thumbs-up thumbsup" title="Likes" style="font-size: 36px;"></i>
                     </td>
@@ -33,6 +36,9 @@
                         <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{like_count}}</span>
                     </td>
                 </tr>
+                <ng-template #temp2>
+                    <h4 Style="color: white;">Sorry, No likes are available, we are working on it!!!</h4>
+                </ng-template>
             </table>
         </div>
     </div>
@@ -49,15 +55,6 @@
         <ng-template #show>
             <h4 class="heading4" style="text-align: center;margin-top: 50px;">Sorry! No trailer is available for this movie, We are working on it.</h4> 
         </ng-template>
-        
-        <!-- <div class="row" style="margin-top: -30px;margin-bottom: 70px;margin-left: -35px;text-align: center;">
-            <div class="col">
-                <img [src] = "screenshot1" height="315" width="70%"/>
-            </div>
-            <div class="col" style="margin-left: -220px;">
-                <img [src] = "screenshot2" height="315" width="70%"/>
-            </div>
-        </div> -->
     </div>
     <div class="synopsis">
         <div class="row">
@@ -77,24 +74,34 @@
                         <h4 class="heading4" style="margin-left: 50px;"><i class="fa fa-star star"></i>&nbsp;&nbsp;Director(s)</h4>
                         <hr class="dividerCast" style="margin-left: 50px;">
                         <table style="margin-left: 50px;border-spacing: 15px;">
-                            <tr *ngFor="let dirName of directorNames; let i = index" class="spaceUnder1">
-                                <td style="padding:0 15px 0 15px;"><img src="{{directorImageURL[i]}}" alt="Avatar" class="avatar"></td>
-                                <td style="padding:0 15px 0 15px;">
-                                    <a href="{{directorProfileURL[i]}}" style="color: white;">{{dirName}}</a>
-                                </td>
-                            </tr>
+                            <ng-container *ngIf = "directorNames.length!=0;else temp3">
+                                <tr *ngFor="let dirName of directorNames; let i = index" class="spaceUnder1">
+                                    <td style="padding:0 15px 0 15px;"><img src="{{directorImageURL[i]}}" alt="Avatar" class="avatar"></td>
+                                    <td style="padding:0 15px 0 15px;">
+                                        <a href="{{directorProfileURL[i]}}" style="color: greenyellow;">{{dirName}}</a>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                            <ng-template #temp3>
+                                <h4 class="heading5" style="text-align: center;margin-top: 20px;">Sorry! Directors details are not available at the moment...</h4> 
+                            </ng-template>
                         </table>
                     </div>
                     <div style="margin-top: 40px;">
                         <h4 class="heading4" style="margin-left: 50px;"><i class="fa fa-star star"></i>&nbsp;&nbsp;Actors &amp; Actress</h4>
                         <hr class="dividerCast" style="margin-left: 50px;">
                         <table style="margin-left: 50px;border-spacing: 5px 1rem;">
-                            <tr *ngFor="let castName of castNames; let i = index" class="spaceUnder1" style="border-spacing: 5px 1rem;">
-                                <td style="padding:0 15px 0 15px;border-spacing: 5px 1rem;"><img src="{{castImageURL[i]}}" alt="Avatar" class="avatar"></td>
-                                <td style="padding:0 15px 0 15px;border-spacing: 5px 1rem;">
-                                    <p style="color: white;"><a href="{{castProfileURL[i]}}" style="color: greenyellow;">{{castName}}</a> as {{characterNames[i]}}</p>
-                                </td>
-                            </tr>
+                            <ng-container *ngIf="castNames.length!=0,else temp4">
+                                <tr *ngFor="let castName of castNames; let i = index" class="spaceUnder1" style="border-spacing: 5px 1rem;">
+                                    <td style="padding:0 15px 0 15px;border-spacing: 5px 1rem;"><img src="{{castImageURL[i]}}" alt="Avatar" class="avatar"></td>
+                                    <td style="padding:0 15px 0 15px;border-spacing: 5px 1rem;">
+                                        <p style="color: white;"><a href="{{castProfileURL[i]}}" style="color: greenyellow;">{{castName}}</a> as {{characterNames[i]}}</p>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                            <ng-template #temp4>
+                                <h4 class="heading5" style="text-align: center;margin-top: 20px;">Sorry! Cast details are not available at the moment...</h4> 
+                            </ng-template>
                         </table>
                     </div>
                 </div>

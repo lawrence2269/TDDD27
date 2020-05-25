@@ -29,6 +29,8 @@ import { MovieComponent } from './movie/movie.component';
 import { MoviesComponent } from './movies/movies.component';
 import { MoviesService } from './movies/movies.service';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatDialogModule} from '@angular/material/dialog';
+import { DialogBodyComponent } from './dialog-body/dialog-body.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     SignupComponent,
     BsNavbarComponent,
     MovieComponent,
-    MoviesComponent
+    MoviesComponent,
+    DialogBodyComponent
   ],
   imports: [
     BrowserModule,
@@ -57,6 +60,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     ReactiveFormsModule,
     MatDividerModule,
     MatNativeDateModule,
+    MatDialogModule,
     MatCardModule,
     MatPaginatorModule,
     MatSlideToggleModule,
