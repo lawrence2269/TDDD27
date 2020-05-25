@@ -7,8 +7,10 @@ import requests
 from datetime import datetime
 import tmdbAPI as tm
 import random as ran
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 CORS(app)
 app.config['MONGO_URI'] = 'mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority'
 app.config['MONGO_DBNAME'] = 'SWMDB'
@@ -52,7 +54,7 @@ class CreateUser(Resource):
             userData['dateofbirth'] = str(data['dateofbirth'])
             userData['email_id'] = data['email']
             userData['country'] = data['country']
-            userData['password'] = data['password']
+            userData['password'] = bcrypt.generate_password_hash(data['password'])
             userData['role'] = 'user'
             userData['status'] = 'active'
             userData['created_at'] = datetime.now(tz=None)
