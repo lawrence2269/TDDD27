@@ -5,12 +5,11 @@
         </mat-card-header>
         <mat-card-content>
             <form [formGroup] = "moviesForm">
-                <div class="input-group mb-3" style="margin-top: 30px; padding-right: 80px;">
+                <div class="input-group mb-3" style="margin-top: 30px;">
                     <div class="input-group-prepend">
                     <span class="input-group-text" id="inputGroup-sizing-default">Search Term</span>
                     </div>
-                    <input type="text" formControlName="searchText" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-                    <button class="btn btn-primary my-2 my-sm-0" style="margin-left: 10px;" ><i class="fa fa-fw fa-search"></i></button>
+                    <input type="text" formControlName="searchText" [(ngModel)]="search" placeholder="Start search for a movie by it's title" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
                 </div>
                 <br>
                 <div class="row">
@@ -68,18 +67,24 @@
         [pageSize]="content_length"
         [pageSizeOptions]="[5, 10, 25, 100, content_length]">
     </mat-paginator>
-    <div class="row" style="margin-top: 20px;">
-        <div class="browse-movie-wrap col-xs-10 col-md-3" *ngFor="let obj of collection,let i=index;">
-            <a (click) = "movieDetails(obj.title,obj.release_year)" class="browse-movie-link">
-                <figure>
-                    <img class="img-responsive" [src]= obj.poster_path_s width="210" height="315"/>
-                </figure>
-            </a>
-            <div class="browse-movie-bottom">
-                <p class="browse-movie-title">
-                    {{obj.title}}
-                </p>
+    <ng-container *ngIf="(collection|filter:search) as result">
+        <div class="row" style="margin-top: 20px;">
+            <div class="browse-movie-wrap col-xs-10 col-md-3" *ngFor="let obj of result,let i=index;">
+                <a (click) = "movieDetails(obj.title,obj.release_year)" class="browse-movie-link">
+                    <figure>
+                        <img class="img-responsive" [src]= obj.poster_path_s width="210" height="315"/>
+                    </figure>
+                </a>
+                <div class="browse-movie-bottom">
+                    <p class="browse-movie-title">
+                        {{obj.title}}
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
+        <div align="center">
+            <h4 style="color: white; margin-top: 30px;" *ngIf="result.length === 0">No movies found...</h4>
+        </div>
+    </ng-container>
+    
 </div>

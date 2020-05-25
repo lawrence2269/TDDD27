@@ -31,6 +31,7 @@ import { MoviesService } from './movies/movies.service';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatDialogModule} from '@angular/material/dialog';
 import { DialogBodyComponent } from './dialog-body/dialog-body.component';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { DialogBodyComponent } from './dialog-body/dialog-body.component';
     MatNativeDateModule,
     MatDialogModule,
     MatCardModule,
+    Ng2SearchPipeModule,
     MatPaginatorModule,
     MatSlideToggleModule,
     RouterModule.forRoot([

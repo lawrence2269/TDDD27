@@ -20,6 +20,7 @@ export class MoviesComponent implements OnInit {
   content_length:number = 0;
   color = 'primary';
   labelPosition = 'after';
+  search:string;
   constructor(private formBuilder:FormBuilder,private route: ActivatedRoute,private router: Router,private moviesService: MoviesService) { 
     
     this.moviesService.getGenre().subscribe((data)=>{
