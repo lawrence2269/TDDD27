@@ -6,8 +6,8 @@ import json
 import requests
 from datetime import datetime
 import tmdbAPI as tm
-import random as ran
 from flask_bcrypt import Bcrypt
+import numpy as np
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -214,17 +214,21 @@ class GetYears(Resource):
     def get(self):
         years = []
         for i in range(1960,datetime.now().year+1):
-            years.append(i)
+            years.append(str(i))
         resp = jsonify({"years":years})
         resp.status_code = 200
         return resp
 
 class GetRatings(Resource):
     def get(self):
+        ratingsList = np.arange(1.0,10.1,0.1)
         ratings = []
-        ratings.append("All")
-        for i in range(1,10):
-            ratings.append(str(i)+"+")
+        for i in ratingsList.tolist():
+            temp = str(round(i,1))
+            if(temp.split(".")[1] == "0"):
+                ratings.append(temp.split(".")[0])
+            else:
+                ratings.append(temp)
         resp = jsonify({"ratings":ratings})
         resp.status_code = 200
         return resp
