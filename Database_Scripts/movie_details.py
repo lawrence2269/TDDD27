@@ -314,4 +314,43 @@ def changePosterSizeV2():
         col_2.update_one(query, replacement)
 
 changePosterSizeV2()
+
+import numpy as np
+import random as ran
+
+def insertReviews():
+    client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
+    db=client['SWMDB']
+    col_2 = db['movieDetails']
+    col_3 = db['reviews']
+    records = col_2.find({},{"_id":1,"tmdb_id":1,"title":1,"rating":1})
+    likes = [True,False]
+    for i in records:
+        reviewURL = "https://api.themoviedb.org/3/movie/{}/reviews?api_key={}".format(i['tmdb_id'],api_key)
+        reviewURLResponse = json.loads(json.dumps(api.get(reviewURL).json()))
+        ratingsList = np.arange(float(i['rating']),10.1,0.1).tolist()
+        if(len(reviewURLResponse['results'])!=0):
+            print(i['tmdb_id'])
+            for j in range(0,len(reviewURLResponse['results'])):
+                reviewData = {}
+                
+                if(col_3.find({}).count()==0):
+                    reviewData["_id"] = 1
+                else:
+                    reviewData["_id"] = [c['_id'] for c in col_3.find({}).sort("_id",-1).limit(1)][0]+1
+                
+                reviewData['movie_id'] = i["_id"]
+                reviewData['title'] = i['title']
+                reviewData['author'] = reviewURLResponse['results'][j]['author']
+                reviewData['review'] = reviewURLResponse['results'][j]['content']
+                reviewData['userRating'] = round(ran.choice(ratingsList),1)
+                reviewData['likes'] = ran.choice(likes)
+                reviewData['createdAt'] = datetime.now(tz=None)
+                col_3.insert_one(reviewData)
+
+insertReviews()
+                
+            
+                
+        
     
