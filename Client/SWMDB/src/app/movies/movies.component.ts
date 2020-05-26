@@ -18,9 +18,12 @@ export class MoviesComponent implements OnInit {
   collection_temp:any = [];
   moviesForm:FormGroup;
   content_length:number = 0;
-  color = 'primary';
-  labelPosition = 'after';
   search:string;
+  genreSearch:string;
+  ratingSearch:string;
+  yearSearch:string;
+  adultSearch:string;
+  
   constructor(private formBuilder:FormBuilder,private route: ActivatedRoute,private router: Router,private moviesService: MoviesService) { 
     
     this.moviesService.getGenre().subscribe((data)=>{
@@ -51,13 +54,13 @@ export class MoviesComponent implements OnInit {
       years : new FormControl(this.movieYears),
       genre : new FormControl(this.genreList),
       ratings : new FormControl(this.ratingsList),
-      searchText : new FormControl(null)
+      searchText : new FormControl(null),
+      adultContent : new FormControl(null)
     });
   }
 
   async ngOnInit() {
     await this.movieData();
-    console.log("====>",this.collection_temp);
     this.content_length = this.collection_temp.length;
   }
 

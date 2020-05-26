@@ -16,7 +16,7 @@
                     <div class="col-sm-3">
                         <mat-form-field class="form-field" appearance="outline">
                             <mat-label>Genre</mat-label>
-                            <mat-select formControlName="genre" placeholder="Genre">
+                            <mat-select formControlName="genre" [(ngModel)]="genreSearch" placeholder="Genre">
                                 <mat-option *ngFor="let c of genreList" [value]="c">
                                     {{c}}
                                 </mat-option>
@@ -26,7 +26,7 @@
                     <div class="col-sm-3">
                         <mat-form-field class="form-field" appearance="outline">
                             <mat-label>Rating</mat-label>
-                            <mat-select formControlName="ratings" placeholder="Rating">
+                            <mat-select formControlName="ratings" [(ngModel)] = "ratingSearch" placeholder="Rating">
                                 <mat-option *ngFor="let c of ratingsList" [value]="c">
                                     {{c}}
                                 </mat-option>
@@ -36,23 +36,26 @@
                     <div class="col-sm-3">
                         <mat-form-field class="form-field" appearance="outline">
                             <mat-label>Year</mat-label>
-                            <mat-select formControlName="years" placeholder="Year">
+                            <mat-select formControlName="years" [(ngModel)] = "yearSearch" placeholder="Year">
                                 <mat-option *ngFor="let c of movieYears" [value]="c">
                                     {{c}}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-sm-3" style="margin-top: 20px;">
-                        <mat-slide-toggle (change)="onAdultContent($event.checked)" [disabled]="false" [color] = "color" [labelPosition] = "labelPosition" >
-                            <span class="status">Adult Content: {{status}}</span>
-                        </mat-slide-toggle>
+                    <div class="col-sm-3">
+                        <mat-form-field class="form-field" appearance="outline">
+                            <mat-label>Adult Content</mat-label>
+                            <mat-select formControlName="adultContent" [(ngModel)] = "adultSearch" placeholder="Adult Content">
+                                <mat-option value="No">No</mat-option>
+                                <mat-option value="Yes">Yes</mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
                 </div>
             </form>
         </mat-card-content>
         <mat-card-actions align="center">
-            <!-- <button mat-raised-button color="primary" style="border: none;outline: none;">Search</button> -->
             <button mat-raised-button color="warn" style="border: none;outline: none;" (click)="moviesForm.reset()">Reset</button>
             <br>
             <br>
@@ -67,7 +70,7 @@
         [pageSize]="content_length"
         [pageSizeOptions]="[5, 10, 25, 100, content_length]">
     </mat-paginator>
-    <ng-container *ngIf="(collection|filter:search) as result">
+    <ng-container *ngIf="(collection|filter:search|filter:genreSearch|filter:ratingSearch|filter:yearSearch|filter:adultSearch) as result">
         <div class="row" style="margin-top: 20px;">
             <div class="browse-movie-wrap col-xs-10 col-md-3" *ngFor="let obj of result,let i=index;">
                 <a (click) = "movieDetails(obj.title,obj.release_year)" class="browse-movie-link">
