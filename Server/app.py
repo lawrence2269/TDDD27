@@ -1,22 +1,26 @@
 from flask import Flask,jsonify,request,Response
 from flask_restful import Resource,Api
 from flask_pymongo import PyMongo
+import pymongo
 from flask_cors import CORS
 import json
 import requests
 from datetime import datetime
 import tmdbAPI as tm
-from flask_bcrypt import Bcrypt
+from werkzeug.security import generate_password_hash,check_password_hash
+from flask_jwt_extended import JWTManager,create_access_token,create_refresh_token,jwt_required
 import numpy as np
 
 app = Flask(__name__)
-bcrypt = Bcrypt(app)
 CORS(app)
+jwt = JWTManager(app)
 app.config['MONGO_URI'] = 'mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority'
 app.config['MONGO_DBNAME'] = 'SWMDB'
+app.config['JWT_SECRET_KEY'] = b'\x7f5\x03\xe3T\xe9\xa6\xd3i\xdb\x1a`\xc4g}\xfc'
 api = Api(app)
 
 mongo = PyMongo(app)
+client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
 
 class Countries(Resource):
     def get(self):
@@ -38,6 +42,33 @@ class Languages(Resource):
         return resp
 
 ##### User related services ######
+class AuthUser(Resource):
+    def post(self):
+        data = request.get_json()
+        users_collection = mongo.db.users
+        if(users_collection.find({'email_id':{"$eq":data['email_Id']}}).count()!=0):
+            record = users_collection.find({'email_id':{"$eq":data['email_Id']}},{"_id":0,"email_id":1,"password":1})
+            password = []
+            for i in record:
+                password.append(i['password'])
+            if(check_password_hash(password[0],data['password'])):
+                user = {}
+                access_token = create_access_token(identity=data['email_Id'])
+                refresh_token = create_refresh_token(identity=data['email_Id'])
+                user['access_token'] = access_token
+                user['refresh_token'] = refresh_token
+                del password
+                resp = jsonify({"userData":user})
+                resp.status_code = 200
+                return resp
+            else:
+                resp = jsonify({"userData":"Password doesn't match"})
+                resp.status_code = 401
+                return resp
+        else:
+            resp = jsonify({"userData":"User doesn't exists"})
+            resp.status_code = 401
+            return resp
 
 class CreateUser(Resource):
     def post(self):
@@ -54,7 +85,7 @@ class CreateUser(Resource):
             userData['dateofbirth'] = str(data['dateofbirth'])
             userData['email_id'] = data['email']
             userData['country'] = data['country']
-            userData['password'] = bcrypt.generate_password_hash(data['password'])
+            userData['password'] = generate_password_hash(data['password'],method="sha256")
             userData['role'] = 'user'
             userData['status'] = 'active'
             userData['created_at'] = datetime.now(tz=None)
@@ -73,7 +104,7 @@ class GetMovies(Resource):
         movie_collection = mongo.db.movieDetails
         movie_records = movie_collection.find({},{"title":1,"poster_path_s":1,"release_year":1,"genre":1,"adult":1,"rating":1,"_id":0})
         movies = [movie for movie in movie_records]
-        resp = jsonify({"movies":sorted(movies,key = lambda i: i['rating'],reverse=True)})
+        resp = jsonify({"movies":sorted(movies,key = lambda i: i['title'])})
         resp.status_code = 200
         return resp
 
@@ -248,9 +279,10 @@ class GetMovieDetails(Resource):
     def get(self):
         title = request.args.get("title")
         year = int(request.args.get("year"))
-        movie_collection = mongo.db.movieDetails
-        if(movie_collection.find({"title":{"$eq":title},"release_year":year}).count()!=0):
-            movie_records = movie_collection.find({"title":{"$eq":title},"release_year":{"$eq":year}})
+        db=client['SWMDB']
+        movie_collection = db['movieDetails']
+        if(movie_collection.count_documents({"title":{"$eq":title},"release_year":str(year)})!=0):
+            movie_records = movie_collection.find({"title":{"$eq":title},"release_year":{"$eq":str(year)}})
             movieData = [movie for movie in movie_records]
             resp = jsonify({"movieDetails":movieData[0]})
             resp.status_code = 200
@@ -261,13 +293,14 @@ class GetMovieDetails(Resource):
             yifyListMovies = json.loads(json.dumps(requests.get(tm.yifyListMoviesURL.format(title)).json()))
             if(len(movieDetails['results'])!=0):
                 movieData = {}
+                movieData['_id'] = [m["_id"] for m in movie_collection.find().sort("_id",-1).limit(1)][0]+1
                 movieData['tmdb_id'] = movieDetails['results'][0]['id']
                 movieData['title'] = movieDetails['results'][0]['title']
                 movieData['poster_path'] = tm.posterPathURL_L.format(movieDetails['results'][0]['poster_path'])
                 movieData['rating'] = movieDetails['results'][0]['vote_average']
                 movieData['synopsis'] = movieDetails['results'][0]['overview']
                 movieData['likes'] = round(movieDetails['results'][0]['popularity'])
-                movieData['release_year'] = year
+                movieData['release_year'] = str(year)
                 tmdbVideoURL = json.loads(json.dumps(requests.get(tm.tmdbVideoURL.format(movieData['tmdb_id'],tm.api_key)).json()))
 
                 if(len(tmdbVideoURL['results'])!=0):
@@ -292,7 +325,10 @@ class GetMovieDetails(Resource):
                             castDict = {}
                             castDict['name'] = tmdbMovieDetails['credits']['cast'][castId]['name']
                             castDict['character_name'] = tmdbMovieDetails['credits']['cast'][castId]['character']
-                            castDict['cast_image_url'] = tm.profilePathURL.format(tmdbMovieDetails['credits']['cast'][castId]['profile_path'])
+                            if(tm.profilePathURL.format(tmdbMovieDetails['credits']['cast'][castId]['profile_path'])!=None):
+                                castDict['cast_image_url'] = tm.profilePathURL.format(tmdbMovieDetails['credits']['cast'][castId]['profile_path'])
+                            else:
+                                castDict['cast_image_url'] = "https://i.ibb.co/XShk8Pg/no-user-profile.png"
                             peopleDetails = json.loads(json.dumps(requests.get(tm.tmdbPersonDetailsURL.format(tmdbMovieDetails['credits']['cast'][castId]['id'],tm.api_key)).json()))
                             castDict['imdb_profile_url'] = tm.imdbProfileURL.format(peopleDetails['imdb_id'][2:])
                             castList.append(castDict)
@@ -303,7 +339,10 @@ class GetMovieDetails(Resource):
                             castDict = {}
                             castDict['name'] = tmdbMovieDetails['credits']['cast'][castId]['name']
                             castDict['character_name'] = tmdbMovieDetails['credits']['cast'][castId]['character']
-                            castDict['cast_image_url'] = tm.profilePathURL.format(tmdbMovieDetails['credits']['cast'][castId]['profile_path'])
+                            if(tmdbMovieDetails['credits']['cast'][castId]['profile_path']!=None):
+                                castDict['cast_image_url'] = tm.profilePathURL.format(tmdbMovieDetails['credits']['cast'][castId]['profile_path'])
+                            else:
+                                castDict['cast_image_url'] = "https://i.ibb.co/XShk8Pg/no-user-profile.png"
                             peopleDetails = json.loads(json.dumps(requests.get(tm.tmdbPersonDetailsURL.format(tmdbMovieDetails['credits']['cast'][castId]['id'],tm.api_key)).json()))
                             castDict['imdb_profile_url'] = tm.imdbProfileURL.format(peopleDetails['imdb_id'][2:])
                             castList.append(castDict)
@@ -318,6 +357,8 @@ class GetMovieDetails(Resource):
                         dirDict['name'] = tmdbMovieDetails['credits']['crew'][k]['name']
                         if(tmdbMovieDetails['credits']['crew'][k]['profile_path'] != None):
                             dirDict['cast_image_url'] = tm.tmdbProfileURL.format(tmdbMovieDetails['credits']['crew'][k]['profile_path'])
+                        else:
+                            dirDict['cast_image_url'] = "https://i.ibb.co/XShk8Pg/no-user-profile.png"
                         peopleDetails = json.loads(json.dumps(requests.get(tm.tmdbPersonDetailsURL.format(tmdbMovieDetails['credits']['crew'][k]['id'],tm.api_key)).json()))
                         dirDict['imdb_profile_url'] = tm.imdbProfileURL.format(peopleDetails['imdb_id'][2:])
                         dirList.append(dirDict)
@@ -353,6 +394,7 @@ class GetMovieDetails(Resource):
                             if(year == yifyListMovies['data']['movies'][runTime]['year'] and title == yifyListMovies['data']['movies'][runTime]['title']):
                                 movieData['runTime'] = yifyListMovies['data']['movies'][runTime]['runtime']
 
+                movie_collection.insert_one(movieData)
                 resp = jsonify({"movieDetails":movieData})
                 resp.status_code = 200
                 return resp
@@ -390,18 +432,19 @@ class GetSimilarMovies(Resource):
 
 class GetUserReview(Resource):
     def get(self):
-        data = request.get_json()
-        movie_collection = mongo.db.movies
-        review_collection = mongo.db.reviews
-        movieId = [movie['_id'] for movie in movie_collection.find({"title":{"$regex":data['title'],"$options":"i"}},{"_id":1})][0]
-        review_cursor = review_collection.find({"movie_id":movieId})
-        if(review_cursor.count()!=0):
+        title = request.args.get("title")
+        db=client['SWMDB']
+        review_collection = db['reviews']
+        if(review_collection.count_documents({"title":{"$eq":title}})!=0):
+            review_cursor = review_collection.find({"title":{"$eq":title}})
             reviewList = []
             for review in review_cursor:
                 reviews = {}
-                reviews['user'] = review['user']
-                reviews['reviewStmt'] = review['content']
-                reviews['rating'] = review['rating']
+                reviews['author'] = review['author']
+                reviews['reviewStmt'] = review['review']
+                reviews['rating'] = review['userRating']
+                reviews['likes'] = review['likes']
+                reviews['dated'] = str(datetime.strftime(review['createdAt'],'%Y-%m-%d'))
                 reviewList.append(reviews)
             resp = jsonify({"reviews":reviewList})
             resp.status_code = 200
@@ -478,6 +521,7 @@ class DeleteUser(Resource):
 
 api.add_resource(Countries,'/countries')
 api.add_resource(Languages,'/languages')
+api.add_resource(AuthUser,'/login')
 api.add_resource(CreateUser,'/createuser')
 api.add_resource(RequestMovies,'/requestmovie')
 api.add_resource(ChangePassword,'/changepwd')
