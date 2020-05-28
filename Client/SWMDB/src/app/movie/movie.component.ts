@@ -2,6 +2,7 @@ import { MovieService } from './movie.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';  
+import {MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-movie',
@@ -35,9 +36,11 @@ export class MovieComponent implements OnInit {
   directorNames:any = [];
   directorImageURL:any = [];
   directorProfileURL:any = [];
+  reviewsList:any = [];
+  starRating:number;
 
   constructor(private route: ActivatedRoute,private router: Router,private movieService: MovieService,
-    private sanitizer: DomSanitizer) { 
+    private sanitizer: DomSanitizer,private matDialog: MatDialog) { 
 
     this.router.events.subscribe((e)=>{
       if(e instanceof NavigationEnd){
@@ -62,7 +65,6 @@ export class MovieComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("Inside Movie component : "+this.title+" ,"+this.year);
     let temp:number = 0;
     this.movieService.getMovieDetails(this.title,this.year).subscribe((data)=>{
         this.genre = data.movieDetails.genre;
@@ -94,9 +96,12 @@ export class MovieComponent implements OnInit {
             this.similar_Movies_Poster_Path.push(elements.poster_path);
             this.similar_Movies_Title.push(elements.title);
             this.similar_Movies_Year.push(elements.year);
-          },error=>{
-            alert("Error is "+error.length);
           });
+        this.movieService.getReviews(this.title).subscribe((data)=>{
+          data.reviews.forEach(elements=>{
+            this.reviewsList.push(elements);
+          });
+        });
       });
     });
   }
@@ -113,5 +118,14 @@ export class MovieComponent implements OnInit {
     this.router.navigateByUrl('/movie',{skipLocationChange:true}).then(()=>{
       this.router.navigate(['/movie'],{queryParams:{title:value1,year:value2}});
     });
+  }
+
+  public deleteReview(value1:String,value2:String):void{
+    console.log(value1+"\t"+value2);
+  }
+
+  public trackByRating(i:number,review:any){
+    this.starRating = review.rating;
+    return this.starRating;
   }
 }

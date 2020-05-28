@@ -68,7 +68,7 @@
         (page)="onPageChange($event)"
         [length]= "content_length"
         [pageSize]="content_length"
-        [pageSizeOptions]="[5, 10, 25, 100, content_length]">
+        [pageSizeOptions]="[4, 12, 36, 100, content_length]">
     </mat-paginator>
     <ng-container *ngIf="(collection|filter:search|filter:genreSearch|filter:ratingSearch|filter:yearSearch|filter:adultSearch) as result">
         <div class="row" style="margin-top: 20px;">

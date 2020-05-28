@@ -4,7 +4,7 @@
             <img class="img-responsive" src="{{poster_path}}">
         </div>
         <div id="movieContent" class="col-xs-6">
-            <h1 style="color: white;">{{title}}</h1>
+            <h3 style="color: white;" class="text-wrap">{{title}}</h3>
             <br>
             <h4 style="color: white;">{{year}}</h4>
             <h4 style="color: white;">{{genre}}</h4>
@@ -88,7 +88,7 @@
                         </table>
                     </div>
                     <div style="margin-top: 40px;">
-                        <h4 class="heading4" style="margin-left: 50px;"><i class="fa fa-star star"></i>&nbsp;&nbsp;Actors &amp; Actress</h4>
+                        <h4 class="heading4" style="margin-left: 50px;"><i class="fa fa-star star"></i>&nbsp;&nbsp;Actors &amp; Actresses</h4>
                         <hr class="dividerCast" style="margin-left: 50px;">
                         <table style="margin-left: 50px;border-spacing: 5px 1rem;">
                             <ng-container *ngIf="castNames.length!=0,else temp4">
@@ -107,6 +107,41 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="similar">
+        <h4 class="heading4"><i class="fa fa-star star"></i>&nbsp;&nbsp;User Reviews</h4> 
+        <hr class="dividerSimilar"/>
+        <ng-container *ngIf="reviewsList.length!=0,else noReviews">
+            <div class="list">
+                <div class="list-item" *ngFor="let review of reviewsList,let i = index;trackBy:trackByRating">
+                    <input type="hidden" [(ngModel)] = "starRating" value="{{trackByRating(i,review)}}"/>
+                    <div>
+                        <p style="margin-left:10px;margin-top: 10px;" align="justify">{{review.reviewStmt}}</p>
+                        <div style="margin-left:10px;margin-bottom: 10px;">
+                            <table>
+                                <tr>
+                                    <td>By &nbsp;<strong><i>{{review.author}}</i></strong></td>
+                                    <td style="padding-right: 20px;"></td>
+                                    <td style="padding-right: 12px;">
+                                        <ng-template #t let-fill="fill">
+                                            <span class="star" [class.full]="fill === 100">
+                                              <span class="half" [style.width.%]="fill">&hearts;</span>&hearts;
+                                            </span>
+                                          </ng-template>
+                                          <ngb-rating [(rate)]="starRating" [starTemplate]="t" [readonly]="true" [max]="10"></ngb-rating>
+                                    </td>
+                                    <td style="padding-right: 20px;"><strong>{{starRating}}</strong></td>
+                                    <td><i>{{review.dated}}</i></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #noReviews>
+            <h4 class="heading4" style="text-align: center;margin-top: 20px;">No reviews has been made for this movie. Be the first to review this movie!!!</h4> 
+        </ng-template>
     </div>
     <div class="similar">
         <h4 class="heading4"><i class="fa fa-star star"></i>&nbsp;&nbsp;Similar Movies</h4>

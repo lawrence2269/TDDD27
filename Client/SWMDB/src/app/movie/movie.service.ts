@@ -20,4 +20,9 @@ export class MovieService {
     let params = new HttpParams({fromString:'tmdb_id='+value});
     return this.http.get(localUrl+"/similarmovies",{params});
   }
+
+  getReviews(value:String):Observable<any>{
+    let params = new HttpParams({fromString:'title='+value});
+    return this.http.get(localUrl+"/userreviews",{params});
+  }
 }

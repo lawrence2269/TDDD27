@@ -58,6 +58,44 @@
     padding-right: 15px;
 }
 
+.title{
+    overflow-wrap: break-word;
+}
+
+.list {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border: 0px solid #e8f8ff;
+    margin-left: 10px;
+}
+
+.list-item {
+    border-bottom: 1px solid #e8f8ff;
+    color:white;
+    background-color: #1d2125;
+    box-sizing: border-box;
+}
+
+.hearts {
+    position: relative;
+    display: inline-block;
+    font-size: 5rem;
+    color:#d3d3d3;
+  }
+  .full {
+    color: red;
+  }
+  .half {
+    position: absolute;
+    display: inline-block;
+    overflow: hidden;
+    color: red;
+  }
 
 .heading4{
     color:white;
