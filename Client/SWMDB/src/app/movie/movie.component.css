@@ -62,23 +62,10 @@
     overflow-wrap: break-word;
 }
 
-.list {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    height: auto;
-    overflow-x: auto;
-    overflow-y: auto;
-    box-sizing: border-box;
-    border: 0px solid #e8f8ff;
-    margin-left: 10px;
-}
-
-.list-item {
-    border-bottom: 1px solid #e8f8ff;
+.table-responsive {
+    max-height:500px;
+    background-color:#1d2125;
     color:white;
-    background-color: #1d2125;
-    box-sizing: border-box;
 }
 
 .hearts {

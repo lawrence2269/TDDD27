@@ -112,31 +112,38 @@
         <h4 class="heading4"><i class="fa fa-star star"></i>&nbsp;&nbsp;User Reviews</h4> 
         <hr class="dividerSimilar"/>
         <ng-container *ngIf="reviewsList.length!=0,else noReviews">
-            <div class="list">
-                <div class="list-item" *ngFor="let review of reviewsList,let i = index;trackBy:trackByRating">
-                    <input type="hidden" [(ngModel)] = "starRating" value="{{trackByRating(i,review)}}"/>
-                    <div>
-                        <p style="margin-left:10px;margin-top: 10px;" align="justify">{{review.reviewStmt}}</p>
-                        <div style="margin-left:10px;margin-bottom: 10px;">
-                            <table>
-                                <tr>
-                                    <td>By &nbsp;<strong><i>{{review.author}}</i></strong></td>
-                                    <td style="padding-right: 20px;"></td>
-                                    <td style="padding-right: 12px;">
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                        <ng-container *ngFor="let review of reviewsList,let i = index;trackBy:trackByRating">
+                            <input type="hidden" [(ngModel)] = "starRating" value="{{trackByRating(i,review)}}"/>
+                            <div>
+                                <p style="margin-left:10px;margin-top: 10px;margin-right:10px;color: white;" align="justify">{{review.reviewStmt}}</p> 
+                                <br>
+                                <div class="row">
+                                    <div class="col-sm-2" style="margin-left:10px;margin-bottom: -15px; margin-top: -15px;">
+                                        <p style="color: white;">By &nbsp;<strong><i>{{review.author}}</i></strong></p>
+                                    </div>
+                                    <div class="col-sm-2" style="margin-left:10px;margin-bottom: -15px; margin-top: -15px;">
                                         <ng-template #t let-fill="fill">
                                             <span class="star" [class.full]="fill === 100">
                                               <span class="half" [style.width.%]="fill">&hearts;</span>&hearts;
                                             </span>
-                                          </ng-template>
-                                          <ngb-rating [(rate)]="starRating" [starTemplate]="t" [readonly]="true" [max]="10"></ngb-rating>
-                                    </td>
-                                    <td style="padding-right: 20px;"><strong>{{starRating}}</strong></td>
-                                    <td><i>{{review.dated}}</i></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                                        </ng-template>
+                                        <ngb-rating [(rate)]="starRating" [starTemplate]="t" [readonly]="true" [max]="10"></ngb-rating>
+                                    </div>
+                                    <div class="col-sm-2" style="margin-left:-10px;margin-bottom: -15px; margin-top: -15px;">
+                                        <strong style="color: white;">{{starRating}}</strong>
+                                    </div>
+                                    <div class="col-sm-2" style="margin-left:-80px;margin-bottom: -15px; margin-top: -15px;">
+                                        <i style="color: white;">{{review.dated}}</i> 
+                                    </div>
+                                </div>
+                                <hr class="dividerTrailer">
+                            </div>
+                        </ng-container>
+                    </tbody>
+                </table>
             </div>
         </ng-container>
         <ng-template #noReviews>
