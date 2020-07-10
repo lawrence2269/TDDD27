@@ -62,6 +62,29 @@ movieYearsList = [datetime.strptime(m,'%Y-%m-%d').year for m in movieYearsList]
 
 # movieDatabase()
 
+def balancingMismatch():
+    client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
+    db=client['SWMDB']
+    col_1 = db['movies']
+    col_2 = db['moviedetails']
+    data = []
+    for i in range(1082,1114):
+        if(i != 1106):
+            data.append(col_2.find_one({"_id":i},{"title":1,"poster_path_s":1,"tmdb_id":1,"release_year":1,"_id":0}))
+    mid = [movie["_id"] for movie in col_1.find().sort("_id",-1).limit(1)][0]
+    mid = mid+1
+    print(mid)
+    for j in range(0,len(data)):
+        movies = {}
+        movies["_id"] = mid
+        movies["tmdb_id"] = data[j]['tmdb_id']
+        movies["title"] = data[j]["title"]
+        movies["poster_path"] = data[j]["poster_path_s"]
+        movies["release_year"] = int(data[j]["release_year"])
+        mid = mid+1
+        col_1.insert_one(movies)
+balancingMismatch()
+
 def englishMoviesDatabase():
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
@@ -76,7 +99,7 @@ def englishMoviesDatabase():
             movies["tmdb_id"] = movieDetails_1['results'][0]["id"]
             movies["title"] = movieDetails_1['results'][0]['title']
             movies["poster_path"] = "http://image.tmdb.org/t/p/w185{}".format(movieDetails_1['results'][0]['poster_path'])
-            
+
             col_1.insert_one(movies)
         else:
           not_Added.append(movieTitles[i])
@@ -102,12 +125,12 @@ def addReleaseYear():
             movieCompleteDetailsURL = "https://api.themoviedb.org/3/movie/{}?api_key={}".format(movie["tmdb_id"],api_key)
             movieCompleteDetailsResponse = json.loads(json.dumps(api.get(movieCompleteDetailsURL).json()))
             print("movie id is: "+str(movie["_id"])+"\t"+str(datetime.strptime(movieCompleteDetailsResponse['release_date'],"%Y-%m-%d").year))
-            data = {"$set":{"release_year":datetime.strptime(movieCompleteDetailsResponse['release_date'],"%Y-%m-%d").year}}   
+            data = {"$set":{"release_year":datetime.strptime(movieCompleteDetailsResponse['release_date'],"%Y-%m-%d").year}}
             query = {"_id":movie["_id"]}
             col_1.update_one(query, data)
-            
+
 addReleaseYear()
-  
+
 def englishMovieDetailsDatabase():
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
@@ -121,15 +144,15 @@ def englishMovieDetailsDatabase():
             movies["_id"] = i+1
             movies["tmdb_id"] = movieDetails_1['results'][0]["id"]
             movies["title"] = movieDetails_1['results'][0]['title']
-            movies["poster_path"] = "http://image.tmdb.org/t/p/w185{}".format(movieDetails_1['results'][0]['poster_path'])            
+            movies["poster_path"] = "http://image.tmdb.org/t/p/w185{}".format(movieDetails_1['results'][0]['poster_path'])
             movieCompleteDetailsURL = "https://api.themoviedb.org/3/movie/{}?api_key={}&append_to_response=credits".format(movies["tmdb_id"],api_key)
             movieCompleteDetailsResponse = json.loads(json.dumps(api.get(movieCompleteDetailsURL).json()))
-            
+
             if(movieCompleteDetailsResponse['adult'] == False):
                 movies['adult'] = 'No'
             else:
                 movies['adult'] = 'Yes'
-            
+
             genreDetailUrl = "https://api.themoviedb.org/3/genre/movie/list?api_key={}&language=en-US".format(api_key)
             genre = []
             genre_temp = movieDetails_1['results'][0]['genre_ids']
@@ -139,11 +162,11 @@ def englishMovieDetailsDatabase():
                     if(info['id'] == genreId):
                         genre.append(info['name'])
             movies['genre'] = str(" / ".join(genre))
-            
+
             movies['rating'] = movieDetails_1['results'][0]['vote_average']
             movies['synopsis'] = movieDetails_1['results'][0]['overview']
             movies['likes'] = round(movieDetails_1['results'][0]['popularity'])
-            
+
             tmdbVideoURL = "https://api.themoviedb.org/3/movie/{}/videos?api_key={}".format(movies["tmdb_id"],api_key)
             videoData = json.loads(json.dumps(api.get(tmdbVideoURL).json()))
             if(len(videoData['results'])!=0):
@@ -152,7 +175,7 @@ def englishMovieDetailsDatabase():
                         movies['trailer'] = "https://www.youtube.com/embed/{}".format(videoData['results'][j]['key'])
             else:
                 movies['trailer'] = None
-                
+
             dirList = []
             castList = []
             castId = 0
@@ -167,10 +190,10 @@ def englishMovieDetailsDatabase():
                     peopleDetails = json.loads(json.dumps(api.get("https://api.themoviedb.org/3/person/{}?api_key={}".format(movieCompleteDetailsResponse['credits']['cast'][castId]['id'],api_key)).json()))
                     castDict['imdb_profile_url'] = "https://www.imdb.com/name/nm{}".format(peopleDetails['imdb_id'][2:])
                     castList.append(castDict)
-                    castId = castId+1  
-            
+                    castId = castId+1
+
             # castFlag = True
-            
+
             # while(castFlag):
             #     if(len(movieCompleteDetailsResponse['credits']['cast'])<=4):
             #         #if(movieCompleteDetailsResponse['credits']['cast'][castId]['profile_path']!=None):
@@ -197,7 +220,7 @@ def englishMovieDetailsDatabase():
             #         if(castId == 4):
             #             castFlag == False
             movies['cast'] = castList
-            
+
             for k in range(0,len(movieCompleteDetailsResponse['credits']['crew'])):
                 if(movieCompleteDetailsResponse['credits']['crew'][k]['job'] == "Director"):
                     dirDict = {}
@@ -207,14 +230,14 @@ def englishMovieDetailsDatabase():
                     peopleDetails = json.loads(json.dumps(api.get("https://api.themoviedb.org/3/person/{}?api_key={}".format(movieCompleteDetailsResponse['credits']['crew'][k]['id'],api_key)).json()))
                     dirDict['imdb_profile_url'] = "https://www.imdb.com/name/nm{}".format(peopleDetails['imdb_id'][2:])
                     dirList.append(dirDict)
-            
+
             movies['directors'] = dirList
-            
+
             movies['imdb_id'] = "https://www.imdb.com/title/{}/".format(movieCompleteDetailsResponse['imdb_id'])
             movies['runtime'] = movieCompleteDetailsResponse['runtime']
-            
+
             col_2.insert_one(movies)
-            
+
         else:
             not_Added.append(movieTitles[i])
     return not_Added
@@ -261,6 +284,21 @@ def addCountries():
 
 addCountries()
 
+def addCountriesAndCodes():
+    client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
+    db=client['SWMDB']
+    col = db['countries']
+    input_file = pd.read_csv("country_names_codes.csv")
+    
+    for i in range(len(input_file)):
+        countries = {}
+        countries["_id"] = i + 1
+        countries["countryName"] = input_file.loc[i,"Name"]
+        countries["countryCode"] = input_file.loc[i,"Code"]
+        col.insert_one(countries)
+
+addCountriesAndCodes()
+
 def addLanguages():
     client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
     db=client['SWMDB']
@@ -289,7 +327,7 @@ def changePosterSize():
     records = col_2.find({},{"title":1,"_id":1,"release_year":1})
     for i in records:
         movieDetailsUrl = "https://api.themoviedb.org/3/search/movie?api_key={}&query={}&include_adult={}&year={}".format(api_key,i['title'],True,i['release_year'])
-        movieDetails_1 = json.loads(json.dumps(api.get(movieDetailsUrl).json()))  
+        movieDetails_1 = json.loads(json.dumps(api.get(movieDetailsUrl).json()))
         if(len(movieDetails_1['results'])!=0):
             query = {"_id":{"$eq":i["_id"]}}
             replacement = {"$set":{"poster_path":posterPathURL_L.format(movieDetails_1['results'][0]['poster_path'])}}
@@ -333,12 +371,12 @@ def insertReviews():
             print(i['tmdb_id'])
             for j in range(0,len(reviewURLResponse['results'])):
                 reviewData = {}
-                
+
                 if(col_3.find({}).count()==0):
                     reviewData["_id"] = 1
                 else:
                     reviewData["_id"] = [c['_id'] for c in col_3.find({}).sort("_id",-1).limit(1)][0]+1
-                
+
                 reviewData['movie_id'] = i["_id"]
                 reviewData['title'] = i['title']
                 reviewData['author'] = reviewURLResponse['results'][j]['author']
@@ -349,8 +387,3 @@ def insertReviews():
                 col_3.insert_one(reviewData)
 
 insertReviews()
-                
-            
-                
-        
-    
