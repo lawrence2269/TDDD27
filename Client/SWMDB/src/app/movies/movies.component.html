@@ -86,7 +86,12 @@
             </div>
         </div>
         <div align="center">
-            <h4 style="color: white; margin-top: 30px;" *ngIf="result.length === 0">No movies found...</h4>
+            <ng-container *ngIf="result.length === 0">
+                <h4 style="color: white; margin-top: 30px;">No movies found !</h4>
+                <br/>
+                <button mat-raised-button>Request Movie</button>
+            </ng-container>
+            
         </div>
     </ng-container>
     

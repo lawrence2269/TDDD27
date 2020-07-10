@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';  
 import {MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-movie',
@@ -40,7 +41,7 @@ export class MovieComponent implements OnInit {
   starRating:number;
 
   constructor(private route: ActivatedRoute,private router: Router,private movieService: MovieService,
-    private sanitizer: DomSanitizer,private matDialog: MatDialog) { 
+    private sanitizer: DomSanitizer,private matDialog: MatDialog,public datepipe: DatePipe) { 
 
     this.router.events.subscribe((e)=>{
       if(e instanceof NavigationEnd){
@@ -67,31 +68,33 @@ export class MovieComponent implements OnInit {
   ngOnInit(): void {
     let temp:number = 0;
     this.movieService.getMovieDetails(this.title,this.year).subscribe((data)=>{
-        this.genre = data.movieDetails.genre;
-        this.adult_Content = data.movieDetails.adult_Content;
-        this.poster_path = data.movieDetails.poster_path;
-        this.runTime = this.runTimeConversion(data.movieDetails.runtime);
-        this.synopsis = data.movieDetails.synopsis;
-        this.trailer = this.sanitizer.bypassSecurityTrustResourceUrl(data.movieDetails.trailer);
-        this.trailerString = data.movieDetails.trailer;
-        this.tmdb_id = data.movieDetails.tmdb_id;
-        this.imdb_id = data.movieDetails.imdb_id
-        this.rating = data.movieDetails.rating;
-        this.like_count = data.movieDetails.likes;
-        this.yify_id = data.movieDetails.yify_id;
-        this.runTimeServer = data.movieDetails.runtime
-        data.movieDetails.cast.forEach(elements=>{
+        this.genre = data.movieDetails[0]['genre'];
+        this.adult_Content = data.movieDetails[0]['adult_Content'];
+        this.poster_path = data.movieDetails[0]['poster_path'];
+        this.runTime = this.runTimeConversion(data.movieDetails[0]['runtime']);
+        this.synopsis = data.movieDetails[0]['synopsis'];
+        this.trailer = this.sanitizer.bypassSecurityTrustResourceUrl(data.movieDetails[0]['trailer']);
+        this.trailerString = data.movieDetails[0]['trailer'];
+        this.tmdb_id = data.movieDetails[0]['tmdb_id'];
+        this.imdb_id = data.movieDetails[0]['imdb_id'];
+        this.rating = data.movieDetails[0]['rating'];
+        this.like_count = data.movieDetails[0]['likes'];
+        this.yify_id = data.movieDetails[0]['yify_id'];
+        this.runTimeServer = data.movieDetails[0]['runtime']
+        
+        data.movieDetails[0]['cast'].forEach(elements=>{
           this.castNames.push(elements.name);
           this.characterNames.push(elements.character_name);
           this.castProfileURL.push(elements.imdb_profile_url);
           this.castImageURL.push(elements.cast_image_url)
         });
-        data.movieDetails.directors.forEach(elements=>{
+        data.movieDetails[0]['directors'].forEach(elements=>{
           this.directorNames.push(elements.name);
           this.directorImageURL.push(elements.cast_image_url);
           this.directorProfileURL.push(elements.imdb_profile_url);
         });
-        this.movieService.getSimilarMovies(data.movieDetails.tmdb_id).subscribe((data)=>{
+        
+        this.movieService.getSimilarMovies(data.movieDetails[0]['tmdb_id']).subscribe((data)=>{
           data.similarMovies.forEach(elements=>{
             this.similar_Movies_Poster_Path.push(elements.poster_path);
             this.similar_Movies_Title.push(elements.title);

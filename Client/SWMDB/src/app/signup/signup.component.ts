@@ -57,9 +57,7 @@ export class SignupComponent implements OnInit{
 
       if(res['message'] == "Success"){
           console.log(res);
-          // alert("User has been created");
           this.msg= "User has been created"
-          //const dialogConfig = new MatDialogConfig();
           this.matDialog.open(DialogBodyComponent,{
             data:{message:this.msg,name:"User Registration - Success"}
           })
@@ -67,10 +65,8 @@ export class SignupComponent implements OnInit{
       }
       else{
         console.log(res);
-        // alert("User already exists, please check your email Id....");
         this.msg= "User already exists, please check the email Id";
         this.emailField.nativeElement.focus();
-        //const dialogConfig = new MatDialogConfig();
         this.matDialog.open(DialogBodyComponent,{
             data:{message:this.msg,name:"User Registration - Failed"}
         });

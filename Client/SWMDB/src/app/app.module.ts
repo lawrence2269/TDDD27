@@ -33,6 +33,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import { DialogBodyComponent } from './dialog-body/dialog-body.component';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     SignupService,
     HomeService,
     MovieService,
-    MoviesService
+    MoviesService,
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })

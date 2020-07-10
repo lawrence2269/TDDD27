@@ -6,7 +6,7 @@
         <div id="movieContent" class="col-xs-6">
             <h3 style="color: white;" class="text-wrap">{{title}}</h3>
             <br>
-            <h4 style="color: white;">{{year}}</h4>
+            <h4 style="color: white;">{{year}}</h4> <br>
             <h4 style="color: white;">{{genre}}</h4>
             <h4 *ngIf="runTimeServer != 0;else noRunTime" style="color: white;">{{runTime}}</h4>
             <ng-template #noRunTime>
@@ -118,7 +118,7 @@
                         <ng-container *ngFor="let review of reviewsList,let i = index;trackBy:trackByRating">
                             <input type="hidden" [(ngModel)] = "starRating" value="{{trackByRating(i,review)}}"/>
                             <div>
-                                <p style="margin-left:10px;margin-top: 10px;margin-right:10px;color: white;" align="justify">{{review.reviewStmt}}</p> 
+                                <p style="margin-left:10px;margin-top: 10px;margin-right:10px;color: white;" align="justify">{{review.review}}</p> 
                                 <br>
                                 <div class="row">
                                     <div class="col-sm-2" style="margin-left:10px;margin-bottom: -15px; margin-top: -15px;">
@@ -133,10 +133,11 @@
                                         <ngb-rating [(rate)]="starRating" [starTemplate]="t" [readonly]="true" [max]="10"></ngb-rating>
                                     </div>
                                     <div class="col-sm-2" style="margin-left:-10px;margin-bottom: -15px; margin-top: -15px;">
-                                        <strong style="color: white;">{{starRating}}</strong>
+                                        <strong style="color: white;">{{review.userRating}}</strong>
                                     </div>
                                     <div class="col-sm-2" style="margin-left:-80px;margin-bottom: -15px; margin-top: -15px;">
-                                        <i style="color: white;">{{review.dated}}</i> 
+                                        <!-- <i style="color: white;">{{review.createdAt}}</i>  -->
+                                        <i style="color: white;">{{datepipe.transform(review.createdAt,'dd-MM-yyyy')}}</i>
                                     </div>
                                 </div>
                                 <hr class="dividerTrailer">

@@ -1,5 +1,5 @@
 import { Component, OnInit} from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { MoviesService } from './movies.service';
 
@@ -85,5 +85,9 @@ export class MoviesComponent implements OnInit {
 
   onPageChange($event) {
     this.collection =  this.collection_temp.slice($event.pageIndex*$event.pageSize, $event.pageIndex*$event.pageSize + $event.pageSize);
+  }
+
+  requestMovie():void{
+    sessionStorage.getItem("loginStatus")
   }
 }
