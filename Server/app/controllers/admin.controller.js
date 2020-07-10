@@ -5,30 +5,6 @@ const apiConfig  = require('../helpers/api.config.js');
 const url = require('url');
 const requestMovies = require('../models/requestmovies.model.js');
 
-exports.deactivateUser = async (req,res) =>{
-    var status = "inactive";
-    var uid = 0;
-
-    await users.find({'email_id':req.body.email}).select({"_id":1}).lean().exec().then(data=>{
-        uid = data[0]["_id"]
-    }).catch(err=>{
-        console.log(err)
-    })
-
-    var data = {
-        status : status
-    }
-    users.findByIdAndUpdate(uid,data).lean().exec(function(err,result){
-        if(err){
-            res.status(500).json({"message":err});
-        }
-        else
-        {
-            res.status(200).json({"message":"User's account deactivated successfully"});
-        }
-    });
-}
-
 exports.getUsers = (req,res) =>{
     users.find({"_id":{"$ne":1},"status":{"$ne":"inactive"}}).select({"_id":0,"username":1,"email_id":1,"role":1}).lean().exec().then(data=>{
         res.status(200).json({"users":data});

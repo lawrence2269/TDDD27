@@ -13,7 +13,7 @@ module.exports = (app) =>{
     app.post("/changepwd",usersController.changePassword);
 
     //Deactivate user
-    app.post("/admin/deactivate",adminController.deactivateUser);
+    app.post("/deactivate",usersController.deactivateUser);
 
     //Retrieve list of users
     app.get("/admin/users",adminController.getUsers);

@@ -31,7 +31,7 @@ exports.login = async (req,res) =>{
     else{
         var result = {};
         result['message'] = "User doesn't exist, please register";
-        res.status(401).json({"userData":result});
+        res.status(404).json({"userData":result});
     }
 }
 
@@ -93,6 +93,30 @@ exports.changePassword = async (req,res) =>{
         else
         {
             res.status(200).json({"message":"Password changed successfully"});
+        }
+    });
+}
+
+exports.deactivateUser = async (req,res) =>{
+    var status = "inactive";
+    var uid = 0;
+
+    await users.find({'email_id':req.body.email}).select({"_id":1}).lean().exec().then(data=>{
+        uid = data[0]["_id"]
+    }).catch(err=>{
+        console.log(err)
+    })
+
+    var data = {
+        status : status
+    }
+    users.findByIdAndUpdate(uid,data).lean().exec(function(err,result){
+        if(err){
+            res.status(500).json({"message":err});
+        }
+        else
+        {
+            res.status(200).json({"message":"User's account deactivated successfully"});
         }
     });
 }
