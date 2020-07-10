@@ -7,7 +7,7 @@
             <form [formGroup] = "loginForm">
                 <mat-form-field class="form-field" appearance="outline">
                     <mat-label> E-mail</mat-label>
-                    <input matInput formControlName="loginEmail" placeholder="Email Address" #email required>
+                    <input matInput formControlName="loginEmail" #lo placeholder="Email Address" #email required>
                     <mat-error *ngIf="loginForm.controls.loginEmail.touched && loginForm.controls.loginEmail.invalid">
                       <span *ngIf="loginForm.controls.loginEmail.errors.required">This field is mandatory.</span>
                     </mat-error>
@@ -17,7 +17,7 @@
                   </mat-form-field>
                   <mat-form-field class="form-field" appearance="outline">
                     <mat-label>Password</mat-label>
-                    <input matInput formControlName="password" [type]="hide ? 'password' : 'text'" placeholder="Password" required/>
+                    <input matInput formControlName="password" #pwd [type]="hide ? 'password' : 'text'" placeholder="Password" required/>
                     <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                     <mat-error *ngIf="loginForm.controls.password.touched && loginForm.controls.password.invalid">
                         <span *ngIf="loginForm.controls.password.errors?.required">This field is mandatory.</span>
