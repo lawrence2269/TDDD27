@@ -13,7 +13,6 @@ movie they are going to watch in the future. Some of the reviews are posted by u
 reviews about a movie is got from other sites such as IMDB, TMDB, and et cetera.</div>
 
 <br>
-<br>
 
 <div style="text-align: justify">The user can login through username and password or OAuth login from Facebook/Google. Reviews,
 movie names, etc. from other sites are obtained through API handling. These APIs' are provided by the respective websites related to movies. The user can also filter the reviews based on different parameters like age, gender, etc. Most of the movie review webistes show only English movies first and show other language movies later.
