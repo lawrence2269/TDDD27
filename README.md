@@ -22,11 +22,12 @@ reading all the reviews and understanding about it.
 
 # Technical Specification
 ## Main Tools
-* <b>Client-Side Framework : </b>Angular
-* <b>Back-end Framework : </b>Python Flask Rest Framework
+* <b>Client-Side Framework : </b>Angular 9
+* <b>Back-end Framework : </b>Node.js and Express.js
 * <b>Database : </b>MongoDB Atlas
 * <b>Deployment : </b>Heroku
 
 ## Extra Tool(s)
 * <b> Testing Back-end :</b> Postman
-* <b> Editor :</b> VSCode and Atom
+* <b> Editor :</b> VSCode
+* <b> Database IDE : </b> Robo 3T
