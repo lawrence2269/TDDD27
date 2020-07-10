@@ -1,0 +1,22 @@
+module.exports = {
+    api_key : '818cffde0b1e6749199b67fee1cbd032',
+    upcomingMovieURL : "https://api.themoviedb.org/3/movie/upcoming",
+    posterPathURL : "http://image.tmdb.org/t/p/w185",
+    nowPlayingMovieURL : "https://api.themoviedb.org/3/movie/now_playing",
+    tmdbSimilarMoviesURL : "https://api.themoviedb.org/3/movie/",
+    popularMovieURL : "https://api.themoviedb.org/3/movie/popular",
+    genreDetailURL : "https://api.themoviedb.org/3/genre/movie/list",
+    movieSearchURL : "https://api.themoviedb.org/3/search/movie",
+    posterPathURL_L : "http://image.tmdb.org/t/p/w342",
+    cast_image_url : "https://i.ibb.co/XShk8Pg/no-user-profile.png",
+    tmdbVideoURL : "https://api.themoviedb.org/3/movie/",
+    youtubeTrailerURL : "https://www.youtube.com/embed/",
+    yifyListMoviesURL : "https://yts.mx/api/v2/list_movies.json?query_term=",
+    tmdbMovieDetailsURL : "https://api.themoviedb.org/3/movie/",
+    profilePathURL : "https://image.tmdb.org/t/p/w45",
+    castImageURL : "https://i.ibb.co/XShk8Pg/no-user-profile.png",
+    peopleProfileURL : "https://api.themoviedb.org/3/person/",
+    imdbProfileURL : "https://www.imdb.com/name/",
+    tmdbProfileURL : "https://image.tmdb.org/t/p/original",
+    imdb_URL : "https://www.imdb.com/title/"
+}
