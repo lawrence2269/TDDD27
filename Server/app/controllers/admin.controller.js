@@ -6,7 +6,7 @@ const url = require('url');
 const requestMovies = require('../models/requestmovies.model.js');
 
 exports.getUsers = (req,res) =>{
-    users.find({"_id":{"$ne":1},"status":{"$ne":"inactive"}}).select({"_id":0,"username":1,"email_id":1,"role":1}).lean().exec().then(data=>{
+    users.find({"role":{"$eq":"user"},"status":{"$ne":"inactive"}}).select({"_id":0,"username":1,"email_id":1,"role":1}).lean().exec().then(data=>{
         res.status(200).json({"users":data});
     }).catch(err=>{
         res.status(500).json({"users":"Unable to retrieve list of users"});

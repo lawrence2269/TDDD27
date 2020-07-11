@@ -65,4 +65,7 @@ module.exports = (app) =>{
 
     //Retrieve details about a movie.
     app.get("/movieDetails",moviesController.getMovieDetails);
+
+    //sample
+    app.post("/sample",usersController.changePwd);
 }

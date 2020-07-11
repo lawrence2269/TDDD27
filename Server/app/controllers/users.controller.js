@@ -97,6 +97,14 @@ exports.changePassword = async (req,res) =>{
     });
 }
 
+exports.changePwd = async (req,res) =>{
+    await users.find({'email_id':req.body.email}).lean().exec().then(data=>{
+        res.send({"data":data.length})
+    }).catch(err=>{
+        console.log(err)
+    })
+}
+
 exports.deactivateUser = async (req,res) =>{
     var status = "inactive";
     var uid = 0;
@@ -119,4 +127,8 @@ exports.deactivateUser = async (req,res) =>{
             res.status(200).json({"message":"User's account deactivated successfully"});
         }
     });
+}
+
+exports.forgotPwd = (req,res) =>{
+
 }
