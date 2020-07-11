@@ -4,3 +4,11 @@
 .navbar-text{
     color:#ffffff
 }
+
+a{
+    cursor: pointer;
+}
+
+.dropdown-item:hover{
+    background-color: #0275d8;
+}

@@ -1,0 +1,64 @@
+<div class="example-container">
+    <mat-card class="mat-elevation-z14" style="width: 55%; margin-top:10px">
+        <mat-card-header style="justify-content: center;">
+            <mat-card-title>Request a movie</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <form [formGroup] = "requestMovieForm">
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>EmailId</mat-label>
+                    <input matInput formControlName="emailId" placeholder="Your Email ID" required readonly/>
+                    <mat-error *ngIf="requestMovieForm.controls.emailId.touched && requestMovieForm.controls.emailId.invalid">
+                        <span *ngIf="requestMovieForm.controls.emailId.errors.required">This field is mandatory.</span>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>Title</mat-label>
+                    <input matInput formControlName="title" placeholder="Movie title" required/>
+                    <mat-error *ngIf="requestMovieForm.controls.title.touched && requestMovieForm.controls.title.invalid">
+                        <span *ngIf="requestMovieForm.controls.title.errors.required">This field is mandatory.</span>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>Release Year</mat-label>
+                    <mat-select formControlName="releaseYear" required placeholder="Release Year">
+                        <mat-option *ngFor="let r of release_year" [value]="r">
+                            {{r}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="requestMovieForm.controls.releaseYear.touched && requestMovieForm.controls.releaseYear.invalid">
+                        <span *ngIf="requestMovieForm.controls.releaseYear.errors.required">This field is mandatory.</span>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>Language</mat-label>
+                    <mat-select formControlName="movieLanguage" required placeholder="Language">
+                        <mat-option *ngFor="let l of languages" [value]="l['languageCode']">
+                            {{l['languageName']}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="requestMovieForm.controls.movieLanguage.touched && requestMovieForm.controls.movieLanguage.invalid">
+                        <span *ngIf="requestMovieForm.controls.movieLanguage.errors.required">This field is mandatory.</span>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>Country</mat-label>
+                    <mat-select formControlName="countryReleased" required placeholder="Country">
+                        <mat-option *ngFor="let c of countries" [value]="c">
+                            {{c}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="requestMovieForm.controls.countryReleased.touched && requestMovieForm.controls.countryReleased.invalid">
+                        <span *ngIf="requestMovieForm.controls.countryReleased.errors.required">This field is mandatory.</span>
+                    </mat-error>
+                  </mat-form-field>
+            </form>
+        </mat-card-content>
+        <mat-card-actions>
+            <button mat-raised-button color="primary" style="border: none;outline: none;" [disabled]="requestMovieForm.invalid" (click)="requestMovie()">Request</button>
+            <button mat-raised-button color="warn" style="border: none;outline: none;" (click)="requestMovieForm.reset()">Cancel</button>
+            <br>
+            <br>
+        </mat-card-actions>
+    </mat-card>
+</div>

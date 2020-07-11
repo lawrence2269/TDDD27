@@ -11,23 +11,23 @@ import { DatePipe } from '@angular/common';
   styleUrls: ['./movie.component.css']
 })
 export class MovieComponent implements OnInit {
-  title:String = "";
+  title:string = "";
   year:number = 0;
-  genre:String = "";
-  adult_Content:String = "";
-  poster_path:String = "";
-  runTime:String = "";
-  synopsis:String = "";
+  genre:string = "";
+  adult_Content:string = "";
+  poster_path:string = "";
+  runTime:string = "";
+  synopsis:string = "";
   trailer:SafeResourceUrl;
   tmdb_id:number = 0;
-  imdb_id:String = "";
+  imdb_id:string = "";
   rating:number = 0;
   like_count:number = 0;
   yify_id:number = 0;
   similar_Movies_Poster_Path:any = [];
   similar_Movies_Title:any = [];
   similar_Movies_Year:any = [];
-  trailerString:String= "";
+  trailerString:string= "";
   mySubscription: any;
   runTimeServer:any;
   castNames:any = [];
@@ -109,7 +109,7 @@ export class MovieComponent implements OnInit {
     });
   }
 
-  public runTimeConversion(value:number):String{
+  public runTimeConversion(value:number):string{
     let hours = (value/60);
     let rhours = Math.floor(hours);
     let minutes = (hours-rhours)*60;
@@ -117,13 +117,13 @@ export class MovieComponent implements OnInit {
     return rhours+" hour(s) and "+rminutes+" minute(s)";
   }
 
-  public similarMovieClick(value1:String,value2:number):void{
+  public similarMovieClick(value1:string,value2:number):void{
     this.router.navigateByUrl('/movie',{skipLocationChange:true}).then(()=>{
       this.router.navigate(['/movie'],{queryParams:{title:value1,year:value2}});
     });
   }
 
-  public deleteReview(value1:String,value2:String):void{
+  public deleteReview(value1:string,value2:string):void{
     console.log(value1+"\t"+value2);
   }
 

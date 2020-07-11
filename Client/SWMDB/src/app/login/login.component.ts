@@ -16,11 +16,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   hide: boolean;
   msg:string;
-  region:string;
-  loggedIn:string;
-  role:string;
-  userName:string;
-  token:string;
+  invalidLogin: boolean;
   
 
   @ViewChild("pwd") passwordField:ElementRef;
@@ -32,11 +28,6 @@ export class LoginComponent implements OnInit {
       password : new FormControl(null, [Validators.required])
     });
     this.hide=true;
-    this.region = " ";
-    this.loggedIn = "No";
-    this.role = " ";
-    this.userName = " ";
-    this.token = " ";
   }
 
   ngOnInit(): void {
@@ -47,58 +38,37 @@ export class LoginComponent implements OnInit {
   }
 
   public loginUser():void{
-    this.loginService.doLogin(this.loginForm.value).subscribe(res =>{
-     
-      this.region = res['userData']['countryCode'];
-      this.role = res['userData']['role'];
-      this.userName = res['userData']['username'];
-      this.token = res['userData']['token'];
-      this.loggedIn = "Yes";
-      console.log("Inside loginuser method");
-
-      //Setting the above values in local storage for further access
-      localStorage.setItem("region",this.region);
-      localStorage.setItem("role",this.role);
-      localStorage.setItem("username",this.userName);
-      localStorage.setItem("token",this.token);
-      localStorage.setItem("isLoggedIn",this.loggedIn);
-      sessionStorage.setItem("temp",this.loggedIn);
-      sessionStorage.setItem("username",this.userName);
-
-      this.loginService.broadcastLoginChange(this.userName);
-      this.router.navigate(["/"]);
-      
-    },error =>{
-      if(error.status == 401){
-        this.msg = "Email ID or password is wrong, Please check and try again";
-        localStorage.setItem("isLoggedIn",this.loggedIn);
-        this.emailField.nativeElement.focus();
-        this.matDialog.open(DialogBodyComponent,{
-          data:{message:this.msg,name:"Login - Failed"}
-        });
-        
-      }
-      else if(error.status == 404){
-        
-        localStorage.setItem("isLoggedIn",this.loggedIn);
-        console.log(localStorage.getItem("isLoggedIn"));
-        this.msg = "User Account doesn't exists, please register and login";
-        this.matDialog.open(DialogBodyComponent,{
-          data:{message:this.msg,name:"Login - Failed"}
-        });
-        this.reset();
-      }
-      else{
-        this.msg = "Some error occurred!. Please contact admin";
-        localStorage.setItem("isLoggedIn",this.loggedIn);
-        this.matDialog.open(DialogBodyComponent,{
-          data:{message:this.msg,name:"Login - Failed"}
-        });
-        this.reset();
-      }
-    });
-  }
-
-  
+      this.loginService.doLogin(this.loginForm.value).subscribe(result =>{
+            this.invalidLogin = false;
+            this.router.navigateByUrl("/");
+      },error =>{
+            if(error.status == 401){
+              this.invalidLogin = true;
+              this.msg = "Email ID or password is wrong, Please check and try again";
+              this.emailField.nativeElement.focus();
+              this.matDialog.open(DialogBodyComponent,{
+                data:{message:this.msg,name:"Login - Failed"}
+              });
+              
+            }
+            else if(error.status == 404){
+              console.log(localStorage.getItem("isLoggedIn"));
+              this.invalidLogin = true;
+              this.msg = "User Account doesn't exists, please register and login";
+              this.matDialog.open(DialogBodyComponent,{
+                data:{message:this.msg,name:"Login - Failed"}
+              });
+              this.reset();
+            }
+            else{
+              this.invalidLogin = true;
+              this.msg = "Some error occurred!. Please contact admin";
+              this.matDialog.open(DialogBodyComponent,{
+                data:{message:this.msg,name:"Login - Failed"}
+              });
+              this.reset();
+            }
+       });
+    }
 }
 

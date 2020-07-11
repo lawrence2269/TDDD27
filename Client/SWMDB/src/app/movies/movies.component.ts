@@ -79,7 +79,7 @@ export class MoviesComponent implements OnInit {
     });
 }
 
-  movieDetails(title:String,year:number):void{
+  movieDetails(title:string,year:number):void{
     this.router.navigate(['/movie'],{queryParams:{title:title,year:year}});
   }
 

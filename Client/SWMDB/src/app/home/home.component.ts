@@ -23,16 +23,16 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void 
   {
     let region = "";
-    if(sessionStorage.getItem("region") == null)
+    if(localStorage.getItem("region") == null || localStorage.getItem("region") == undefined || localStorage.getItem("region") == " ")
     {
-        sessionStorage.setItem("region","US");
+        localStorage.setItem("region","US");
         region = "US";
-        console.log(sessionStorage.getItem("region"));
+        console.log(localStorage.getItem("region"));
     }
     else
     {
-        region = sessionStorage.getItem("region");
-        console.log(sessionStorage.getItem("region"));
+        region = localStorage.getItem("region");
+        console.log(localStorage.getItem("region"));
     }
     this.homeService.getPopularMovies(region).subscribe((data)=>{
       data.popularMovies.forEach(elements=>{
@@ -59,17 +59,17 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  public popularMovieClick(title:String,year:number):void{
+  public popularMovieClick(title:string,year:number):void{
     console.log(title);
     this.router.navigate(['/movie'],{queryParams:{title:title,year:year}});
   }
 
-  public playingMovieclick(title:String,year:number) : void{
+  public playingMovieclick(title:string,year:number) : void{
     console.log(title);
     this.router.navigate(['/movie'],{queryParams:{title:title,year:year}});
   }
 
-  public upcomingMovieClick(title:String,year:number) : void{
+  public upcomingMovieClick(title:string,year:number) : void{
     console.log(title);
     this.router.navigate(['/movie'],{queryParams:{title:title,year:year}});
   }

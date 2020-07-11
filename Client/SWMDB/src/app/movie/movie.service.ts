@@ -12,7 +12,7 @@ export class MovieService {
 
   constructor(private http: HttpClient) { }
 
-  getMovieDetails(title:String,year:number):Observable<any>{
+  getMovieDetails(title:string,year:number):Observable<any>{
     let params = new HttpParams({fromString:'title='+title+"&year="+year});
     return this.http.get(localUrl+"/movieDetails",{params});
   }
@@ -22,7 +22,7 @@ export class MovieService {
     return this.http.get(localUrl+"/similarmovies",{params});
   }
 
-  getReviews(value:String):Observable<any>{
+  getReviews(value:string):Observable<any>{
     let params = new HttpParams({fromString:'title='+value});
     return this.http.get(localUrl+"/userreviews",{params});
   }

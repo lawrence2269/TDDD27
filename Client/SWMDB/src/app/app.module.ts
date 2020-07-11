@@ -34,6 +34,7 @@ import { DialogBodyComponent } from './dialog-body/dialog-body.component';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DatePipe } from '@angular/common';
+import { MovieRequestComponent } from './movie-request/movie-request.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { DatePipe } from '@angular/common';
     BsNavbarComponent,
     MovieComponent,
     MoviesComponent,
-    DialogBodyComponent
+    DialogBodyComponent,
+    MovieRequestComponent
   ],
   imports: [
     BrowserModule,
@@ -73,7 +75,8 @@ import { DatePipe } from '@angular/common';
       {path: 'login', component:LoginComponent},
       {path: 'signup', component:SignupComponent},
       {path: 'movies',component:MoviesComponent},
-      {path: 'movie',component:MovieComponent}
+      {path: 'movie',component:MovieComponent},
+      {path: 'movierequest',component:MovieRequestComponent}
     ]),
     NgbModule
   ],
