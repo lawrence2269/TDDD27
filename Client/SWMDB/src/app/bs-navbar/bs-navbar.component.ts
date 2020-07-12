@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../login/login.service';
 import { Observable } from 'rxjs';
+import { BsNavbarService } from './bs-navbar.service';
+import { DialogBodyComponent } from '../dialog-body/dialog-body.component';
+import {MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { ConfirmationDialogService } from '../confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   selector: 'bs-navbar',
@@ -11,7 +16,9 @@ export class BsNavbarComponent implements OnInit {
   
   role:string;
   uname:string
-  constructor(private loginService:LoginService) { 
+  msg:string;
+  constructor(private loginService:LoginService,private bsNavbarService:BsNavbarService,private matDialog: MatDialog,
+    private router: Router,private confirmationDialogService: ConfirmationDialogService) { 
     this.role = '';
     this.uname = '';
   }
@@ -34,5 +41,29 @@ export class BsNavbarComponent implements OnInit {
 
   onLogout(){
     this.loginService.logout();
+  }
+
+  onDeactivateAcct(){
+    this.confirmationDialogService.confirm("Deactivation-Confirmation",'Are you sure to deactivate your account?').then((confirmed)=>{
+      if(confirmed){
+          var data = {"email":localStorage.getItem("userEmailId")};
+          this.bsNavbarService.doDeactivate(data).subscribe(result=>{
+            this.msg = result['message']+". If you want to activate your account, please log in.";
+            this.matDialog.open(DialogBodyComponent,{
+              data:{message:this.msg,name:"Deactivation - Successful"}
+            });
+          this.loginService.logout();
+          this.router.navigateByUrl("/");
+        },error=>{
+          this.msg = "Some problem in deactivating your account please try again";
+          this.matDialog.open(DialogBodyComponent,{
+            data:{message:this.msg,name:"Deactivation - Failed"}
+          });
+          this.router.navigateByUrl("/");
+        });
+      }
+    }).catch(()=>{
+      
+    })
   }
 }

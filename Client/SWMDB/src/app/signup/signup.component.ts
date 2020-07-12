@@ -15,8 +15,9 @@ export class SignupComponent implements OnInit{
   signUpForm: FormGroup;
   hide: boolean;
   userRegistration: boolean;
-  public signUpAlert:boolean;
+  //public signUpAlert:boolean;
   msg:string = " ";
+
   @ViewChild("email") emailField:ElementRef;
   emailRegx = /^(([^<>+()\[\]\\.,;:\s@"-#$%&=]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
   countries: any = [];
@@ -34,7 +35,7 @@ export class SignupComponent implements OnInit{
     });
     this.hide=true;
     this.userRegistration = false;
-    this.signUpAlert = false;
+    //this.signUpAlert = false;
    }
   ngOnInit(): void {
     this.signUpService.getCountriesList().subscribe((data)=>{
@@ -42,7 +43,7 @@ export class SignupComponent implements OnInit{
       this.countries = data['countries'];
       this.countries.sort();
     });
-    this.signUpAlert = false;
+    //this.signUpAlert = false;
   }
 
   public reset():void{

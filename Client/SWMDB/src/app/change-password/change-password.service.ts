@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class MovieRequestService {
+export class ChangePasswordService {
 
   constructor(private http: HttpClient) { }
 
@@ -13,7 +13,6 @@ export class MovieRequestService {
   private baseURL:string = 'https://swmdbapi.herokuapp.com';
 
   headers = new HttpHeaders({
-    //'Access-Control-Allow-Origin':'*',
     'access-token':localStorage.getItem("jwtToken")
   });
 
@@ -21,16 +20,8 @@ export class MovieRequestService {
     headers: this.headers 
   };
 
-  getLanguagesList(){
-    return this.http.get(this.baseURL+"/languages");
-  }
-
-  getReleaseYearList(){
-    return this.http.get(this.baseURL+"/years");
-  }
-
-  doRequestMovie(data:any){
-    return this.http.post<any>(this.baseURL+"/requestmovie",data,this.requestOptions).pipe(map(result=>{
+  doChgPassword(data:any){
+    return this.http.post<any>(this.baseURL+"/changepwd",data,this.requestOptions).pipe(map(result =>{
       return result;
     }));
   }

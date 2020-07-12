@@ -5,7 +5,6 @@ import {Router} from "@angular/router"
 import { LoginService } from './login.service';
 import { DialogBodyComponent } from '../dialog-body/dialog-body.component';
 import {MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +19,7 @@ export class LoginComponent implements OnInit {
   
 
   @ViewChild("pwd") passwordField:ElementRef;
-  @ViewChild("lo") emailField:ElementRef;
+  @ViewChild("logemail") emailField:ElementRef;
   emailRegx = /^(([^<>+()\[\]\\.,;:\s@"-#$%&=]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
   constructor(private formBuilder:FormBuilder,private router: Router,private loginService:LoginService,private matDialog: MatDialog) {
     this.loginForm = this.formBuilder.group({
@@ -46,10 +45,10 @@ export class LoginComponent implements OnInit {
               this.invalidLogin = true;
               this.msg = "Email ID or password is wrong, Please check and try again";
               this.emailField.nativeElement.focus();
+              this.passwordField.nativeElement.value = "";
               this.matDialog.open(DialogBodyComponent,{
                 data:{message:this.msg,name:"Login - Failed"}
               });
-              
             }
             else if(error.status == 404){
               console.log(localStorage.getItem("isLoggedIn"));

@@ -35,6 +35,8 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DatePipe } from '@angular/common';
 import { MovieRequestComponent } from './movie-request/movie-request.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +48,9 @@ import { MovieRequestComponent } from './movie-request/movie-request.component';
     MovieComponent,
     MoviesComponent,
     DialogBodyComponent,
-    MovieRequestComponent
+    MovieRequestComponent,
+    ConfirmationDialogComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -76,7 +80,8 @@ import { MovieRequestComponent } from './movie-request/movie-request.component';
       {path: 'signup', component:SignupComponent},
       {path: 'movies',component:MoviesComponent},
       {path: 'movie',component:MovieComponent},
-      {path: 'movierequest',component:MovieRequestComponent}
+      {path: 'movierequest',component:MovieRequestComponent},
+      {path: 'chgpassword',component:ChangePasswordComponent}
     ]),
     NgbModule
   ],

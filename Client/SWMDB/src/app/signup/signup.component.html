@@ -47,8 +47,8 @@
                   <mat-form-field class="form-field" appearance="outline">
                     <mat-label>Country</mat-label>
                     <mat-select formControlName="country" required placeholder="Country">
-                        <mat-option *ngFor="let c of countries" [value]="c">
-                            {{c}}
+                        <mat-option *ngFor="let c of countries" [value]="c['countryCode']">
+                            {{c['countryName']}}
                         </mat-option>
                     </mat-select>
                     <mat-error *ngIf="signUpForm.controls.country.touched && signUpForm.controls.country.invalid">
@@ -69,6 +69,7 @@
                   <mat-form-field class="form-field" appearance="outline" *ngIf="signUpForm.controls['password'].valid">
                     <mat-label>Confirm Password</mat-label>
                     <input matInput formControlName="confirmPassword" [type]="hide ? 'password' : 'text'" placeholder="Password" required/>
+                    <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                     <mat-error *ngIf="signUpForm.controls.confirmPassword.touched && signUpForm.controls.confirmPassword.invalid">
                         <span *ngIf="signUpForm.controls.confirmPassword.errors?.required">This field is mandatory.</span>
                     </mat-error>
