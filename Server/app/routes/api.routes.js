@@ -13,7 +13,7 @@ module.exports = (app) =>{
     app.post("/changepwd",usersController.changePassword);
 
     //Deactivate user
-    app.post("/deactivate",usersController.deactivateUser);
+    app.post("/deactivateacct",usersController.deactivateUser);
 
     //Retrieve list of users
     app.get("/admin/users",adminController.getUsers);
@@ -46,7 +46,7 @@ module.exports = (app) =>{
     app.get("/popularmovies",moviesController.popularMovies);
 
     //Request a movie
-    app.post("/requestmovie",moviesController.requestMovie);
+    app.post("/requestmovie",usersController.requestMovie);
 
     //Retrieve a list of genre
     app.get("/genre",moviesController.getGenre);
@@ -65,7 +65,4 @@ module.exports = (app) =>{
 
     //Retrieve details about a movie.
     app.get("/movieDetails",moviesController.getMovieDetails);
-
-    //sample
-    app.post("/sample",usersController.changePwd);
 }

@@ -114,45 +114,6 @@ exports.popularMovies = (req,res) =>{
     });
 }
 
-exports.requestMovie = async (req,res) =>{
-    var jwtToken = req.headers['access-token'];
-    if(jwtToken){
-        jwt.verify(jwtToken,jwtConfig.secret_key,async function(err,decoded){
-            if(err){
-                res.status(400).json({"message":"Failure"});
-            }
-            else{
-                if(await requestMovies.find({"title":{"$regex":req.body.title,'$options':'i'}}).countDocuments() == 0){
-                    const data = new requestMovies({
-                        userId : req.body.email_id,
-                        title : req.body.title,
-                        release_year : req.body.releaseYear,
-                        language : req.body.language,
-                        region : req.body.region
-                    });
-            
-                    data.save().then(result=>{
-                        if(result["_id"] !== ''){
-                            res.status(200).json({"message":"Success"});
-                        }
-                        else{
-                            res.status(400).json({"message":"Failure"});
-                        }
-                    }).catch(err =>{
-                        res.status(400).json({"message":"Failure"});
-                    })
-                }
-                else{
-                    res.status(500).json({"message":"Record already exists"});
-                }
-            }
-        });
-    }
-    else{
-        res.status(401).json({"message":"Unauthorized access"});
-    }
-}
-
 exports.getGenre = (req,res) =>{
     request(apiConfig.genreDetailURL+"?api_key="+apiConfig.api_key,{json:true},(err,resp,body)=>{
         var genreList = [];
@@ -245,7 +206,7 @@ exports.getYears = (req,res) =>{
 }
 
 exports.getCountries = (req,res) =>{
-    Countries.find({}).select({"countryName":1}).lean().exec(function(err, data){
+    Countries.find({}).select({"_id":0}).lean().exec(function(err, data){
         if(err){
             res.status(500).send({
                 message:err.message || "Some error occurred while retrieving countries."
@@ -253,11 +214,7 @@ exports.getCountries = (req,res) =>{
         }
         else
         {
-            let countries = [];
-            for(var i = 0;i<data.length;i++){
-                countries.push(data[i]['countryName'])
-            }
-            res.json({"countries":countries});
+            res.status(200).json({"countries":data});
         }
     });
 }
