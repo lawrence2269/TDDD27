@@ -2,12 +2,14 @@
     <mat-card class="mat-elevation-z14" style="width: 55%; margin-top:10px">
         <mat-card-header style="justify-content: center;">
             <mat-card-title>Login</mat-card-title>
+            <mat-card-subtitle><p style="text-align:center">Forgot your password? <a [routerLink]="" (click)="openFormModal()">Reset it!</a></p>
+            </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
             <form [formGroup] = "loginForm">
                 <mat-form-field class="form-field" appearance="outline">
                     <mat-label> E-mail</mat-label>
-                    <input matInput formControlName="loginEmail" #logemail placeholder="Email Address" #email required>
+                    <input matInput formControlName="loginEmail" #logemail placeholder="Email Address" required>
                     <mat-error *ngIf="loginForm.controls.loginEmail.touched && loginForm.controls.loginEmail.invalid">
                       <span *ngIf="loginForm.controls.loginEmail.errors.required">This field is mandatory.</span>
                     </mat-error>

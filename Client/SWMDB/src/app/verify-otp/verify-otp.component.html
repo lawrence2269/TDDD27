@@ -1,0 +1,27 @@
+<div class="modal-header">
+    <h4 class="modal-title">OTP Verification</h4>
+    <button type="button" class="close" aria-label="Close" (click)="verifyOTPmodal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  <div class="modal-body">
+    <p>Please enter the OTP received for your password reset</p>
+    <form [formGroup] = "verifyOtpForm">
+        <div class="example-container">
+            <mat-form-field class="form-field" appearance="outline">
+                <mat-label> OTP</mat-label>
+                <input matInput formControlName="otpNumber" placeholder="OTP Number" #otp required>
+                <mat-error *ngIf="verifyOtpForm.controls.otpNumber.touched && verifyOtpForm.controls.otpNumber.invalid">
+                  <span *ngIf="verifyOtpForm.controls.otpNumber.errors.required">This field is mandatory.</span>
+                </mat-error>
+                <mat-error *ngIf="verifyOtpForm.controls.otpNumber.touched && verifyOtpForm.controls.otpNumber.invalid">
+                  <span *ngIf="verifyOtpForm.controls.otpNumber.errors.pattern">Please enter a 6 digit OTP Number.</span>
+                </mat-error>
+              </mat-form-field>
+        </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary btn-raised" [disabled]="verifyOtpForm.invalid" (click)="checkOTPNumber()">Submit</button>
+    <button class="btn btn-danger btn-raised" (click)="verifyOTPmodal.dismiss()">Cancel</button>
+  </div>

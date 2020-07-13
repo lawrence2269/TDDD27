@@ -37,6 +37,9 @@ import { DatePipe } from '@angular/common';
 import { MovieRequestComponent } from './movie-request/movie-request.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { VerifyOTPComponent } from './verify-otp/verify-otp.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +53,10 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
     DialogBodyComponent,
     MovieRequestComponent,
     ConfirmationDialogComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    ForgotPasswordComponent,
+    VerifyOTPComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -81,7 +87,10 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
       {path: 'movies',component:MoviesComponent},
       {path: 'movie',component:MovieComponent},
       {path: 'movierequest',component:MovieRequestComponent},
-      {path: 'chgpassword',component:ChangePasswordComponent}
+      {path: 'chgpassword',component:ChangePasswordComponent},
+      {path: 'forgotpwd',component:ForgotPasswordComponent},
+      {path: 'verifyOTP',component:VerifyOTPComponent},
+      {path: 'resetpwd', component:ResetPasswordComponent}
     ]),
     NgbModule
   ],
@@ -92,6 +101,11 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
     MoviesService,
     DatePipe
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    ForgotPasswordComponent,
+    VerifyOTPComponent,
+    ResetPasswordComponent
+  ]
 })
 export class AppModule { }
