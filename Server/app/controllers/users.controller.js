@@ -1,9 +1,13 @@
 const users = require('../models/users.model.js');
 const countries = require('../models/countries.model.js');
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const jwtConfig = require('../helpers/jwt.config.js');
-var passwordHash = require('password-hash');
+const passwordHash = require('password-hash');
 const requestMovies = require('../models/requestmovies.model.js');
+const otpGenerator = require('otp-generator')
+const nodemailer = require('nodemailer');
+const apiConfig  = require('../helpers/api.config.js');
+const resetpwd = require("../models/resetpwd.model.js")
 
 exports.login = async (req,res) =>{
     if(await users.find({'email_id':req.body.loginEmail}).countDocuments()!==0){
@@ -211,4 +215,118 @@ exports.requestMovie = async (req,res) =>{
     else{
         res.status(401).json({"message":"Unauthorized access"});
     }
+}
+
+exports.forgotPwd = async (req,res) =>{
+    if(await users.find({'email_id':req.body.email}).countDocuments()!=0){
+        if(await resetpwd.find({"email_id":req.body.email}).countDocuments()==0){
+            otpConfig(req,res);
+            res.status(200).json({"message":"Email sent."});
+        }
+        else{
+            var id;
+            var otpDate;
+            await resetpwd.find({"email_id":req.body.email}).lean().exec().then(result=>{
+                id = result[0]["_id"];
+                otpDate = result[0]["created_at"];
+            }).catch((error)=>{
+                res.status(500).json({"message":"Failure"});
+            });
+            
+            if(Math.abs(new Date().getMinutes()-new Date(otpDate).getMinutes())<2){
+                res.status(409).json({"message":"OTP already sent to your registered email ID. Please check your email."});
+            }
+            else{
+                resetpwd.findByIdAndDelete({"_id":id}).lean().exec().then(result=>{
+                    otpConfig(req,res);
+                    res.status(200).json({"message":"Email sent."});
+                }).catch(error=>{
+                    res.status(500).json({"message":"Failure"});
+                });
+            }
+        }
+    }
+    else{
+        res.status(404).json({"message":"User doesn't exist, please register"});
+    }
+}
+
+otpConfig = function (req,res){
+    const otp = otpGenerator.generate(6, { upperCase: false, specialChars: false ,alphabets:false});
+
+    const resetData = new resetpwd({
+        email_id : req.body.email,
+        otp:otp,
+        createAt: new Date()
+    });
+
+    resetData.save().then(result=>{
+        if(result){
+            var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                user: apiConfig.emailId,
+                pass: apiConfig.emailPwd
+                }
+            });
+
+            var mailOptions = {
+                from: apiConfig.emailId,
+                to: req.body.email,
+                subject: 'OTP (One Time Password) for password reset.',
+                html: '<h4>Hello!</h4><p>Please use the below OTP to reset your password and this OTP is valid only for 2 minutes</p><br>'+
+                    '<b>'+otp+'</b><br><br><b>Regards</b><br>SWMDB Team'
+            };
+
+            transporter.sendMail(mailOptions, function(error, info){});
+        }
+    }).catch(error=>{
+        res.status(500).json({"message":"Some error occurred."})
+    });
+}
+
+exports.checkOTP = async (req,res) =>{
+    var id;
+    var otp = 0;
+    var otpDate;
+    await resetpwd.find({"email_id":req.body.resetEmail}).lean().exec().then(result=>{
+        id = result[0]["_id"];
+        otp = result[0]["otp"];
+        otpDate = result[0]["created_at"];
+    });
+
+    if(otp == req.body.otp && Math.abs(new Date().getMinutes()-new Date(otpDate).getMinutes())<2){
+
+        resetpwd.findByIdAndDelete({"_id":id}).lean().exec().then(result=>{
+            otpConfig(req,res);
+            res.status(200).json({"message":"Success"});
+        }).catch(error=>{
+            res.status(500).json({"message":"Failure"});
+        });
+    }
+    else{
+        res.status(409).json({"message":"OTP doesn't match or expired OTP"});
+    }
+}
+
+exports.resetPassword = async (req,res) =>{
+    var id;
+    await users.find({"email_id":req.body.email}).lean().exec().then(result=>{
+        id = result[0]["_id"];
+        var data = {
+            password : passwordHash.generate(req.body.password)
+        }
+    
+        users.findByIdAndUpdate(id,data).lean().exec(function(err,result){
+            if(err){
+                res.status(500).json({"message":err});
+            }
+            else
+            {
+                res.status(200).json({"message":"Password reset successful."});
+            }
+        });
+    }).catch(err=>{
+        res.status(500).json({"message":"Some error occurred"});
+    });
 }

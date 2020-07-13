@@ -18,5 +18,7 @@ module.exports = {
     peopleProfileURL : "https://api.themoviedb.org/3/person/",
     imdbProfileURL : "https://www.imdb.com/name/",
     tmdbProfileURL : "https://image.tmdb.org/t/p/original",
-    imdb_URL : "https://www.imdb.com/title/"
+    imdb_URL : "https://www.imdb.com/title/",
+    emailPwd : "Qwerty@123",
+    emailId : "swmdbtddd27@gmail.com"
 }

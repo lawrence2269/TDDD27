@@ -15,6 +15,18 @@ module.exports = (app) =>{
     //Deactivate user
     app.post("/deactivateacct",usersController.deactivateUser);
 
+    //Request a movie
+    app.post("/requestmovie",usersController.requestMovie);
+
+    //Forgot password otp generator
+    app.post("/forgotpwd",usersController.forgotPwd);
+
+    //Check OTP
+    app.post("/checkotp",usersController.checkOTP);
+
+    //Reset password
+    app.post("/resetpwd",usersController.resetPassword);
+
     //Retrieve list of users
     app.get("/admin/users",adminController.getUsers);
 
@@ -44,9 +56,6 @@ module.exports = (app) =>{
 
     //Retrieve popular movies
     app.get("/popularmovies",moviesController.popularMovies);
-
-    //Request a movie
-    app.post("/requestmovie",usersController.requestMovie);
 
     //Retrieve a list of genre
     app.get("/genre",moviesController.getGenre);
