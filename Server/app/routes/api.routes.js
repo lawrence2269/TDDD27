@@ -36,6 +36,9 @@ module.exports = (app) =>{
     //Delete a user
     app.post("/admin/deleteuser",adminController.deleteUser);
 
+    //List of requested movies
+    app.get("/admin/requestedmov",adminController.getMovieRequests);
+
     //Retrieve all languages
     app.get("/languages",moviesController.getLanguages);
 

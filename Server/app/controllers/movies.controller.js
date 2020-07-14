@@ -1,4 +1,5 @@
 const movieDetails = require('../models/moviedetails.model.js');
+const moviesModel = require('../models/movie.model.js')
 const request = require('request');
 const apiConfig  = require('../helpers/api.config.js');
 const url = require('url');
@@ -252,8 +253,15 @@ exports.getMovieDetails = async (req,res) =>{
         
         if(tmdbMovieDetails['results'].length != 0){
             var mid = 0;
+            var mid_2 = 0;
             await movieDetails.findOne().sort({'_id':-1}).select({"_id":1}).lean().exec().then(id=>{
                 mid = id["_id"]+1;
+            }).catch(err=>{
+                res.status(500).json({"movieDetails":err.message});
+            })
+
+            await moviesModel.findOne().sort({'_id':-1}).select({"_id":1}).lean().exec().then(id=>{
+                mid_2 = id["_id"]+1;
             }).catch(err=>{
                 res.status(500).json({"movieDetails":err.message});
             })
@@ -404,8 +412,16 @@ exports.getMovieDetails = async (req,res) =>{
                     runtime = 0;
                 }
             }
+
+            const movieData = new moviesModel({
+                _id:mid_2,
+                tmdb_id:tmdb_id,
+                title:title,
+                poster_path:poster_path_s,
+                release_year:release_year
+            });
             
-            const movieData = new movieDetails({
+            const movieDetailsData = new movieDetails({
                 _id : mid,
                 tmdb_id:tmdb_id,
                 title : title,
@@ -424,8 +440,12 @@ exports.getMovieDetails = async (req,res) =>{
                 runtime:runtime
             });
 
-            movieData.save().then(result =>{
-                res.status(200).json({"movieDetails":result})
+            movieData.save().then(result1=>{
+                movieDetailsData.save().then(result2 =>{
+                    res.status(200).json({"movieDetails":result2})
+                }).catch(err=>{
+                    res.status(500).json({"movieDetails":err.message})
+                });
             }).catch(err=>{
                 res.status(500).json({"movieDetails":err.message})
             });

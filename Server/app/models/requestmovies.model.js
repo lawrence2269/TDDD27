@@ -4,7 +4,7 @@ const requestMoviesSchema = mongoose.Schema({
     title:String,
     language:String,
     userId:String,
-    release_year:String,
+    release_year:Number,
     region:String
 });
 

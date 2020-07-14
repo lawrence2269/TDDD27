@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const jwtConfig = require('../helpers/jwt.config.js');
 const passwordHash = require('password-hash');
 const requestMovies = require('../models/requestmovies.model.js');
+const movieModel = require('../models/movie.model.js');
 const otpGenerator = require('otp-generator')
 const nodemailer = require('nodemailer');
 const apiConfig  = require('../helpers/api.config.js');
@@ -186,25 +187,30 @@ exports.requestMovie = async (req,res) =>{
                 res.status(400).json({"message":"Failure"});
             }
             else{
-                if(await requestMovies.find({"title":{"$regex":req.body.title,'$options':'i'}}).countDocuments() == 0){
-                    const data = new requestMovies({
-                        userId : req.body.emailId,
-                        title : req.body.title,
-                        release_year : req.body.releaseYear,
-                        language : req.body.movieLanguage,
-                        region : req.body.countryReleased
-                    });
-            
-                    data.save().then(result=>{
-                        if(result["_id"] != ''){
-                            res.status(200).json({"message":"Success"});
-                        }
-                        else{
-                            res.status(400).json({"message":"Failure"});
-                        }
-                    }).catch(err =>{
-                        res.status(500).json({"message":"Failure"});
-                    })
+                if(await movieModel.find({"title":{"$regex":req.body.title,'$options':'i'}}).countDocuments() == 0){
+                    if(await requestMovies.find({"title":{"$regex":req.body.title,'$options':'i'}}).countDocuments() == 0){
+                        const data = new requestMovies({
+                            userId : req.body.emailId,
+                            title : req.body.title,
+                            release_year : req.body.releaseYear,
+                            language : req.body.movieLanguage,
+                            region : req.body.countryReleased
+                        });
+                
+                        data.save().then(result=>{
+                            if(result["_id"] != ''){
+                                res.status(200).json({"message":"Success"});
+                            }
+                            else{
+                                res.status(400).json({"message":"Failure"});
+                            }
+                        }).catch(err =>{
+                            res.status(500).json({"message":"Failure"});
+                        })
+                    }
+                    else{
+                        res.status(409).json({"message":"Record already exists"});
+                    }
                 }
                 else{
                     res.status(409).json({"message":"Record already exists"});
