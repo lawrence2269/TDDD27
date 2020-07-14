@@ -40,6 +40,8 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { VerifyOTPComponent } from './verify-otp/verify-otp.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { ManageUsersComponent } from './manage-users/manage-users.component';
+import { AddMoviesComponent } from './add-movies/add-movies.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +58,9 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
     ChangePasswordComponent,
     ForgotPasswordComponent,
     VerifyOTPComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    ManageUsersComponent,
+    AddMoviesComponent
   ],
   imports: [
     BrowserModule,
@@ -90,7 +94,9 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
       {path: 'chgpassword',component:ChangePasswordComponent},
       {path: 'forgotpwd',component:ForgotPasswordComponent},
       {path: 'verifyOTP',component:VerifyOTPComponent},
-      {path: 'resetpwd', component:ResetPasswordComponent}
+      {path: 'resetpwd', component:ResetPasswordComponent},
+      {path: 'manageusr',component:ManageUsersComponent},
+      {path: 'addmovie',component:AddMoviesComponent}
     ]),
     NgbModule
   ],
@@ -98,8 +104,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
     SignupService,
     HomeService,
     MovieService,
-    MoviesService,
-    DatePipe
+    MoviesService
   ],
   bootstrap: [AppComponent],
   entryComponents: [

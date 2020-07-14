@@ -1,0 +1,32 @@
+<div class="card" style="margin-top: 30px;">
+    <div class="card-body">  
+        <h4 class="card-title">Users</h4>
+        <div class="table-responsive" *ngIf="uData.length!=0,else dataNotAvailable">
+            <table class="table table-hover">
+                <thead class="thead-dark" style="position: sticky;">
+                    <tr>
+                        <th scope="col">User ID</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email ID</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of uData">
+                        <td>{{user['_id']}}</td>
+                        <td>{{user['username']}}</td>
+                        <td>{{user['email_id']}}</td>
+                        <td><button mat-raised-button color="primary" style="border: none;outline: none;" (click)="deleteUser(user['email_id'])">Delete</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div> 
+        <div align="center">
+            <ng-template #dataNotAvailable>
+                <div align="center">
+                    <h4 style="color: black; margin-top: 30px;">No users are available.</h4>
+                </div>
+            </ng-template>
+        </div> 
+    </div>
+</div>

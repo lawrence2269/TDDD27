@@ -24,8 +24,8 @@
             {{uname | uppercase}}
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a *ngIf="role == 'admin'" class="dropdown-item">Manage Users</a>
-            <a *ngIf="role == 'admin'" class="dropdown-item">Add Movie</a>
+            <a *ngIf="role == 'admin'" class="dropdown-item" href="/manageusr">Manage Users</a>
+            <a *ngIf="role == 'admin'" class="dropdown-item" href="/addmovie">Add Movie</a>
             <a *ngIf="role == 'user'" class="dropdown-item" href="/movierequest">Request movie</a>
             <a *ngIf="role == 'user'" class="dropdown-item" href="/chgpassword">Change password</a>
             <a *ngIf="role == 'user'" class="dropdown-item" (click)="onDeactivateAcct()">Deactivate account</a>

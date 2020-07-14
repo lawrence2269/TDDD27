@@ -1,0 +1,36 @@
+<div class="card" style="margin-top: 30px;">
+    <div class="card-body">  
+        <h4 class="card-title">Movie Requests</h4>
+        <div class="table-responsive" *ngIf="requestMovieData.length!=0,else dataNotAvailable">
+            <table class="table table-hover">
+                <thead class="thead-dark" style="position: sticky;">
+                    <tr>
+                        <th scope="col">User Email</th>
+                        <th scope="col">Movie Title</th>
+                        <th scope="col">Release Year</th>
+                        <th scope="col">Language</th>
+                        <th scope="col">Region</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let movies of requestMovieData">
+                        <td>{{movies['userId']}}</td>
+                        <td>{{movies['title']}}</td>
+                        <td>{{movies['release_year']}}</td>
+                        <td>{{movies['language']|uppercase}}</td>
+                        <td>{{movies['region']}}</td>
+                        <td><button mat-raised-button color="primary" style="border: none;outline: none;" (click)="addMovie(movies['userId'],movies['title'],movies['release_year'])">Add Movie</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div align="center">
+            <ng-template #dataNotAvailable>
+                <div align="center">
+                    <h4 style="color: black; margin-top: 30px;">No requests available.</h4>
+                </div>
+            </ng-template>
+        </div> 
+    </div>
+</div>
