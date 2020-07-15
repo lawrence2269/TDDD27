@@ -69,6 +69,15 @@ module.exports = (app) =>{
     //Get reviews for a movie
     app.get("/userreviews",moviesController.getReview);
 
+    //Get reviews by review id
+    app.get("/getreviewsbyid",moviesController.getReviewById);
+
+    //Delete a review
+    app.post("/deletereview",moviesController.deleteReview);
+
+    //Update a review
+    app.post("/updatereview",moviesController.updateReview);
+
     //Retrieve a list of years
     app.get("/years",moviesController.getYears);
 

@@ -10,6 +10,7 @@ const languages = require('../models/languages.model.js');
 const fetch = require('node-fetch');
 const jwtConfig = require('../helpers/jwt.config.js');
 var jwt = require('jsonwebtoken');
+const e = require('express');
 
 exports.findAll = (req,res) =>{
     movieDetails.find().select({"title":1,"poster_path_s":1,"release_year":1,"genre":1,"adult":1,"rating":1,"_id":0}).sort("title").then(data=>{
@@ -127,6 +128,7 @@ exports.getGenre = (req,res) =>{
 
 exports.createReview = async (req,res) =>{
     var jwtToken = req.headers['access-token'];
+    var likes;
     if(jwtToken){
         jwt.verify(jwtToken,jwtConfig.secret_key,async function(err,decoded){
             if(err){
@@ -139,13 +141,20 @@ exports.createReview = async (req,res) =>{
                     movieId = data[0]["_id"];
                 });
 
+                if(req.body.likes == "yes"){
+                    likes = true;
+                }
+                else{
+                    likes = false;
+                }
+
                 const reviewData = new movieReviews({
                     movie_id:movieId,
                     title:req.body.title,
                     author:req.body.username,
-                    review:req.body.review,
+                    review:parseFloat(req.body.review),
                     userRating:req.body.rating,
-                    likes:req.body.likes
+                    likes:likes
                 });
 
                 reviewData.save().then(data=>{
@@ -156,7 +165,7 @@ exports.createReview = async (req,res) =>{
                         res.status(400).json({"message":"Failure"});
                     }
                 }).catch(err=>{
-                    res.status(400).json({"message":err.message});
+                    res.status(500).json({"message":err.message});
                 });
             }
         });
@@ -169,7 +178,7 @@ exports.createReview = async (req,res) =>{
 exports.getReview = async (req,res) =>{
     const queryObject = url.parse(req.url,true).query;
     if(await movieReviews.find({"title":{"$regex":queryObject['title'],"$options":"i"}}).countDocuments()!=0){
-        movieReviews.find({"title":{"$regex":queryObject['title'],"$options":"i"}}).select({"_id":0,"movie_id":0,"__v":0}).lean().exec().then(data =>{
+        movieReviews.find({"title":{"$regex":queryObject['title'],"$options":"i"}}).select({"__v":0}).lean().exec().then(data =>{
             res.json({"reviews":data});
         }).catch(err=>{
             res.status(500).json({"reviews":err.message});
@@ -178,6 +187,65 @@ exports.getReview = async (req,res) =>{
     else{
         res.status(404).json({"reviews":"No reviews for this movie"})
     }
+}
+
+exports.getReviewById = (req,res) =>{
+    var jwtToken = req.headers['access-token'];
+    if(jwtToken){
+        jwt.verify(jwtToken,jwtConfig.secret_key,async function(err,decoded){
+            if(err){
+                res.status(400).json({"reviews":"Failure"});
+            }
+            else{
+                movieReviews.find({"_id":req.body.id}).select({"_id":1,"author":1,"review":1,"userRating":1,"likes":1,"__v":0}).lean().exec().then(data=>{
+                    res.status(200).json({"reviews":data});
+                }).catch(error=>{
+                    res.status(500).json({"reviews":err.message});
+                });
+            }
+        });
+    }
+    else{
+        res.status(401).json({"reviews":"Unauthorized access"}); 
+    }
+}
+
+exports.deleteReview = (req,res)=>{
+    var jwtToken = req.headers['access-token'];
+    if(jwtToken){
+        jwt.verify(jwtToken,jwtConfig.secret_key,async function(err,decoded){
+            if(err){
+                res.status(400).json({"reviews":"Failure"});
+            }
+            else{
+                movieReviews.deleteOne({"_id":req.body.reviewId}).then(result=>{
+                    res.status(200).json({"reviews":"Success"});
+                }).catch(err=>{
+                    res.status(500).json({"reviews":"Some error occurred."});
+                });
+            }
+        });
+    }
+    else{
+        res.status(401).json({"reviews":"Unauthorized access"});
+    }
+}
+
+exports.updateReview = (req,res) =>{
+    var data = {
+        review:req.body.reviewStmt,
+        userRating:req.body.userRating,
+        likes:req.body.likes
+    }
+
+    movieReviews.findByIdAndUpdate(req.body.id,data).exec(function(err,result){
+        if(err){
+            res.status(500).json({"reviews":"Some error occurred."});
+        }
+        else{
+            res.status(200).json({"reviews":"Success"});
+        }
+    });
 }
 
 exports.getRatings = (req,res) =>{
