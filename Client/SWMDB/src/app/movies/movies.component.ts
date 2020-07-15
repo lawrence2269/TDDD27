@@ -88,6 +88,6 @@ export class MoviesComponent implements OnInit {
   }
 
   requestMovie():void{
-    sessionStorage.getItem("loginStatus")
+    this.router.navigate(["/movierequest"]);
   }
 }

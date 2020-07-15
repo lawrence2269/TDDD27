@@ -42,6 +42,8 @@ import { VerifyOTPComponent } from './verify-otp/verify-otp.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { ManageUsersComponent } from './manage-users/manage-users.component';
 import { AddMoviesComponent } from './add-movies/add-movies.component';
+import {MatSliderModule} from '@angular/material/slider';
+import { UpdateReviewComponent } from './update-review/update-review.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +62,8 @@ import { AddMoviesComponent } from './add-movies/add-movies.component';
     VerifyOTPComponent,
     ResetPasswordComponent,
     ManageUsersComponent,
-    AddMoviesComponent
+    AddMoviesComponent,
+    UpdateReviewComponent
   ],
   imports: [
     BrowserModule,
@@ -81,6 +84,7 @@ import { AddMoviesComponent } from './add-movies/add-movies.component';
     MatNativeDateModule,
     MatDialogModule,
     MatCardModule,
+    MatSliderModule,
     Ng2SearchPipeModule,
     MatPaginatorModule,
     MatSlideToggleModule,
@@ -104,7 +108,8 @@ import { AddMoviesComponent } from './add-movies/add-movies.component';
     SignupService,
     HomeService,
     MovieService,
-    MoviesService
+    MoviesService,
+    DatePipe
   ],
   bootstrap: [AppComponent],
   entryComponents: [

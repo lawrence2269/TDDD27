@@ -12,6 +12,13 @@
     }
 }
 
+.container {
+    /* margin-right: auto;
+    margin-left: -200px; */
+    margin-top:30px;
+    padding-left: 35px;
+    padding-right: 15px;
+}
 
 .column{
     float: left;
@@ -166,12 +173,18 @@ tr.spaceUnder1>td {
     padding-bottom: 1sem;
   }
 
+  
+
 .container {
     /* margin-right: auto;
     margin-left: -200px; */
     margin-top:50px;
     padding-left: 15px;
     padding-right: 15px;
+}
+
+.form-field{
+    display: block;
 }
 
 .row{

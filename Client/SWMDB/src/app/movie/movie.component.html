@@ -117,6 +117,7 @@
                     <tbody>
                         <ng-container *ngFor="let review of reviewsList,let i = index;trackBy:trackByRating">
                             <input type="hidden" [(ngModel)] = "starRating" value="{{trackByRating(i,review)}}"/>
+                            <input type="hidden" [(ngModel)] = "uid" value="{{setUid(review)}}"/>
                             <div>
                                 <p style="margin-left:10px;margin-top: 10px;margin-right:10px;color: white;" align="justify">{{review.review}}</p> 
                                 <br>
@@ -136,9 +137,16 @@
                                         <strong style="color: white;">{{review.userRating}}</strong>
                                     </div>
                                     <div class="col-sm-2" style="margin-left:-80px;margin-bottom: -15px; margin-top: -15px;">
-                                        <!-- <i style="color: white;">{{review.createdAt}}</i>  -->
                                         <i style="color: white;">{{datepipe.transform(review.createdAt,'dd-MM-yyyy')}}</i>
                                     </div>
+                                    <ng-container *ngIf="loginStatus">
+                                        <ng-container *ngIf="uid == author">
+                                            <div class="col-sm-4" style="margin-left:-80px;margin-bottom: -15px; margin-top: -15px;">
+                                                <button mat-raised-button color="primary" style="border: none;outline: none;" (click)="deleteReview(review.userRating)">Update</button> &nbsp;&nbsp;&nbsp;
+                                                <button mat-raised-button color="warn" style="border: none;outline: none;" (click)="deleteReview(review.userRating)">Delete</button>  
+                                            </div>
+                                        </ng-container> 
+                                    </ng-container>
                                 </div>
                                 <hr class="dividerTrailer">
                             </div>
@@ -150,6 +158,55 @@
         <ng-template #noReviews>
             <h4 class="heading4" style="text-align: center;margin-top: 20px;">No reviews has been made for this movie. Be the first to review this movie!!!</h4> 
         </ng-template>
+    </div>
+    <div class="similar" *ngIf="loginStatus">
+        <mat-card class="mat-elevation-z14" style="width: 100%; margin-top:10px">
+            <mat-card-header style="justify-content: center;">
+                <mat-card-title>Add your Review</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <form [formGroup] = "reviewForm">
+                    <mat-form-field class="form-field" appearance="outline" style="width:35%;">
+                        <mat-label>User ID</mat-label>
+                        <input matInput formControlName="username" readonly/>
+                    </mat-form-field>
+                    <mat-form-field class="form-field" appearance="outline">
+                        <mat-label>Review</mat-label>
+                        <textarea matInput formControlName="review" rows="10" placeholder="Your Review" required></textarea>
+                        <mat-error *ngIf="reviewForm.controls.review.touched && reviewForm.controls.review.invalid">
+                            <span *ngIf="reviewForm.controls.review.errors.required">This field is mandatory.</span>
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="form-field" appearance="outline" style="width:25%;">
+                        <mat-label>Like the movie ?</mat-label>
+                        <mat-select formControlName="likes" placeholder="Like ?" required>
+                            <mat-option value="yes">Yes</mat-option>
+                            <mat-option value="no">No</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="reviewForm.controls.likes.touched && reviewForm.controls.likes.invalid">
+                            <span *ngIf="reviewForm.controls.likes.errors.required">This field is mandatory.</span>
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="form-field" appearance="outline" style="width:25%;">
+                        <mat-label>Rating ?</mat-label>
+                        <mat-select formControlName="rating" required placeholder="Rating ?">
+                            <mat-option *ngFor="let c of ratingsList" [value]="c">
+                                {{c}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="reviewForm.controls.rating.touched && reviewForm.controls.rating.invalid">
+                            <span *ngIf="reviewForm.controls.rating.errors.required">This field is mandatory.</span>
+                        </mat-error>
+                    </mat-form-field>
+                </form>
+            </mat-card-content>
+            <mat-card-actions>
+                <div align="center">
+                    <button mat-raised-button color="primary" style="border: none;outline: none;" [disabled]="reviewForm.invalid" (click)="submitReview()">Submit</button>
+                    <button mat-raised-button color="warn" style="border: none;outline: none;" (click) = "doReset()">Cancel</button>
+                </div>
+            </mat-card-actions>
+        </mat-card>
     </div>
     <div class="similar">
         <h4 class="heading4"><i class="fa fa-star star"></i>&nbsp;&nbsp;Similar Movies</h4>

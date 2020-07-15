@@ -34,7 +34,6 @@ export class LoginService {
 
         this.UserName.next(localStorage.getItem("username"));
         this.UserRole.next(localStorage.getItem("userRole"));
-        console.log("Inside login service: "+localStorage.getItem("userEmailId"));
       }
       return result;
     }));
