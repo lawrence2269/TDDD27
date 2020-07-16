@@ -1,23 +1,65 @@
-<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Update your review</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<div class="modal-header">
+    <h4 class="modal-title">Update your review</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="updateReviewModal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form [formGroup] = "updateReviewForm">
+        <div>
+            <div class="input-group mb-3" style="width:35%;">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-default">User ID</span>
+                </div>
+                <input type="text" formControlName = "author" class="form-control" aria-label="Default" readonly>
+              </div>              
+            <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Review</span>
+                </div>
+                <div style="width: 80%;">
+                    <textarea class="form-control" formControlName = "review" value="{{reviewStmt}}" rows="10" placeholder="Your Review" required></textarea>
+                </div>
+                
+                <mat-error *ngIf="updateReviewForm.controls.review.touched && updateReviewForm.controls.review.invalid">
+                    <span *ngIf="updateReviewForm.controls.review.errors.required">This field requires mandatory change other wise please close it.</span>
+                </mat-error>
             </div>
-            <div class="modal-body">
-                <form [formGroup] = "updateReviewForm">
-                    <div>
-                        <mat-form-field class="form-field" appearance="outline">
-                            <mat-label>User ID</mat-label>
-                            <input matInput formControlName="author" readonly/>
-                        </mat-form-field>
-                    </div>
-                </form>
+            <br>
+            <div class="form-group" style="width:25%;">
+                <label for="like">Like the movie ?</label>
+                <ng-select
+                bindLabel="like"
+                placeholder="- Please Choose -"
+                formControlName="likes"
+                required>
+                    <ng-option [value]="l|lowercase" [disabled]="l.disabled" *ngFor="let l of likesArray">
+                        {{l}}
+                    </ng-option>
+                </ng-select>
+                <mat-error *ngIf="updateReviewForm.controls.likes.touched && updateReviewForm.controls.likes.invalid">
+                    <span *ngIf="updateReviewForm.controls.likes.errors.required">This field is mandatory.</span>
+                </mat-error>
+            </div>
+            <div class="form-group" style="width:25%;">
+                <label for="ratings">Ratings ?</label>
+                <ng-select
+                bindLabel="ratings"
+                placeholder="- Please Choose -"
+                formControlName="ratings"
+                required>
+                    <ng-option [value]="c" [disabled]="c.disabled" *ngFor="let c of ratingsList">
+                        {{c}}
+                    </ng-option>
+                </ng-select>
+                <mat-error *ngIf="updateReviewForm.controls.ratings.touched && updateReviewForm.controls.ratings.invalid">
+                    <span *ngIf="updateReviewForm.controls.ratings.errors.required">This field is mandatory.</span>
+                </mat-error>
+            </div>
+            <div align="center">
+                <button mat-raised-button color="primary" style="border: none;outline: none;" [disabled]="updateReviewForm.invalid" (click)="updateReviews()">Update</button> &nbsp;&nbsp;&nbsp;
+                <button mat-raised-button color="warn" style="border: none;outline: none;" (click) = "doReset()">Cancel</button>
             </div>
         </div>
-    </div>
+    </form>
 </div>
-

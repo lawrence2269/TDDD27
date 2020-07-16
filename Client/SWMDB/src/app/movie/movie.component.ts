@@ -7,8 +7,11 @@ import { DatePipe } from '@angular/common';
 import { Observable } from 'rxjs';
 import { LoginService } from '../login/login.service';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MoviesService } from '../movies/movies.service';
+import { ConfirmationDialogService } from '../confirmation-dialog/confirmation-dialog.service';
+import { DialogBodyComponent } from '../dialog-body/dialog-body.component';
+import { UpdateReviewComponent } from '../update-review/update-review.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-movie',
@@ -49,13 +52,12 @@ export class MovieComponent implements OnInit {
   uid:string;
   reviewForm: FormGroup;
   loginStatus:boolean;
-  
-  @ViewChild('autosize') 
-  txtAreaAutosize: CdkTextareaAutosize;
+  msg = "";
 
   constructor(private route: ActivatedRoute,private router: Router,private movieService: MovieService,
     private sanitizer: DomSanitizer,private matDialog: MatDialog,public datepipe: DatePipe,private loginService:LoginService,
-    private formBuilder:FormBuilder,private moviesService:MoviesService) { 
+    private formBuilder:FormBuilder,private moviesService:MoviesService,private confirmationDialogService: ConfirmationDialogService,
+    private updateReviewModalService:NgbModal) { 
 
     this.router.events.subscribe((e)=>{
       if(e instanceof NavigationEnd){
@@ -92,9 +94,6 @@ export class MovieComponent implements OnInit {
     });
     this.author = localStorage.getItem("username");
   }
-
-  //loginStatus$:Observable<boolean>;
-  //userName$:Observable<string>;
 
   ngOnInit(): void {
     let temp:number = 0;
@@ -158,7 +157,34 @@ export class MovieComponent implements OnInit {
   }
 
   public deleteReview(id:any):void{
-    console.log(id);
+    this.confirmationDialogService.confirm("Delete eview",'Are you sure to delete?').then(confirmed=>{
+      if(confirmed){
+        var data = {"reviewId":id};
+        this.movieService.deleteReview(data).subscribe(result=>{
+          this.msg= "Your review has been deleted successfully.";
+          this.matDialog.open(DialogBodyComponent,{
+            data:{message:this.msg,name:"Delete review - Success"}
+          });
+          this.router.navigate(['/movie'],{queryParams:{title:this.title,year:this.year}});
+        },error=>{
+          if(error.status == 500){
+            this.msg = "Some error occurred, please try again after some time.";
+            this.matDialog.open(DialogBodyComponent,{
+                data:{message:this.msg,name:"Delete review - Failed"}
+            });
+          }
+        });
+      }
+    }).catch(()=>{
+
+    })
+  }
+
+  public updateReview(id:any):void{
+    localStorage.setItem("reviewId",id);
+    localStorage.setItem("title",this.title);
+    localStorage.setItem("year",this.year.toString());
+    const updateModalRef = this.updateReviewModalService.open(UpdateReviewComponent,{ size: 'xl' });
   }
 
   public trackByRating(i:number,review:any){
@@ -172,11 +198,32 @@ export class MovieComponent implements OnInit {
   }
 
   public submitReview(){
-    console.log(this.reviewForm.value);
+    this.confirmationDialogService.confirm("Submit review",'Are you sure to submit?').then(confirmed=>{
+      if(confirmed){
+        var data = {"title":this.title,"username":this.reviewForm.value['username'],"review":this.reviewForm.value['review'],"rating":parseFloat(this.reviewForm.value['rating']),"likes":this.reviewForm.value['likes']};
+        this.movieService.createReviews(data).subscribe((result)=>{
+          this.msg= "Your review has been submitted successfully.";
+          this.matDialog.open(DialogBodyComponent,{
+            data:{message:this.msg,name:"Submit review - Success"}
+          });
+          this.doReset();
+          this.router.navigate(['/movie'],{queryParams:{title:this.title,year:this.year}});
+        },error=>{
+          if(error.status == 400 || error.status == 500){
+            this.msg = "Some error occurred, please try again and check your input as well";
+            this.matDialog.open(DialogBodyComponent,{
+                data:{message:this.msg,name:"Submit review - Failed"}
+            });
+          }
+        });
+      }
+    }).catch(()=>{
+
+    });
   }
 
   public doReset():void{
-    this.reviewForm.reset({email:this.reviewForm.get("email").value});
+    this.reviewForm.reset({username:this.reviewForm.get("username").value});
   }
 
   public formatLabel(value: number) {

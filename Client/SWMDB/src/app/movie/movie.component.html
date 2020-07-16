@@ -142,8 +142,8 @@
                                     <ng-container *ngIf="loginStatus">
                                         <ng-container *ngIf="uid == author">
                                             <div class="col-sm-4" style="margin-left:-80px;margin-bottom: -15px; margin-top: -15px;">
-                                                <button mat-raised-button color="primary" style="border: none;outline: none;" (click)="deleteReview(review.userRating)">Update</button> &nbsp;&nbsp;&nbsp;
-                                                <button mat-raised-button color="warn" style="border: none;outline: none;" (click)="deleteReview(review.userRating)">Delete</button>  
+                                                <button mat-raised-button color="primary" style="border: none;outline: none;" (click)="updateReview(review._id)">Update</button> &nbsp;&nbsp;&nbsp;
+                                                <button mat-raised-button color="warn" style="border: none;outline: none;" (click)="deleteReview(review._id)">Delete</button>  
                                             </div>
                                         </ng-container> 
                                     </ng-container>

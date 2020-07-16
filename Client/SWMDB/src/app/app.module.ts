@@ -44,6 +44,7 @@ import { ManageUsersComponent } from './manage-users/manage-users.component';
 import { AddMoviesComponent } from './add-movies/add-movies.component';
 import {MatSliderModule} from '@angular/material/slider';
 import { UpdateReviewComponent } from './update-review/update-review.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { UpdateReviewComponent } from './update-review/update-review.component';
     MatInputModule,
     MatSelectModule,
     FormsModule,
+    NgSelectModule,
     HttpClientModule,
     CustomFormsModule,
     ReactiveFormsModule,
@@ -100,7 +102,8 @@ import { UpdateReviewComponent } from './update-review/update-review.component';
       {path: 'verifyOTP',component:VerifyOTPComponent},
       {path: 'resetpwd', component:ResetPasswordComponent},
       {path: 'manageusr',component:ManageUsersComponent},
-      {path: 'addmovie',component:AddMoviesComponent}
+      {path: 'addmovie',component:AddMoviesComponent},
+      {path: 'updatereview',component:UpdateReviewComponent}
     ]),
     NgbModule
   ],
@@ -115,7 +118,8 @@ import { UpdateReviewComponent } from './update-review/update-review.component';
   entryComponents: [
     ForgotPasswordComponent,
     VerifyOTPComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    UpdateReviewComponent
   ]
 })
 export class AppModule { }
