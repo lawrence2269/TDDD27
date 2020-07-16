@@ -40,7 +40,7 @@ exports.addMovies = async (req,res) =>{
             await movies.findOne().sort({'_id':-1}).select({"_id":1}).limit(1).lean().exec().then(id=>{
                 mid = id["_id"]+1;
             }).catch(err=>{
-                res.status(500).json({"message42":err.message});
+                res.status(500).json({"message":err.message});
             });
 
             await movieDetails.findOne().sort({'_id':-1}).select({"_id":1}).limit(1).lean().exec().then(id=>{
@@ -252,13 +252,13 @@ exports.addMovies = async (req,res) =>{
                             res.status(200).json({"message":"Success"});
                         }
                     }).catch(err=>{
-                        res.status(500).json({"message92":err.message})
+                        res.status(500).json({"message":err.message})
                     });
                 }).catch(err=>{
-                    res.status(500).json({"message92":err.message})
+                    res.status(500).json({"message":err.message})
                 });
             }).catch(err=>{
-                res.status(500).json({"message95":err.message})
+                res.status(500).json({"message":err.message})
             });
         }
         else{

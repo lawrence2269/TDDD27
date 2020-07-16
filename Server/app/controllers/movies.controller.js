@@ -152,7 +152,7 @@ exports.createReview = async (req,res) =>{
                     movie_id:movieId,
                     title:req.body.title,
                     author:req.body.username,
-                    review:parseFloat(req.body.review),
+                    review:req.body.review,
                     userRating:req.body.rating,
                     likes:likes
                 });
@@ -190,24 +190,13 @@ exports.getReview = async (req,res) =>{
 }
 
 exports.getReviewById = (req,res) =>{
-    var jwtToken = req.headers['access-token'];
-    if(jwtToken){
-        jwt.verify(jwtToken,jwtConfig.secret_key,async function(err,decoded){
-            if(err){
-                res.status(400).json({"reviews":"Failure"});
-            }
-            else{
-                movieReviews.find({"_id":req.body.id}).select({"_id":1,"author":1,"review":1,"userRating":1,"likes":1,"__v":0}).lean().exec().then(data=>{
-                    res.status(200).json({"reviews":data});
-                }).catch(error=>{
-                    res.status(500).json({"reviews":err.message});
-                });
-            }
-        });
-    }
-    else{
-        res.status(401).json({"reviews":"Unauthorized access"}); 
-    }
+    const queryObject = url.parse(req.url,true).query;
+    movieReviews.find({"_id":queryObject["reviewId"]}).select({"author":1,"review":1,"userRating":1,"likes":1}).lean().exec().then(data=>{
+        res.status(200).json({"reviews":data});
+    }).catch(error=>{
+        console.log("The error is: "+error.message)
+        res.status(500).json({"reviews":error.message});
+    });   
 }
 
 exports.deleteReview = (req,res)=>{
