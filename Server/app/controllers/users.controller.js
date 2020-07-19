@@ -9,6 +9,8 @@ const otpGenerator = require('otp-generator')
 const nodemailer = require('nodemailer');
 const apiConfig  = require('../helpers/api.config.js');
 const resetpwd = require("../models/resetpwd.model.js")
+const fetch = require('node-fetch');
+const request = require('request');
 
 exports.login = async (req,res) =>{
     if(await users.find({'email_id':req.body.loginEmail}).countDocuments()!==0){
@@ -64,6 +66,46 @@ exports.login = async (req,res) =>{
         result['message'] = "User doesn't exist, please register";
         res.status(404).json({"userData":result});
     }
+}
+
+exports.socialLogin = async (req,res) =>{
+    let validationResult = await validateAuthToken(req.body.userData['authToken'],req.body.userData['type']);
+    if("error" in validationResult){
+        res.status(401).json({"userData":"Invalid Credentials"});
+    }
+    else{
+        var token = jwt.sign({id:req.body.userData['email']},jwtConfig.secret_key,{
+            expiresIn:86400 //expires in 24 hours
+        });
+        var result = {};
+        result['email'] = req.body.userData['email'];
+        result['username'] = req.body.userData['name'];
+        result['countryCode'] = "US";
+        result['token'] = token;
+        result['role'] = 'user';
+        result['message'] = "Success";
+        res.status(200).json({"userData":result});
+    }
+}
+
+async function validateAuthToken(authToken,type){
+    let result;
+    try{
+        if(type == "g"){
+            var response = await fetch(apiConfig.googleAuthTokenValidation+authToken);
+            result = await response.json();
+            return result;
+        }
+        else{
+            var response = await fetch(apiConfig.facebookAuthTokenValidation+authToken);
+            result = await response.json();
+            return result;
+        }
+    }
+    catch(e){
+        console.log(e)
+    }
+    
 }
 
 exports.create = async (req,res) =>{

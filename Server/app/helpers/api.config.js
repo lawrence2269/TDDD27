@@ -20,5 +20,7 @@ module.exports = {
     tmdbProfileURL : "https://image.tmdb.org/t/p/original",
     imdb_URL : "https://www.imdb.com/title/",
     emailPwd : "Qwerty@123",
-    emailId : "swmdbtddd27@gmail.com"
+    emailId : "swmdbtddd27@gmail.com",
+    facebookAuthTokenValidation : "https://graph.facebook.com/me?access_token=",
+    googleAuthTokenValidation : "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token="
 }

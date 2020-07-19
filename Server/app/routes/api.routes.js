@@ -6,6 +6,9 @@ module.exports = (app) =>{
     //Login
     app.post("/login",usersController.login);
 
+    //Social Login
+    app.post("/sociallogin",usersController.socialLogin);
+
     //Creates a user
     app.post("/createuser",usersController.create);
 
