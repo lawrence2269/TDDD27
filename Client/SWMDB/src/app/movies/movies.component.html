@@ -89,7 +89,7 @@
             <ng-container *ngIf="result.length === 0">
                 <h4 style="color: white; margin-top: 30px;">No movies found !</h4>
                 <br/>
-                <button mat-raised-button>Request Movie</button>
+                <button mat-raised-button (click)="requestMovie()">Request Movie</button>
             </ng-container>
             
         </div>
