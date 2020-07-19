@@ -5,8 +5,10 @@ import { CustomValidators } from 'ng2-validation';
 import {Router} from "@angular/router"
 import { LoginService } from './login.service';
 import { DialogBodyComponent } from '../dialog-body/dialog-body.component';
-import {MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import {MatDialog } from '@angular/material/dialog';
 import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
+import { SocialAuthService, FacebookLoginProvider, GoogleLoginProvider } from "angularx-social-login";
+import { SocialUser } from "angularx-social-login";
 
 @Component({
   selector: 'app-login',
@@ -18,13 +20,15 @@ export class LoginComponent implements OnInit {
   hide: boolean;
   msg:string;
   invalidLogin: boolean;
-  
 
+  public user: SocialUser;
+  loggedIn: boolean;
+  
   @ViewChild("pwd") passwordField:ElementRef;
   @ViewChild("logemail") emailField:ElementRef;
   emailRegx = /^(([^<>+()\[\]\\.,;:\s@"-#$%&=]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
   constructor(private formBuilder:FormBuilder,private router: Router,private loginService:LoginService,private matDialog: MatDialog,
-    private modalService: NgbModal) {
+    private modalService: NgbModal,private authService: SocialAuthService) {
     this.loginForm = this.formBuilder.group({
       loginEmail : new FormControl(null, [Validators.required, Validators.pattern(this.emailRegx)]),
       password : new FormControl(null, [Validators.required])
@@ -32,7 +36,22 @@ export class LoginComponent implements OnInit {
     this.hide=true;
   }
 
+  facebookLogin(){
+    this.authService.signIn(FacebookLoginProvider.PROVIDER_ID).then((userData)=>{
+      this.user = userData;
+      this.socialLoginUser(this.user,"f");
+    });
+  }
+
+  googleLogin(){
+    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID).then((userData)=>{
+      this.user = userData;
+      this.socialLoginUser(this.user,"g");
+    })
+  }
+
   ngOnInit(): void {
+    this.authService.authState.subscribe();
   }
 
   public openFormModal(){
@@ -75,5 +94,22 @@ export class LoginComponent implements OnInit {
             }
        });
     }
+  
+  public socialLoginUser(userData:any, type:string){
+    userData['type'] = type;
+    var data = {"userData":userData};
+    this.loginService.doSocialLogin(data).subscribe(result=>{
+      this.invalidLogin = false;
+      this.router.navigateByUrl("/");
+    },error=>{
+      if(error.status == 401){
+        this.invalidLogin = true;
+        this.msg = "Some problem with logging in with your social account";
+        this.matDialog.open(DialogBodyComponent,{
+          data:{message:this.msg,name:"Login - Failed"}
+        });
+      }
+    });
+  }
 }
 

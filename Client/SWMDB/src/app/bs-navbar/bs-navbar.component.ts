@@ -17,6 +17,7 @@ export class BsNavbarComponent implements OnInit {
   role:string;
   uname:string
   msg:string;
+  loginMethod:string;
   constructor(private loginService:LoginService,private bsNavbarService:BsNavbarService,private matDialog: MatDialog,
     private router: Router,private confirmationDialogService: ConfirmationDialogService) { 
     this.role = '';
@@ -26,6 +27,7 @@ export class BsNavbarComponent implements OnInit {
   loginStatus$:Observable<boolean>;
   userName$:Observable<string>;
   userRole$:Observable<string>;
+  loginMethod$:Observable<string>;
 
   ngOnInit(): void {
     this.loginStatus$ = this.loginService.isLoggedIn;
@@ -37,6 +39,9 @@ export class BsNavbarComponent implements OnInit {
     this.loginService.currentUserName.subscribe(name=>{
       this.uname = name;
     });
+    this.loginService.LoginMethod.subscribe(method=>{
+      this.loginMethod = method;
+    })
   }
 
   onLogout(){

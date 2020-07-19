@@ -1,243 +1,234 @@
-<ng-container *ngIf="dataPresent">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-3">
-                <img class="img-responsive" src="{{poster_path}}">
-            </div>
-            <div id="movieContent" class="col-xs-6">
-                <h3 style="color: white;" class="text-wrap">{{title}}</h3>
-                <br>
-                <h4 style="color: white;">{{year}}</h4> <br>
-                <h4 style="color: white;">{{genre}}</h4>
-                <h4 *ngIf="runTimeServer != 0;else noRunTime" style="color: white;">{{runTime}}</h4>
-                <ng-template #noRunTime>
-                    <h4 Style="color: white;">Sorry, No Runtime available, we are working on it!!!</h4>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-3">
+            <img class="img-responsive" src="{{poster_path}}">
+        </div>
+        <div id="movieContent" class="col-xs-6">
+            <h3 style="color: white;" class="text-wrap">{{title}}</h3>
+            <br>
+            <h4 style="color: white;">{{year}}</h4> <br>
+            <h4 style="color: white;">{{genre}}</h4>
+            <h4 *ngIf="runTimeServer != 0;else noRunTime" style="color: white;">{{runTime}}</h4>
+            <ng-template #noRunTime>
+                <h4 Style="color: white;">Sorry, No Runtime available, we are working on it!!!</h4>
+            </ng-template>
+            <br>
+            <table>
+                <tr class="spaceUnder" *ngIf="imdb_id!=null,else temp1">
+                    <td>
+                        <a href="{{imdb_id}}" title="IMDB Rating" target="_blank">
+                            <img src="/assets/img/logo-imdb.svg">
+                        </a>
+                    </td>
+                    <td>
+                        <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{rating}}</span>
+                        <i class="fa fa-star star" style="margin-left: 10px;"></i>
+                    </td>
+                </tr>
+                <ng-template #temp1>
+                    <h4 Style="color: white;">Sorry, No IMDB rating and our rating available, we are working on it!!!</h4>
                 </ng-template>
-                <br>
-                <table>
-                    <tr class="spaceUnder" *ngIf="imdb_id!=null,else temp1">
-                        <td>
-                            <a href="{{imdb_id}}" title="IMDB Rating" target="_blank">
-                                <img src="/assets/img/logo-imdb.svg">
-                            </a>
-                        </td>
-                        <td>
-                            <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{rating}}</span>
-                            <i class="fa fa-star star" style="margin-left: 10px;"></i>
-                        </td>
-                    </tr>
-                    <ng-template #temp1>
-                        <h4 Style="color: white;">Sorry, No IMDB rating and our rating available, we are working on it!!!</h4>
-                    </ng-template>
-                    <tr class="spaceUnder" *ngIf="like_count!=0,else temp2">
-                        <td>
-                            <i class="fa fa-thumbs-up thumbsup" title="Likes" style="font-size: 36px;"></i>
-                        </td>
-                        <td>
-                            <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{like_count}}</span>
-                        </td>
-                    </tr>
-                    <ng-template #temp2>
-                        <h4 Style="color: white;">Sorry, No likes are available, we are working on it!!!</h4>
-                    </ng-template>
-                </table>
+                <tr class="spaceUnder" *ngIf="like_count!=0,else temp2">
+                    <td>
+                        <i class="fa fa-thumbs-up thumbsup" title="Likes" style="font-size: 36px;"></i>
+                    </td>
+                    <td>
+                        <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{like_count}}</span>
+                    </td>
+                </tr>
+                <ng-template #temp2>
+                    <h4 Style="color: white;">Sorry, No likes are available, we are working on it!!!</h4>
+                </ng-template>
+            </table>
+        </div>
+    </div>
+    <div class="trailer">
+        <h4 class="heading4">Trailer</h4>
+        <hr class="dividerTrailer">
+        <div *ngIf="trailerString!=null;else show">
+            <div style="margin-top: 40px;margin-bottom: 60px;margin-left: -35px;">
+                <div style="text-align: center;">
+                    <iframe [src]="trailer" frameborder="0" width="540" height="315" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                </div>
             </div>
         </div>
-        <div class="trailer">
-            <h4 class="heading4">Trailer</h4>
-            <hr class="dividerTrailer">
-            <div *ngIf="trailerString!=null;else show">
-                <div style="margin-top: 40px;margin-bottom: 60px;margin-left: -35px;">
-                    <div style="text-align: center;">
-                        <iframe [src]="trailer" frameborder="0" width="540" height="315" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        <ng-template #show>
+            <h4 class="heading4" style="text-align: center;margin-top: 50px;">Sorry! No trailer is available for this movie, We are working on it.</h4> 
+        </ng-template>
+    </div>
+    <div class="synopsis">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="leftside">
+                    <h4 class="heading4">Synopsis</h4>
+                    <hr class="dividerSynopsis">
+                    <br>
+                    <p style="color: white;text-align: justify;text-justify: inter-word;margin-top: -20px;">
+                        {{synopsis}}
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="rightside">
+                    <div>
+                        <h4 class="heading4" style="margin-left: 50px;"><i class="fa fa-star star"></i>&nbsp;&nbsp;Director(s)</h4>
+                        <hr class="dividerCast" style="margin-left: 50px;">
+                        <table style="margin-left: 50px;border-spacing: 15px;">
+                            <ng-container *ngIf = "directorNames.length!=0;else temp3">
+                                <tr *ngFor="let dirName of directorNames; let i = index" class="spaceUnder1">
+                                    <td style="padding:0 15px 0 15px;"><img src="{{directorImageURL[i]}}" alt="Avatar" class="avatar"></td>
+                                    <td style="padding:0 15px 0 15px;">
+                                        <a href="{{directorProfileURL[i]}}" style="color: greenyellow;">{{dirName}}</a>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                            <ng-template #temp3>
+                                <h4 class="heading5" style="text-align: center;margin-top: 20px;">Sorry! Directors details are not available at the moment...</h4> 
+                            </ng-template>
+                        </table>
+                    </div>
+                    <div style="margin-top: 40px;">
+                        <h4 class="heading4" style="margin-left: 50px;"><i class="fa fa-star star"></i>&nbsp;&nbsp;Actors &amp; Actresses</h4>
+                        <hr class="dividerCast" style="margin-left: 50px;">
+                        <table style="margin-left: 50px;border-spacing: 5px 1rem;">
+                            <ng-container *ngIf="castNames.length!=0,else temp4">
+                                <tr *ngFor="let castName of castNames; let i = index" class="spaceUnder1" style="border-spacing: 5px 1rem;">
+                                    <td style="padding:0 15px 0 15px;border-spacing: 5px 1rem;"><img src="{{castImageURL[i]}}" alt="Avatar" class="avatar"></td>
+                                    <td style="padding:0 15px 0 15px;border-spacing: 5px 1rem;">
+                                        <p style="color: white;"><a href="{{castProfileURL[i]}}" style="color: greenyellow;">{{castName}}</a> as {{characterNames[i]}}</p>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                            <ng-template #temp4>
+                                <h4 class="heading5" style="text-align: center;margin-top: 20px;">Sorry! Cast details are not available at the moment...</h4> 
+                            </ng-template>
+                        </table>
                     </div>
                 </div>
             </div>
-            <ng-template #show>
-                <h4 class="heading4" style="text-align: center;margin-top: 50px;">Sorry! No trailer is available for this movie, We are working on it.</h4> 
-            </ng-template>
         </div>
-        <div class="synopsis">
+    </div>
+    <div class="similar">
+        <h4 class="heading4"><i class="fa fa-star star"></i>&nbsp;&nbsp;User Reviews</h4> 
+        <hr class="dividerSimilar"/>
+        <ng-container *ngIf="reviewsList.length!=0,else noReviews">
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                        <ng-container *ngFor="let review of reviewsList,let i = index;trackBy:trackByRating">
+                            <input type="hidden" [(ngModel)] = "starRating" value="{{trackByRating(i,review)}}"/>
+                            <input type="hidden" [(ngModel)] = "uid" value="{{setUid(review)}}"/>
+                            <div>
+                                <p style="margin-left:10px;margin-top: 10px;margin-right:10px;color: white;" align="justify">{{review.review}}</p> 
+                                <br>
+                                <div class="row">
+                                    <div class="col-sm-2" style="margin-left:10px;margin-bottom: -15px; margin-top: -15px;">
+                                        <p style="color: white;">By &nbsp;<strong><i>{{review.author}}</i></strong></p>
+                                    </div>
+                                    <div class="col-sm-2" style="margin-left:10px;margin-bottom: -15px; margin-top: -15px;">
+                                        <ng-template #t let-fill="fill">
+                                            <span class="star" [class.full]="fill === 100">
+                                                <span class="half" [style.width.%]="fill">&hearts;</span>&hearts;
+                                            </span>
+                                        </ng-template>
+                                        <ngb-rating [(rate)]="starRating" [starTemplate]="t" [readonly]="true" [max]="10"></ngb-rating>
+                                    </div>
+                                    <div class="col-sm-2" style="margin-left:-10px;margin-bottom: -15px; margin-top: -15px;">
+                                        <strong style="color: white;">{{review.userRating}}</strong>
+                                    </div>
+                                    <div class="col-sm-2" style="margin-left:-80px;margin-bottom: -15px; margin-top: -15px;">
+                                        <i style="color: white;">{{datepipe.transform(review.createdAt,'dd-MM-yyyy')}}</i>
+                                    </div>
+                                    <ng-container *ngIf="loginStatus">
+                                        <ng-container *ngIf="uid == author">
+                                            <div class="col-sm-4" style="margin-left:-80px;margin-bottom: -15px; margin-top: -15px;">
+                                                <button mat-raised-button color="primary" style="border: none;outline: none;" (click)="updateReview(review._id)">Update</button> &nbsp;&nbsp;&nbsp;
+                                                <button mat-raised-button color="warn" style="border: none;outline: none;" (click)="deleteReview(review._id)">Delete</button>  
+                                            </div>
+                                        </ng-container> 
+                                    </ng-container>
+                                </div>
+                                <hr class="dividerTrailer">
+                            </div>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </ng-container>
+        <ng-template #noReviews>
+            <h4 class="heading4" style="text-align: center;margin-top: 20px;">No reviews has been made for this movie. Be the first to review this movie!!!</h4> 
+        </ng-template>
+    </div>
+    <div class="similar" *ngIf="loginStatus">
+        <mat-card class="mat-elevation-z14" style="width: 100%; margin-top:10px">
+            <mat-card-header style="justify-content: center;">
+                <mat-card-title>Add your Review</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <form [formGroup] = "reviewForm">
+                    <mat-form-field class="form-field" appearance="outline" style="width:35%;">
+                        <mat-label>User ID</mat-label>
+                        <input matInput formControlName="username" readonly/>
+                    </mat-form-field>
+                    <mat-form-field class="form-field" appearance="outline">
+                        <mat-label>Review</mat-label>
+                        <textarea matInput formControlName="review" rows="10" placeholder="Your Review" required></textarea>
+                        <mat-error *ngIf="reviewForm.controls.review.touched && reviewForm.controls.review.invalid">
+                            <span *ngIf="reviewForm.controls.review.errors.required">This field is mandatory.</span>
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="form-field" appearance="outline" style="width:25%;">
+                        <mat-label>Like the movie ?</mat-label>
+                        <mat-select formControlName="likes" placeholder="Like ?" required>
+                            <mat-option value="yes">Yes</mat-option>
+                            <mat-option value="no">No</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="reviewForm.controls.likes.touched && reviewForm.controls.likes.invalid">
+                            <span *ngIf="reviewForm.controls.likes.errors.required">This field is mandatory.</span>
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="form-field" appearance="outline" style="width:25%;">
+                        <mat-label>Rating ?</mat-label>
+                        <mat-select formControlName="rating" required placeholder="Rating ?">
+                            <mat-option *ngFor="let c of ratingsList" [value]="c">
+                                {{c}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="reviewForm.controls.rating.touched && reviewForm.controls.rating.invalid">
+                            <span *ngIf="reviewForm.controls.rating.errors.required">This field is mandatory.</span>
+                        </mat-error>
+                    </mat-form-field>
+                </form>
+            </mat-card-content>
+            <mat-card-actions>
+                <div align="center">
+                    <button mat-raised-button color="primary" style="border: none;outline: none;" [disabled]="reviewForm.invalid" (click)="submitReview()">Submit</button>
+                    <button mat-raised-button color="warn" style="border: none;outline: none;" (click) = "doReset()">Cancel</button>
+                </div>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+    <div class="similar">
+        <h4 class="heading4"><i class="fa fa-star star"></i>&nbsp;&nbsp;Similar Movies</h4>
+        <hr class="dividerSimilar"/>
+        <div *ngIf="similar_Movies_Poster_Path.length!=0">
             <div class="row">
-                <div class="col-md-6">
-                    <div class="leftside">
-                        <h4 class="heading4">Synopsis</h4>
-                        <hr class="dividerSynopsis">
-                        <br>
-                        <p style="color: white;text-align: justify;text-justify: inter-word;margin-top: -20px;">
-                            {{synopsis}}
+                <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of similar_Movies_Poster_Path; let i = index">
+                    <a (click)="similarMovieClick(similar_Movies_Title[i],similar_Movies_Year[i])" class="browse-movie-link">
+                        <figure>
+                            <img class="img-responsive2" src={{obj}}/>
+                        </figure>
+                    </a>
+                    <div class="browse-movie-bottom">
+                        <p class="browse-movie-title">
+                            {{similar_Movies_Title[i]}}
                         </p>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="rightside">
-                        <div>
-                            <h4 class="heading4" style="margin-left: 50px;"><i class="fa fa-star star"></i>&nbsp;&nbsp;Director(s)</h4>
-                            <hr class="dividerCast" style="margin-left: 50px;">
-                            <table style="margin-left: 50px;border-spacing: 15px;">
-                                <ng-container *ngIf = "directorNames.length!=0;else temp3">
-                                    <tr *ngFor="let dirName of directorNames; let i = index" class="spaceUnder1">
-                                        <td style="padding:0 15px 0 15px;"><img src="{{directorImageURL[i]}}" alt="Avatar" class="avatar"></td>
-                                        <td style="padding:0 15px 0 15px;">
-                                            <a href="{{directorProfileURL[i]}}" style="color: greenyellow;">{{dirName}}</a>
-                                        </td>
-                                    </tr>
-                                </ng-container>
-                                <ng-template #temp3>
-                                    <h4 class="heading5" style="text-align: center;margin-top: 20px;">Sorry! Directors details are not available at the moment...</h4> 
-                                </ng-template>
-                            </table>
-                        </div>
-                        <div style="margin-top: 40px;">
-                            <h4 class="heading4" style="margin-left: 50px;"><i class="fa fa-star star"></i>&nbsp;&nbsp;Actors &amp; Actresses</h4>
-                            <hr class="dividerCast" style="margin-left: 50px;">
-                            <table style="margin-left: 50px;border-spacing: 5px 1rem;">
-                                <ng-container *ngIf="castNames.length!=0,else temp4">
-                                    <tr *ngFor="let castName of castNames; let i = index" class="spaceUnder1" style="border-spacing: 5px 1rem;">
-                                        <td style="padding:0 15px 0 15px;border-spacing: 5px 1rem;"><img src="{{castImageURL[i]}}" alt="Avatar" class="avatar"></td>
-                                        <td style="padding:0 15px 0 15px;border-spacing: 5px 1rem;">
-                                            <p style="color: white;"><a href="{{castProfileURL[i]}}" style="color: greenyellow;">{{castName}}</a> as {{characterNames[i]}}</p>
-                                        </td>
-                                    </tr>
-                                </ng-container>
-                                <ng-template #temp4>
-                                    <h4 class="heading5" style="text-align: center;margin-top: 20px;">Sorry! Cast details are not available at the moment...</h4> 
-                                </ng-template>
-                            </table>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-        <div class="similar">
-            <h4 class="heading4"><i class="fa fa-star star"></i>&nbsp;&nbsp;User Reviews</h4> 
-            <hr class="dividerSimilar"/>
-            <ng-container *ngIf="reviewsList.length!=0,else noReviews">
-                <div class="table-responsive">
-                    <table class="table">
-                        <tbody>
-                            <ng-container *ngFor="let review of reviewsList,let i = index;trackBy:trackByRating">
-                                <input type="hidden" [(ngModel)] = "starRating" value="{{trackByRating(i,review)}}"/>
-                                <input type="hidden" [(ngModel)] = "uid" value="{{setUid(review)}}"/>
-                                <div>
-                                    <p style="margin-left:10px;margin-top: 10px;margin-right:10px;color: white;" align="justify">{{review.review}}</p> 
-                                    <br>
-                                    <div class="row">
-                                        <div class="col-sm-2" style="margin-left:10px;margin-bottom: -15px; margin-top: -15px;">
-                                            <p style="color: white;">By &nbsp;<strong><i>{{review.author}}</i></strong></p>
-                                        </div>
-                                        <div class="col-sm-2" style="margin-left:10px;margin-bottom: -15px; margin-top: -15px;">
-                                            <ng-template #t let-fill="fill">
-                                                <span class="star" [class.full]="fill === 100">
-                                                  <span class="half" [style.width.%]="fill">&hearts;</span>&hearts;
-                                                </span>
-                                            </ng-template>
-                                            <ngb-rating [(rate)]="starRating" [starTemplate]="t" [readonly]="true" [max]="10"></ngb-rating>
-                                        </div>
-                                        <div class="col-sm-2" style="margin-left:-10px;margin-bottom: -15px; margin-top: -15px;">
-                                            <strong style="color: white;">{{review.userRating}}</strong>
-                                        </div>
-                                        <div class="col-sm-2" style="margin-left:-80px;margin-bottom: -15px; margin-top: -15px;">
-                                            <i style="color: white;">{{datepipe.transform(review.createdAt,'dd-MM-yyyy')}}</i>
-                                        </div>
-                                        <ng-container *ngIf="loginStatus">
-                                            <ng-container *ngIf="uid == author">
-                                                <div class="col-sm-4" style="margin-left:-80px;margin-bottom: -15px; margin-top: -15px;">
-                                                    <button mat-raised-button color="primary" style="border: none;outline: none;" (click)="updateReview(review._id)">Update</button> &nbsp;&nbsp;&nbsp;
-                                                    <button mat-raised-button color="warn" style="border: none;outline: none;" (click)="deleteReview(review._id)">Delete</button>  
-                                                </div>
-                                            </ng-container> 
-                                        </ng-container>
-                                    </div>
-                                    <hr class="dividerTrailer">
-                                </div>
-                            </ng-container>
-                        </tbody>
-                    </table>
-                </div>
-            </ng-container>
-            <ng-template #noReviews>
-                <h4 class="heading4" style="text-align: center;margin-top: 20px;">No reviews has been made for this movie. Be the first to review this movie!!!</h4> 
-            </ng-template>
-        </div>
-        <div class="similar" *ngIf="loginStatus">
-            <mat-card class="mat-elevation-z14" style="width: 100%; margin-top:10px">
-                <mat-card-header style="justify-content: center;">
-                    <mat-card-title>Add your Review</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <form [formGroup] = "reviewForm">
-                        <mat-form-field class="form-field" appearance="outline" style="width:35%;">
-                            <mat-label>User ID</mat-label>
-                            <input matInput formControlName="username" readonly/>
-                        </mat-form-field>
-                        <mat-form-field class="form-field" appearance="outline">
-                            <mat-label>Review</mat-label>
-                            <textarea matInput formControlName="review" rows="10" placeholder="Your Review" required></textarea>
-                            <mat-error *ngIf="reviewForm.controls.review.touched && reviewForm.controls.review.invalid">
-                                <span *ngIf="reviewForm.controls.review.errors.required">This field is mandatory.</span>
-                            </mat-error>
-                        </mat-form-field>
-                        <mat-form-field class="form-field" appearance="outline" style="width:25%;">
-                            <mat-label>Like the movie ?</mat-label>
-                            <mat-select formControlName="likes" placeholder="Like ?" required>
-                                <mat-option value="yes">Yes</mat-option>
-                                <mat-option value="no">No</mat-option>
-                            </mat-select>
-                            <mat-error *ngIf="reviewForm.controls.likes.touched && reviewForm.controls.likes.invalid">
-                                <span *ngIf="reviewForm.controls.likes.errors.required">This field is mandatory.</span>
-                            </mat-error>
-                        </mat-form-field>
-                        <mat-form-field class="form-field" appearance="outline" style="width:25%;">
-                            <mat-label>Rating ?</mat-label>
-                            <mat-select formControlName="rating" required placeholder="Rating ?">
-                                <mat-option *ngFor="let c of ratingsList" [value]="c">
-                                    {{c}}
-                                </mat-option>
-                            </mat-select>
-                            <mat-error *ngIf="reviewForm.controls.rating.touched && reviewForm.controls.rating.invalid">
-                                <span *ngIf="reviewForm.controls.rating.errors.required">This field is mandatory.</span>
-                            </mat-error>
-                        </mat-form-field>
-                    </form>
-                </mat-card-content>
-                <mat-card-actions>
-                    <div align="center">
-                        <button mat-raised-button color="primary" style="border: none;outline: none;" [disabled]="reviewForm.invalid" (click)="submitReview()">Submit</button>
-                        <button mat-raised-button color="warn" style="border: none;outline: none;" (click) = "doReset()">Cancel</button>
-                    </div>
-                </mat-card-actions>
-            </mat-card>
-        </div>
-        <div class="similar">
-            <h4 class="heading4"><i class="fa fa-star star"></i>&nbsp;&nbsp;Similar Movies</h4>
-            <hr class="dividerSimilar"/>
-            <div *ngIf="similar_Movies_Poster_Path.length!=0">
-                <div class="row">
-                    <div class="browse-movie-wrap col-xs-10 col-sm-2" *ngFor="let obj of similar_Movies_Poster_Path; let i = index">
-                        <a (click)="similarMovieClick(similar_Movies_Title[i],similar_Movies_Year[i])" class="browse-movie-link">
-                            <figure>
-                                <img class="img-responsive2" src={{obj}}/>
-                            </figure>
-                        </a>
-                        <div class="browse-movie-bottom">
-                            <p class="browse-movie-title">
-                                {{similar_Movies_Title[i]}}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div *ngIf="similar_Movies_Poster_Path.length===0">
-                <h4 class="heading4" style="text-align: center; margin-top: 50px;">Sorry! No similar movies available, We are working on it.</h4> 
-            </div>
+        <div *ngIf="similar_Movies_Poster_Path.length===0">
+            <h4 class="heading4" style="text-align: center; margin-top: 50px;">Sorry! No similar movies available, We are working on it.</h4> 
         </div>
     </div>
-</ng-container>
-<ng-container *ngIf="!dataPresent">
-    <div align="center">
-        <h4 style="color: white; margin-top: 30px;">Sorry! This movie detail is not available as of now, <br> <br>Our team is working on collecting details of this movie; we will add it shortly!!!</h4>
-        <br/>
-        <button mat-raised-button (click)="back()">Back</button>   
-    </div>
-</ng-container>
+</div>

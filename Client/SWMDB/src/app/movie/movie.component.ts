@@ -53,7 +53,6 @@ export class MovieComponent implements OnInit {
   reviewForm: FormGroup;
   loginStatus:boolean;
   msg:string = "";
-  dataPresent:boolean;
 
   constructor(private route: ActivatedRoute,private router: Router,private movieService: MovieService,
     private sanitizer: DomSanitizer,private matDialog: MatDialog,public datepipe: DatePipe,private loginService:LoginService,
@@ -143,17 +142,20 @@ export class MovieComponent implements OnInit {
             this.similar_Movies_Year.push(elements.release_year);
           });
         });
-
-        this.dataPresent = true;
       }
       else{
-        this.dataPresent = false;
+        this.router.navigate(["/movienotfound"]);
       }
     });
   }
 
-  ngOnInit(): void {
-    
+  ngOnInit(): void 
+  {
+    // this.movieService.getMovieDetails(this.title,this.year).subscribe((data)=>{
+    //   if(data['movieDetails'].length ==  0){
+    //     this.router.navigate(["/movienotfound"]);
+    //   }
+    // });
   }
 
   public runTimeConversion(value:number):string{

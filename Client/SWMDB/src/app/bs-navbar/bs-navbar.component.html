@@ -27,8 +27,8 @@
             <a *ngIf="role == 'admin'" class="dropdown-item" href="/manageusr">Manage Users</a>
             <a *ngIf="role == 'admin'" class="dropdown-item" href="/addmovie">Add Movie</a>
             <a *ngIf="role == 'user'" class="dropdown-item" href="/movierequest">Request movie</a>
-            <a *ngIf="role == 'user'" class="dropdown-item" href="/chgpassword">Change password</a>
-            <a *ngIf="role == 'user'" class="dropdown-item" (click)="onDeactivateAcct()">Deactivate account</a>
+            <a *ngIf="role == 'user' && loginMethod == 'normal'" class="dropdown-item" href="/chgpassword">Change password</a>
+            <a *ngIf="role == 'user' && loginMethod == 'normal'" class="dropdown-item" (click)="onDeactivateAcct()">Deactivate account</a>
           </div>
         </li>
         <li *ngIf="(loginStatus$ | async) as loginStatus" class="nav-item active">

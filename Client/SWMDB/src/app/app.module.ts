@@ -45,6 +45,12 @@ import { AddMoviesComponent } from './add-movies/add-movies.component';
 import {MatSliderModule} from '@angular/material/slider';
 import { UpdateReviewComponent } from './update-review/update-review.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
+import {
+  GoogleLoginProvider,
+  FacebookLoginProvider
+} from 'angularx-social-login';
+import { MovieNotFoundComponent } from './movie-not-found/movie-not-found.component';
 
 @NgModule({
   declarations: [
@@ -64,10 +70,12 @@ import { NgSelectModule } from '@ng-select/ng-select';
     ResetPasswordComponent,
     ManageUsersComponent,
     AddMoviesComponent,
-    UpdateReviewComponent
+    UpdateReviewComponent,
+    MovieNotFoundComponent
   ],
   imports: [
     BrowserModule,
+    SocialLoginModule,
     BrowserAnimationsModule,
     MatCheckboxModule,
     MatRadioModule,
@@ -103,7 +111,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
       {path: 'resetpwd', component:ResetPasswordComponent},
       {path: 'manageusr',component:ManageUsersComponent},
       {path: 'addmovie',component:AddMoviesComponent},
-      {path: 'updatereview',component:UpdateReviewComponent}
+      {path: 'updatereview',component:UpdateReviewComponent},
+      {path: 'movienotfound',component:MovieNotFoundComponent},
+      {path: '**',redirectTo:''}
     ]),
     NgbModule
   ],
@@ -112,7 +122,25 @@ import { NgSelectModule } from '@ng-select/ng-select';
     HomeService,
     MovieService,
     MoviesService,
-    DatePipe
+    DatePipe,
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(
+              '434418122452-vlq9p2aii1qdls02tuechiei12tc8ep4.apps.googleusercontent.com'
+            ),
+          },
+          {
+            id: FacebookLoginProvider.PROVIDER_ID,
+            provider: new FacebookLoginProvider('578017606194849'),
+          },
+        ],
+      } as SocialAuthServiceConfig,
+    }
   ],
   bootstrap: [AppComponent],
   entryComponents: [
