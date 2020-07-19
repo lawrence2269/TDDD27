@@ -24,7 +24,7 @@ exports.login = async (req,res) =>{
                         }
                         else
                         {
-                            var token = jwt.sign({id:data[0]['username']},jwtConfig.secret_key,{
+                            var token = jwt.sign({id:data[0]['email_id']},jwtConfig.secret_key,{
                                 expiresIn:86400 //expires in 24 hours
                             });
                             var result = {};
@@ -38,7 +38,7 @@ exports.login = async (req,res) =>{
                     });   
                 }
                 else{
-                    var token = jwt.sign({id:data[0]['username']},jwtConfig.secret_key,{
+                    var token = jwt.sign({id:data[0]['email_id']},jwtConfig.secret_key,{
                         expiresIn:86400 //expires in 24 hours
                     });
                     var result = {};
