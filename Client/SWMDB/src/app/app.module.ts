@@ -51,6 +51,7 @@ import {
   FacebookLoginProvider
 } from 'angularx-social-login';
 import { MovieNotFoundComponent } from './movie-not-found/movie-not-found.component';
+import { AuthGuardService } from './authGuard/auth-guard.service';
 
 @NgModule({
   declarations: [
@@ -104,14 +105,14 @@ import { MovieNotFoundComponent } from './movie-not-found/movie-not-found.compon
       {path: 'signup', component:SignupComponent},
       {path: 'movies',component:MoviesComponent},
       {path: 'movie',component:MovieComponent},
-      {path: 'movierequest',component:MovieRequestComponent},
-      {path: 'chgpassword',component:ChangePasswordComponent},
+      {path: 'movierequest',component:MovieRequestComponent,canActivate:[AuthGuardService]},
+      {path: 'chgpassword',component:ChangePasswordComponent,canActivate:[AuthGuardService]},
       {path: 'forgotpwd',component:ForgotPasswordComponent},
       {path: 'verifyOTP',component:VerifyOTPComponent},
       {path: 'resetpwd', component:ResetPasswordComponent},
-      {path: 'manageusr',component:ManageUsersComponent},
-      {path: 'addmovie',component:AddMoviesComponent},
-      {path: 'updatereview',component:UpdateReviewComponent},
+      {path: 'manageusr',component:ManageUsersComponent,canActivate:[AuthGuardService]},
+      {path: 'addmovie',component:AddMoviesComponent,canActivate:[AuthGuardService]},
+      {path: 'updatereview',component:UpdateReviewComponent,canActivate:[AuthGuardService]},
       {path: 'movienotfound',component:MovieNotFoundComponent},
       {path: '**',redirectTo:''}
     ]),
