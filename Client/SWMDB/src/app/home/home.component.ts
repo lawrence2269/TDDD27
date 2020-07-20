@@ -27,12 +27,10 @@ export class HomeComponent implements OnInit {
     {
         localStorage.setItem("region","US");
         region = "US";
-        console.log(localStorage.getItem("region"));
     }
     else
     {
         region = localStorage.getItem("region");
-        console.log(localStorage.getItem("region"));
     }
     this.homeService.getPopularMovies(region).subscribe((data)=>{
       data.popularMovies.forEach(elements=>{
@@ -60,17 +58,14 @@ export class HomeComponent implements OnInit {
   }
 
   public popularMovieClick(title:string,year:number):void{
-    console.log(title);
     this.router.navigate(['/movie'],{queryParams:{title:title,year:year}});
   }
 
   public playingMovieclick(title:string,year:number) : void{
-    console.log(title);
     this.router.navigate(['/movie'],{queryParams:{title:title,year:year}});
   }
 
   public upcomingMovieClick(title:string,year:number) : void{
-    console.log(title);
     this.router.navigate(['/movie'],{queryParams:{title:title,year:year}});
   }
 }
