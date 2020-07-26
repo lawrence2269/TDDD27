@@ -3,7 +3,6 @@ const moviesModel = require('../models/movie.model.js')
 const request = require('request');
 const apiConfig  = require('../helpers/api.config.js');
 const url = require('url');
-const requestMovies = require('../models/requestmovies.model.js');
 const movieReviews = require('../models/moviereview.model.js');
 const Countries = require('../models/countries.model.js');
 const languages = require('../models/languages.model.js');
@@ -128,15 +127,15 @@ exports.getGenre = (req,res) =>{
 
 exports.createReview = async (req,res) =>{
     var jwtToken = req.headers['access-token'];
-    var likes;
     if(jwtToken){
         jwt.verify(jwtToken,jwtConfig.secret_key,async function(err,decoded){
             if(err){
                 res.status(400).json({"message":"Failure"});
             }
             else{
+                var likes;
                 var movieId = 0;
-
+                
                 await movieDetails.find({"title":{"$regex":req.body.title,"$options":"i"}}).select({"_id":1}).lean().exec().then(data =>{
                     movieId = data[0]["_id"];
                 });
@@ -148,6 +147,33 @@ exports.createReview = async (req,res) =>{
                     likes = false;
                 }
 
+                var totalReviews = 0;
+                var dislike = 0;
+                var like = 0;
+                var avgRating = 0;
+                var totalRating = 0;
+
+                const reviewsData = await movieReviews.find({"movie_id":movieId});
+                for(const reviews of reviewsData){
+                    if(reviews.likes == true){
+                        like = like + 1;
+                    }
+                    else{
+                        dislike = dislike + 1;
+                    }
+                    totalRating = reviews.userRating + totalRating;
+                    totalReviews = totalReviews + 1;
+                }
+
+                if(req.body.likes == "yes"){
+                    like = like + 1;
+                }
+                else{
+                    dislike = dislike + 1;
+                }
+                
+                avgRating = Math.round((totalRating+req.body.rating)/(totalReviews+1),1);
+                
                 const reviewData = new movieReviews({
                     movie_id:movieId,
                     title:req.body.title,
@@ -157,9 +183,22 @@ exports.createReview = async (req,res) =>{
                     likes:likes
                 });
 
+                var moviedata = {
+                    likes:like,
+                    dislikes:dislike,
+                    SWMDBRating:avgRating
+                }
+
                 reviewData.save().then(data=>{
                     if(data["_id"]!==" "){
-                        res.status(200).json({"message":"Success"});
+                        movieDetails.findByIdAndUpdate(movieId,moviedata).exec((err,result)=>{
+                            if(err){
+                                res.status(400).json({"message":"Failure"});
+                            }
+                            else{
+                                res.status(200).json({"message":"Success"});
+                            }
+                        });
                     }
                     else{
                         res.status(400).json({"message":"Failure"});
@@ -177,6 +216,7 @@ exports.createReview = async (req,res) =>{
 
 exports.getReview = async (req,res) =>{
     const queryObject = url.parse(req.url,true).query;
+
     if(await movieReviews.find({"title":{"$regex":queryObject['title'],"$options":"i"}}).countDocuments()!=0){
         movieReviews.find({"title":{"$regex":queryObject['title'],"$options":"i"}}).select({"__v":0}).lean().exec().then(data =>{
             res.json({"reviews":data});
@@ -220,11 +260,51 @@ exports.deleteReview = (req,res)=>{
     }
 }
 
-exports.updateReview = (req,res) =>{
+exports.updateReview = async (req,res) =>{
+
+    var movieId = 0;
+                
+    await movieDetails.find({"title":{"$regex":req.body.title,"$options":"i"}}).select({"_id":1}).lean().exec().then(data =>{
+        movieId = data[0]["_id"];
+    });
+
+    var totalReviews = 0;
+    var dislike = 0;
+    var like = 0;
+    var avgRating = 0;
+    var totalRating = 0;
+
+    const reviewsData = await movieReviews.find({"movie_id":movieId});
+    for(const reviews of reviewsData){
+        if(reviews.likes == true){
+            like = like + 1;
+        }
+        else{
+            dislike = dislike + 1;
+        }
+        totalRating = reviews.userRating + totalRating;
+        totalReviews = totalReviews + 1;
+    }
+
+    if(req.body.likes == "yes"){
+        like = like + 1;
+    }
+    else{
+        dislike = dislike + 1;
+    }
+    
+    avgRating = Math.round((totalRating+req.body.userRating)/(totalReviews+1),1);
+
     var data = {
         review:req.body.reviewStmt,
         userRating:req.body.userRating,
         likes:req.body.likes
+    }
+
+    var movieData = {
+        likes:like,
+        dislikes:dislike,
+        SWMDBRating:avgRating
     }
 
     movieReviews.findByIdAndUpdate(req.body.id,data).exec(function(err,result){
@@ -232,7 +312,14 @@ exports.updateReview = (req,res) =>{
             res.status(500).json({"reviews":"Some error occurred."});
         }
         else{
-            res.status(200).json({"reviews":"Success"});
+            movieDetails.findByIdAndUpdate(movieId,movieData).exec(function(err,result){
+                if(err){
+                    res.status(500).json({"reviews":"Some error occurred."});
+                }
+                else{
+                    res.status(200).json({"reviews":"Success"});
+                }
+            });
         }
     });
 }
@@ -336,7 +423,7 @@ exports.getMovieDetails = async (req,res) =>{
             
             var rating = tmdbMovieDetails['results'][0]["vote_average"];
             var synopsis = tmdbMovieDetails['results'][0]["overview"];
-            var likes = Math.round(tmdbMovieDetails['results'][0]["popularity"]);
+            //var likes = Math.round(tmdbMovieDetails['results'][0]["popularity"]);
             var release_year = queryObject['year'].toString();
             var videoURL = apiConfig.tmdbVideoURL+tmdb_id+"/videos?api_key="+apiConfig.api_key;
             
@@ -470,6 +557,10 @@ exports.getMovieDetails = async (req,res) =>{
                 }
             }
 
+            var SwmdbRating = 0;
+            var likes = 0
+            var dislikes = 0
+
             const movieData = new moviesModel({
                 _id:mid_2,
                 tmdb_id:tmdb_id,
@@ -490,7 +581,9 @@ exports.getMovieDetails = async (req,res) =>{
                 genre:genre.join(" / "),
                 rating:rating,
                 synopsis:synopsis,
+                SWMDBRating:SwmdbRating,
                 likes:likes,
+                dislikes:dislikes,
                 trailer:trailerLink,
                 release_year:release_year,
                 imdb_id:imdb_id,
