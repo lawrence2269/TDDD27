@@ -387,3 +387,32 @@ def insertReviews():
                 col_3.insert_one(reviewData)
 
 insertReviews()
+
+def updateLikesDislikesMovieDetails():
+    client = pymongo.MongoClient("mongodb+srv://swmdb:swmdb12345@swmdb-ezh2o.mongodb.net/SWMDB?retryWrites=true&w=majority")
+    db=client['SWMDB']
+    col_1 = db['reviews']
+    col_2 = db['moviedetails']
+    movieRecord = col_2.find({},{"_id":1})
+    for recs1 in movieRecord:
+        totalReviewRecords = 0
+        likes = 0
+        dislikes = 0
+        avgRating = 0
+        totalRating = 0
+        if(col_1.find({"movie_id":recs1['_id']}).count()!=0):
+           reviewRecord = col_1.find({"movie_id":recs1['_id']})
+           for recs2 in reviewRecord:
+               totalReviewRecords = totalReviewRecords + 1
+               if(recs2['likes'] == True):
+                   likes = likes + 1
+               else:
+                   dislikes = dislikes + 1
+               totalRating = totalRating + recs2['userRating']
+           avgRating = round(totalRating/totalReviewRecords,1)        
+        myQuery = {"_id":recs1["_id"]}
+        newValues = {"$set":{"SWMDBRating":avgRating,"likes":likes,"dislikes":dislikes}}
+        col_2.update_one(myQuery,newValues)
+        print("Movie ID:",recs1['_id']," Avg. Rating:",avgRating,"Likes :",likes,"Dislikes :",dislikes)
+
+updateLikesDislikesMovieDetails()
