@@ -68,7 +68,7 @@ export class UpdateReviewComponent implements OnInit {
   public updateReviews():void{
     this.confirmationDialogService.confirm("Update review",'Are you sure to update?').then((confirmed)=>{
       if(confirmed){
-        var data = {"id":localStorage.getItem("reviewId"),"reviewStmt":this.updateReviewForm.value['review'],"userRating":parseFloat(this.updateReviewForm.value['ratings']),"likes":this.updateReviewForm.value['likes']};
+        var data = {"id":localStorage.getItem("reviewId"),"title":localStorage.getItem("title"),"reviewStmt":this.updateReviewForm.value['review'],"userRating":parseFloat(this.updateReviewForm.value['ratings']),"likes":this.updateReviewForm.value['likes']};
         this.updateReviewService.doUpdateReviews(data).subscribe((result)=>{
           this.updateReviewModal.close();
           this.msg= "Your review has been updated successfully.";

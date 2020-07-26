@@ -31,6 +31,7 @@ export class MovieComponent implements OnInit {
   imdb_id:string = "";
   rating:number = 0;
   like_count:number = 0;
+  dislike_count:number = 0;
   yify_id:number = 0;
   similar_Movies_Poster_Path:any = [];
   similar_Movies_Title:any = [];
@@ -53,6 +54,7 @@ export class MovieComponent implements OnInit {
   reviewForm: FormGroup;
   loginStatus:boolean;
   msg:string = "";
+  swmdbRating:number = 0;
 
   constructor(private route: ActivatedRoute,private router: Router,private movieService: MovieService,
     private sanitizer: DomSanitizer,private matDialog: MatDialog,public datepipe: DatePipe,private loginService:LoginService,
@@ -113,6 +115,9 @@ export class MovieComponent implements OnInit {
         this.imdb_id = data['movieDetails'][0]['imdb_id'];
         this.rating = data['movieDetails'][0]['rating'];
         this.like_count = data['movieDetails'][0]['likes'];
+        this.dislike_count = data['movieDetails'][0]['dislikes'];
+        this.swmdbRating = data['movieDetails'][0]['SWMDBRating'];
+        
         this.yify_id = data['movieDetails'][0]['yify_id'];
         this.runTimeServer = data['movieDetails'][0]['runtime'];
 
