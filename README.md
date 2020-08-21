@@ -8,7 +8,7 @@ SWMDB (<i>Sweden Movie Database</i>) is a web application which mainly showcases
 [https://youtu.be/YPGfy1I9KK0](https://youtu.be/YPGfy1I9KK0)
 
 # Final Screencast
-[https://liuonline-my.sharepoint.com/:v:/g/personal/lawra776_student_liu_se/EQaL5we4DjhCg0qGPD41pmcBl4W58HfcfjsH0XCG4R6eFA?e=ueev6L] (https://liuonline-my.sharepoint.com/:v:/g/personal/lawra776_student_liu_se/EQaL5we4DjhCg0qGPD41pmcBl4W58HfcfjsH0XCG4R6eFA?e=ueev6L)
+https://liuonline-my.sharepoint.com/:v:/g/personal/lawra776_student_liu_se/EQaL5we4DjhCg0qGPD41pmcBl4W58HfcfjsH0XCG4R6eFA?e=ueev6L
 
 # Heroku Deploy
 [https://swmdbweb.herokuapp.com/] (https://swmdbweb.herokuapp.com/)
