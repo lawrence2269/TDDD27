@@ -9,11 +9,10 @@ export class MovieRequestService {
 
   constructor(private http: HttpClient) { }
 
-  //const localUrl = 'http://127.0.0.1:3000';
+  //private baseURL:string = 'http://127.0.0.1:3000';
   private baseURL:string = 'https://swmdbapi.herokuapp.com';
 
   headers = new HttpHeaders({
-    //'Access-Control-Allow-Origin':'*',
     'access-token':localStorage.getItem("jwtToken")
   });
 

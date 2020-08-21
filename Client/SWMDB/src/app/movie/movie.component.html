@@ -19,24 +19,13 @@
                         <a href="{{imdb_id}}" title="IMDB Rating" target="_blank">
                             <img src="/assets/img/logo-imdb.svg">
                         </a>
-                    </td>
-                    <td>
                         <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{rating}}</span>
                         <i class="fa fa-star star" style="margin-left: 10px;"></i>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <a style="color: white;cursor: default;margin-left: 10px;"><b>SWMDB</b></a>
-                    </td>
-                    <td>
-                        <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{swmdbRating}}</span>
-                        <i class="fa fa-star star" style="margin-left: 10px;"></i> 
+                        <span style="margin-left: 20px;">
+                            <a style="color: white;cursor: default;margin-left: 10px;"><b>SWMDB</b></a>
+                            <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{swmdbRating}}</span>
+                             <i class="fa fa-star star" style="margin-left: 10px;"></i> 
+                        </span>
                     </td>
                 </tr>
                 <ng-template #temp1>
@@ -45,26 +34,13 @@
                 <tr class="spaceUnder" *ngIf="like_count!=0,else temp2">
                     <td>
                         <i class="fa fa-thumbs-up thumbsup" title="Likes" style="font-size: 36px;"></i>
-                    </td>
-                    <td>
                         <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{like_count}}</span>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <i class="fa fa-thumbs-down thumbsdown" title="DisLikes" style="font-size: 36px;"></i>
-                    </td>
-                    <td>
-                        <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: -10px;">{{dislike_count}}</span>
+                        <i class="fa fa-thumbs-down thumbsdown" title="DisLikes" style="font-size: 36px;margin-left: 40px;"></i>
+                        <span style="color:white;font-size: 1.15em;font-weight: 700; margin-left: 20px;">{{dislike_count}}</span>
                     </td>
                 </tr>
                 <ng-template #temp2>
-                    <h4 Style="color: white;">Sorry, No likes are available, we are working on it!!!</h4>
+                    <h4 Style="color: white;">Sorry, No likes have been made so far.</h4>
                 </ng-template>
             </table>
         </div>

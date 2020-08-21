@@ -12,7 +12,7 @@ export class LoginService {
 
   constructor(private http: HttpClient,private router : Router,private authService: SocialAuthService) { }
 
-  //const localUrl = 'http://127.0.0.1:3000';
+  //private baseURL:string = 'http://127.0.0.1:3000';
   private baseURL:string = 'https://swmdbapi.herokuapp.com';
 
 

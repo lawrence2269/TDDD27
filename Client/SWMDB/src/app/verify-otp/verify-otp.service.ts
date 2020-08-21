@@ -13,7 +13,7 @@ export class VerifyOTPService {
   private baseURL:string = 'https://swmdbapi.herokuapp.com';
 
   doVerifyOTP(data:any){
-    return this.http.get(this.baseURL+"/checkotp").pipe(map(result=>{
+    return this.http.post(this.baseURL+"/checkotp",data).pipe(map(result=>{
       return result;
     }));
   }
