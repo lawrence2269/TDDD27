@@ -11,7 +11,7 @@ SWMDB (<i>Sweden Movie Database</i>) is a web application which mainly showcases
 https://liuonline-my.sharepoint.com/:v:/g/personal/lawra776_student_liu_se/EQaL5we4DjhCg0qGPD41pmcBl4W58HfcfjsH0XCG4R6eFA?e=ueev6L
 
 # Heroku Deploy
-[https://swmdbweb.herokuapp.com/] (https://swmdbweb.herokuapp.com/)
+https://swmdbweb.herokuapp.com/
 
 # Functional Specification
 <div style="text-align: justify">The user can login and post their reviews about a movie they had watched and they also can read reviews about a
