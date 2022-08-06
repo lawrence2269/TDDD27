@@ -22,7 +22,7 @@
     "mongoose": "^5.9.21",
     "node-fetch": "^2.6.0",
     "nodemailer": "^6.4.10",
-    "otp-generator": "^1.1.0",
+    "otp-generator": "^3.0.0",
     "password-hash": "^1.2.2",
     "request": "^2.88.2",
     "superagent": "^5.3.1",
